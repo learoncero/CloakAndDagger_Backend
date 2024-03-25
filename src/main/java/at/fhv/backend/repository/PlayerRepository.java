@@ -15,11 +15,15 @@ public class PlayerRepository {
     public void save(Player player) {
         players.put(player.getId(), player);
         for (Player p : players.values()) {
-            System.out.println("Player ID: " + p.getId() + " Player Username " + p.getUsername());
+            System.out.println("Repo: Player ID: " + p.getId() + " Username " + p.getUsername());
         }
     }
 
     public Optional<Player> findById(int id) {
         return Optional.ofNullable(players.get(id));
+    }
+
+    public List<Player> findAll() {
+        return new ArrayList<>(players.values());
     }
 }
