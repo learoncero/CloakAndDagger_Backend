@@ -1,4 +1,4 @@
-package at.fhv.backend;
+package at.fhv.backend.model;
 
 
 import at.fhv.backend.model.Position;

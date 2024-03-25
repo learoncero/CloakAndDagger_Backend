@@ -1,4 +1,4 @@
-package at.fhv.backend;
+package at.fhv.backend.model;
 
 public class PlayerJoinMessage {
     private int id;

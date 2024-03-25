@@ -1,7 +1,7 @@
 package at.fhv.backend.controller;
 
-import at.fhv.backend.PlayerJoinMessage;
-import at.fhv.backend.PlayerMoveMessage;
+import at.fhv.backend.model.PlayerJoinMessage;
+import at.fhv.backend.model.PlayerMoveMessage;
 import at.fhv.backend.service.PlayerService;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
