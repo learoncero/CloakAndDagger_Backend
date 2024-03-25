@@ -4,6 +4,7 @@ import at.fhv.backend.repository.PlayerRepository;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class PlayerService {
@@ -24,10 +25,15 @@ public class PlayerService {
     }
 
     public void updatePlayerPosition(int id, Position position) {
+        System.out.println("updatePlayerPosition called in PlayerService");
         Player player = playerRepository.findById(id).orElse(null);
         if (player != null) {
             player.setPosition(position);
             playerRepository.save(player);
+            List<Player> players = playerRepository.findAll();
+            for(Player p: players) {
+                System.out.println("Player ID: " + p.getId() + " Player Username " + p.getUsername() + "Position: " + p.getPosition().getX() + ", " + p.getPosition().getY());
+            }
         }
     }
 }
