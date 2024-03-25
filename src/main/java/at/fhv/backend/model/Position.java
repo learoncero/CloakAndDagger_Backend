@@ -5,8 +5,7 @@ public class Position {
     private int y;
 
     public Position() {
-        this.x = 0;
-        this.y = 0;
+
     }
 
     public Position(int x, int y) {
