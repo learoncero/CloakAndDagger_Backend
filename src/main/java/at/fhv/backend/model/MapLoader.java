@@ -12,7 +12,6 @@ package at.fhv.backend.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class MapLoader {

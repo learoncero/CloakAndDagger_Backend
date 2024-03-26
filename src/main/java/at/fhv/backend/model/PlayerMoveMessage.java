@@ -1,9 +1,5 @@
 package at.fhv.backend.model;
 
-
-import at.fhv.backend.model.Position;
-
-
 public class PlayerMoveMessage {
     private int id;
     private Position newPosition;
