@@ -1,4 +1,4 @@
-package at.fhv.AmongUsReplicaBackend;
+package at.fhv.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
