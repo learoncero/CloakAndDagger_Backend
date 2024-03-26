@@ -15,7 +15,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class MapLoader {
-    private static final String pathForMap = "src/main/java/at/fhv/backend/repository/map.txt";
+    private static final String pathForMap = "src/main/java/at/fhv/backend/repository/map3.txt";
 
     public static boolean[][] loadMapFromFile() {
         boolean[][] walkableCells = null;
