@@ -11,9 +11,11 @@
 package at.fhv.backend.service;
 
 import at.fhv.backend.model.Map;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
+@Scope("singleton")
 public class MapService {
 
     public Map map;
@@ -34,5 +36,31 @@ public class MapService {
 
     public void setMapbyPosition(int x, int y, boolean value) {
         map.setMapbyPosition(x, y, value);
+    }
+
+    public boolean isCellWalkable(int x, int y) {
+        return map.getCellValue(x, y);
+    }
+
+    public static void main(String[] args) {
+        //Todo - into unit test
+
+        /*MapService mapService = new MapService();
+        Map map = mapService.getInitialMap();
+        boolean[][] array = map.getMap();
+        int arrayRowlength = array[0].length;
+        int y =0;
+        while(y < map.getMap().length) {
+            for (int x = 0; x < arrayRowlength; x++) {
+                if (map.getCellValue(x, y)) {
+                    System.out.print(".");
+                } else {
+                    System.out.print("#");
+                }
+            }
+            System.out.println();
+            y++;
+        }
+        System.out.println(map.getCellValue(7,1));*/
     }
 }
