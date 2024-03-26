@@ -34,4 +34,8 @@ public class Map {
         }
     }
 
+    public boolean getCellValue(int x, int y) {
+        return map[y][x];
+    }
+
 }
