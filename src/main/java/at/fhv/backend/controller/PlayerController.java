@@ -31,10 +31,10 @@ public class PlayerController {
     @MessageMapping("/move")
     @SendTo("/topic/positionChange")
     public Player movePlayer(@Payload PlayerMoveMessage moveMessage) {
-        System.out.println("Received move message: " + moveMessage.getId() + " to " + moveMessage.getNewPosition().getX() + ", " + moveMessage.getNewPosition().getY());
+        //System.out.println("Received move message: " + moveMessage.getId() + " to " + moveMessage.getNewPosition().getX() + ", " + moveMessage.getNewPosition().getY());
         int playerID = moveMessage.getId();
         Position newPosition = new Position(moveMessage.getNewPosition().getX(), moveMessage.getNewPosition().getY());
-        System.out.println("newPosition received: "+newPosition.getX()+", "+newPosition.getY());
+        //System.out.println("newPosition received: "+newPosition.getX()+", "+newPosition.getY());
         if (playerID != 0) {
             System.out.println("Updating player position in controller");
             playerService.updatePlayerPosition(playerID, newPosition);
