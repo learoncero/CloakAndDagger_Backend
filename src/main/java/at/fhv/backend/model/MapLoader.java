@@ -12,6 +12,7 @@ package at.fhv.backend.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class MapLoader {
@@ -26,17 +27,20 @@ public class MapLoader {
                 String line = scanner.nextLine();
                 rows++;
                 cols = Math.max(cols, line.length());
+                //System.out.println("Rows: "+rows+" Cols: "+cols);
             }
-            walkableCells = new boolean[cols][rows];
+            walkableCells = new boolean[rows][cols];
             try(Scanner booleanchecker = new Scanner(new File(pathForMap))){
                 int row = 0;
                 while (booleanchecker.hasNextLine()) {
                     String line = booleanchecker.nextLine();
+                    //System.out.println("Line: "+line);
                     for (int col = 0; col < line.length(); col++) {
-                        walkableCells[col][row] = line.charAt(col) == '.';
+                        walkableCells[row][col] = line.charAt(col) == '.';
                     }
                     row++;
                 }
+                //System.out.println(Arrays.deepToString(walkableCells));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -47,10 +51,10 @@ public class MapLoader {
     }
 
     public static void main(String[] args) {
-        /*boolean[][] walkableCells = loadMapFromFile("src/main/java/at/fhv/backend/repository/map.txt");
+        /*boolean[][] walkableCells = loadMapFromFile();
         System.out.println(walkableCells.length + "x" + walkableCells[0].length);
         System.out.println(walkableCells[0][0]);
-        System.out.println( walkableCells[2][1]);
-        */
+        System.out.println( walkableCells[2][1]);*/
+
     }
 }
