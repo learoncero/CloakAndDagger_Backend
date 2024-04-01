@@ -1,5 +1,6 @@
 package at.fhv.backend.service;
 
+import at.fhv.backend.model.Game;
 import at.fhv.backend.repository.PlayerRepository;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
@@ -16,8 +17,8 @@ public class PlayerService {
         this.mapService = mapservice;
     }
 
-    public Player createPlayer(int id, String username, int x, int y) {
-        Player player = new Player(id, username, x, y);
+    public Player createPlayer(String username, int x, int y, Game game) {
+        Player player = new Player(username, x, y, game);
         playerRepository.save(player);
         return player;
     }

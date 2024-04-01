@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2024 Sarah N
- *
- * Project Name:         AmongUs_Replica_Backend
- * Description:
- *
- * Date of Creation/
- * Last Update:          25/03/2024
- */
-
 package at.fhv.backend.model;
 
 import java.io.File;

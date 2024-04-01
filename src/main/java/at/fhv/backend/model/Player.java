@@ -4,17 +4,18 @@ public class Player {
     private int id;
     private String username;
     private Position position;
+    private Game game;
+    private static int nextID = 1;
 
-    public Player(int id, String username, int x, int y) {
-        this.id = id;
+    public Player(String username, int x, int y, Game game) {
+        this.id = nextID++;
         this.username = username;
         this.position = new Position(x, y);
+        this.game = game;
     }
 
-    public Player (int id, String username) {
-        this.id = id;
-        this.username = username;
-        position = new Position(0, 0);
+    public Player (String username, Game game) {
+        this(username, 0, 0, game);
     }
 
     public Player() {

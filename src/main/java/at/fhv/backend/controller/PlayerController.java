@@ -1,31 +1,31 @@
 package at.fhv.backend.controller;
 
-import at.fhv.backend.model.PlayerJoinMessage;
-import at.fhv.backend.model.PlayerMoveMessage;
+import at.fhv.backend.model.*;
+import at.fhv.backend.service.GameService;
 import at.fhv.backend.service.PlayerService;
-import at.fhv.backend.model.Player;
-import at.fhv.backend.model.Position;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class PlayerController {
     private final PlayerService playerService;
+    private final GameService gameService;
 
     @Autowired
-    public PlayerController(PlayerService playerService, SimpMessagingTemplate messagingTemplate) {
+    public PlayerController(PlayerService playerService, GameService gameService) {
         this.playerService = playerService;
+        this.gameService = gameService;
     }
 
     @MessageMapping("/join")
     @SendTo("/topic/playerJoin")
     public Player createPlayer(@Payload PlayerJoinMessage joinMessage) {
         System.out.println("Received join message: " + joinMessage.getId() + " " + joinMessage.getUsername() + " " + joinMessage.getX() + " " + joinMessage.getY());
-        return playerService.createPlayer(joinMessage.getId(), joinMessage.getUsername(), joinMessage.getX(), joinMessage.getY());
+        Game game = gameService.getGameByCode(joinMessage.getGameCode());
+        return playerService.createPlayer(joinMessage.getUsername(), joinMessage.getX(), joinMessage.getY(), game);
     }
 
     @MessageMapping("/move")
