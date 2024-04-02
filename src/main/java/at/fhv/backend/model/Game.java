@@ -14,7 +14,6 @@ public class Game {
     private int numberOfImpostors;
     private String map;
     private List<Player> players;
-    @Getter
     private static int nextID = 1;
 
     public Game(String gameCode, int numberOfPlayers, int numberOfImpostors, String map, List<Player> players) {
