@@ -64,8 +64,16 @@ public class GameController {
         }
 
         try {
-            System.out.println("Received join message: " + joinMessage.getId() + " " + joinMessage.getUsername() + " " + joinMessage.getPosition().getX() + " " + joinMessage.getPosition().getY());
             Game game = gameService.getGameByCode(joinMessage.getGameCode());
+
+            if (game == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            if (game.getPlayers().size() >= game.getNumberOfPlayers()) {
+                return ResponseEntity.badRequest().body("Game lobby is full");
+            }
+
             Player player = playerService.createPlayer(joinMessage.getId(), joinMessage.getUsername(), joinMessage.getPosition(), game);
             game.getPlayers().add(player);
 
