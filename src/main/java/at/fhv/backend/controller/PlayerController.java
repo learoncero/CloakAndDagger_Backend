@@ -25,7 +25,8 @@ public class PlayerController {
     public Player createPlayer(@Payload PlayerJoinMessage joinMessage) {
         System.out.println("Received join message: " + joinMessage.getId() + " " + joinMessage.getUsername() + " " + joinMessage.getX() + " " + joinMessage.getY());
         Game game = gameService.getGameByCode(joinMessage.getGameCode());
-        return playerService.createPlayer(joinMessage.getUsername(), joinMessage.getX(), joinMessage.getY(), game);
+        Position position = new Position(joinMessage.getX(), joinMessage.getY());
+        return playerService.createPlayer(joinMessage.getId(), joinMessage.getUsername(), position, game);
     }
 
     @MessageMapping("/move")

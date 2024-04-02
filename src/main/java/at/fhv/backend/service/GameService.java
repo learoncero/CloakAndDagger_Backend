@@ -18,11 +18,11 @@ public class GameService {
         this.playerService = playerService;
     }
 
-    public Game createGame(String username, int numberOfPlayers, int numberOfImpostors, String map) {
+    public Game createGame(Player player, int numberOfPlayers, int numberOfImpostors, String map) {
         Game game = new Game(generateGameCode(), numberOfPlayers, numberOfImpostors, map);
         System.out.println("Game Code: " + game.getGameCode() + " Number of Players: " + game.getNumberOfPlayers());
-        Player player = playerService.createPlayer(username, 7, 9, game);
-        game.getPlayers().add(player);
+        Player p = playerService.createPlayer(player.getId(), player.getUsername(), player.getPosition(), game);
+        game.getPlayers().add(p);
         gameRepository.save(game);
 
         return game;

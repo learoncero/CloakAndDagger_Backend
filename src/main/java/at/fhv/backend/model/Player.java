@@ -5,17 +5,12 @@ public class Player {
     private String username;
     private Position position;
     private Game game;
-    private static int nextID = 1;
 
-    public Player(String username, int x, int y, Game game) {
-        this.id = nextID++;
+    public Player(int id, String username, Position position, Game game) {
+        this.id = id;
         this.username = username;
-        this.position = new Position(x, y);
+        this.position = position;
         this.game = game;
-    }
-
-    public Player (String username, Game game) {
-        this(username, 0, 0, game);
     }
 
     public Player() {

@@ -17,8 +17,8 @@ public class PlayerService {
         this.mapService = mapservice;
     }
 
-    public Player createPlayer(String username, int x, int y, Game game) {
-        Player player = new Player(username, x, y, game);
+    public Player createPlayer(int id, String username, Position position, Game game) {
+        Player player = new Player(id, username, position, game);
         playerRepository.save(player);
         return player;
     }

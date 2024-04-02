@@ -21,9 +21,9 @@ public class GameController {
 
     @PostMapping("/create")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) {
-        System.out.println("Received request to create game with username: " + createGameMessage.getUsername() + " number of players: " + createGameMessage.getNumberOfPlayers() + " number of impostors: " + createGameMessage.getNumberOfImpostors() + " map: " + createGameMessage.getMap());
+        System.out.println("Received request to create game with username: " + createGameMessage.getPlayer().getUsername() + " number of players: " + createGameMessage.getNumberOfPlayers() + " number of impostors: " + createGameMessage.getNumberOfImpostors() + " map: " + createGameMessage.getMap());
 
-        Game createdGame = gameService.createGame(createGameMessage.getUsername(), Integer.parseInt(createGameMessage.getNumberOfPlayers()), Integer.parseInt(createGameMessage.getNumberOfImpostors()), createGameMessage.getMap());
+        Game createdGame = gameService.createGame(createGameMessage.getPlayer(), Integer.parseInt(createGameMessage.getNumberOfPlayers()), Integer.parseInt(createGameMessage.getNumberOfImpostors()), createGameMessage.getMap());
 
         if (createdGame != null) {
             return ResponseEntity.ok(createdGame);
