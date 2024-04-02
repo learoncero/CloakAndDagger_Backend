@@ -2,10 +2,16 @@ package at.fhv.backend.controller;
 
 import at.fhv.backend.model.CreateGameMessage;
 import at.fhv.backend.model.Game;
+import at.fhv.backend.model.Player;
+import at.fhv.backend.model.PlayerJoinMessage;
 import at.fhv.backend.service.GameService;
+import at.fhv.backend.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,10 +19,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/game")
 public class GameController {
     private final GameService gameService;
+    private final PlayerService playerService;
 
     @Autowired
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, PlayerService playerservice) {
         this.gameService = gameService;
+        this.playerService = playerservice;
     }
 
     @PostMapping("/create")
@@ -42,4 +50,29 @@ public class GameController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @MessageMapping("/joinGame")
+    @SendTo("/topic/playerJoined")
+    public ResponseEntity<?> createPlayer(@Payload PlayerJoinMessage joinMessage) {
+        if (joinMessage == null ||
+                joinMessage.getId() < 2 ||
+                joinMessage.getUsername() == null ||
+                joinMessage.getPosition() == null ||
+                joinMessage.getGameCode() == null) {
+            // Return a response indicating bad request if any required field is missing
+            return ResponseEntity.badRequest().body("Invalid join message");
+        }
+
+        try {
+            System.out.println("Received join message: " + joinMessage.getId() + " " + joinMessage.getUsername() + " " + joinMessage.getPosition().getX() + " " + joinMessage.getPosition().getY());
+            Game game = gameService.getGameByCode(joinMessage.getGameCode());
+            Player player = playerService.createPlayer(joinMessage.getId(), joinMessage.getUsername(), joinMessage.getPosition(), game);
+            game.getPlayers().add(player);
+
+            return ResponseEntity.ok(game);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating player: " + e.getMessage());
+        }
+    }
+
 }

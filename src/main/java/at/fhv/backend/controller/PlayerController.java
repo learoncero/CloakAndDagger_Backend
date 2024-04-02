@@ -1,6 +1,8 @@
 package at.fhv.backend.controller;
 
-import at.fhv.backend.model.*;
+import at.fhv.backend.model.Player;
+import at.fhv.backend.model.PlayerMoveMessage;
+import at.fhv.backend.model.Position;
 import at.fhv.backend.service.GameService;
 import at.fhv.backend.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +20,6 @@ public class PlayerController {
     public PlayerController(PlayerService playerService, GameService gameService) {
         this.playerService = playerService;
         this.gameService = gameService;
-    }
-
-    @MessageMapping("/join")
-    @SendTo("/topic/playerJoin")
-    public Player createPlayer(@Payload PlayerJoinMessage joinMessage) {
-        System.out.println("Received join message: " + joinMessage.getId() + " " + joinMessage.getUsername() + " " + joinMessage.getX() + " " + joinMessage.getY());
-        Game game = gameService.getGameByCode(joinMessage.getGameCode());
-        Position position = new Position(joinMessage.getX(), joinMessage.getY());
-        return playerService.createPlayer(joinMessage.getId(), joinMessage.getUsername(), position, game);
     }
 
     @MessageMapping("/move")
