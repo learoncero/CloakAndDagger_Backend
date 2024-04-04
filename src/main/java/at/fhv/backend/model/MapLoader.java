@@ -5,11 +5,12 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class MapLoader {
-    private static final String pathForMap = "src/main/java/at/fhv/backend/repository/map3.txt";
+    private static final String pathForMap = "src/main/java/at/fhv/backend/repository/";
 
-    public static boolean[][] loadMapFromFile() {
+    public static boolean[][] loadMapFromFile(String map) {
         boolean[][] walkableCells = null;
-        try (Scanner scanner = new Scanner(new File(pathForMap))) {
+        String newPathForMap = pathForMap + map.toLowerCase() + ".txt";
+        try (Scanner scanner = new Scanner(new File(newPathForMap))) {
             int rows = 0;
             int cols = 0;
             while (scanner.hasNextLine()) {
@@ -19,7 +20,7 @@ public class MapLoader {
                 //System.out.println("Rows: "+rows+" Cols: "+cols);
             }
             walkableCells = new boolean[rows][cols];
-            try(Scanner booleanchecker = new Scanner(new File(pathForMap))){
+            try(Scanner booleanchecker = new Scanner(new File(newPathForMap))){
                 int row = 0;
                 while (booleanchecker.hasNextLine()) {
                     String line = booleanchecker.nextLine();
