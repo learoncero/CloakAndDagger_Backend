@@ -23,23 +23,24 @@ public class PlayerController {
     @MessageMapping("/join")
     @SendTo("/topic/playerJoin")
     public Player createPlayer(@Payload PlayerJoinMessage joinMessage) {
-        System.out.println("Received join message: " + joinMessage.getId() + " " + joinMessage.getUsername() + " " + joinMessage.getX() + " " + joinMessage.getY());
+        System.out.println("Received join message: " + joinMessage.getId() + " " + joinMessage.getUsername() + " " + joinMessage.getPosition().getX() + " " + joinMessage.getPosition().getY());
         Game game = gameService.getGameByCode(joinMessage.getGameCode());
-        Position position = new Position(joinMessage.getX(), joinMessage.getY());
+        Position position = new Position(joinMessage.getPosition().getX(), joinMessage.getPosition().getY());
         return playerService.createPlayer(joinMessage.getId(), joinMessage.getUsername(), position, game);
     }
 
     @MessageMapping("/move")
     @SendTo("/topic/positionChange")
     public Player movePlayer(@Payload PlayerMoveMessage moveMessage) {
-        //System.out.println("Received move message: " + moveMessage.getId() + " to " + moveMessage.getNewPosition().getX() + ", " + moveMessage.getNewPosition().getY());
+        System.out.println("Received move message: " + moveMessage.getId() + " to " + moveMessage.getNewPosition().getX() + ", " + moveMessage.getNewPosition().getY());
         int playerID = moveMessage.getId();
         Position newPosition = new Position(moveMessage.getNewPosition().getX(), moveMessage.getNewPosition().getY());
-        //System.out.println("newPosition received: "+newPosition.getX()+", "+newPosition.getY());
+        System.out.println("newPosition received: "+newPosition.getX()+", "+newPosition.getY());
         if (playerID != 0) {
             System.out.println("Updating player position in controller");
             playerService.updatePlayerPosition(playerID, newPosition);
         }
+
         return playerService.getPlayerByID(playerID);
     }
 
