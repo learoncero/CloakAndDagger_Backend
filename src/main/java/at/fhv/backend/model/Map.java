@@ -18,9 +18,9 @@ public class Map {
         map[x][y] = value;
     }
 
-    public void setInitialMap() {
+    public void setInitialMap(String mapName) {
         if (map == null) {
-            map = MapLoader.loadMapFromFile();
+            map = MapLoader.loadMapFromFile(mapName);
         }
     }
 
