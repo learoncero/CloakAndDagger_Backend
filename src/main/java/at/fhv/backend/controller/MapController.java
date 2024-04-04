@@ -26,22 +26,22 @@ public class MapController {
         this.mapService = mapService;
     }
 
-    @MessageMapping("/mapinitialiser")
+    /*@MessageMapping("/mapinitialiser")
     @SendTo("/topic/mapinitialiser")
     public Map getInitialMap() {
         return mapService.getInitialMap();
-    }
+    }*/
 
     @MessageMapping("/mapupdate")
     @SendTo("/topic/mapupdate")
-    public Map updateMap(Map map) {
+    public boolean[][] updateMap(boolean[][] map) {
         mapService.setMap(map);
         return map;
     }
 
     @MessageMapping("/mapupdatebyposition")
     @SendTo("/topic/mapupdatebyposition")
-    public Map updateMapByPosition(int x, int y, boolean value) {
+    public boolean[][] updateMapByPosition(int x, int y, boolean value) {
         mapService.setMapbyPosition(x, y, value);
         return mapService.getMap();
     }
