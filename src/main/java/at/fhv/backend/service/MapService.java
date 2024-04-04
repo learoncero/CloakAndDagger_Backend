@@ -15,23 +15,29 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
-@Scope("singleton")
 public class MapService {
 
     public Map map;
 
-    public Map getMap() {
-        return map;
+    public MapService() {
     }
 
-    public Map getInitialMap() {
+    public MapService(String mapName) {
+        getInitialMap(mapName);
+    }
+
+    public boolean[][] getMap(){
+        return map.getMap();
+    }
+
+    public Map getInitialMap(String mapName) {
         map = new Map();
-        map.setInitialMap();
+        map.setInitialMap(mapName);
         return map;
     }
 
-    public void setMap(Map map) {
-        this.map = map;
+    public void setMap(boolean[][] map) {
+        this.map.setMap(map);
     }
 
     public void setMapbyPosition(int x, int y, boolean value) {
