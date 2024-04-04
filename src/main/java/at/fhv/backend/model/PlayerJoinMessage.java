@@ -8,18 +8,16 @@ import lombok.Setter;
 public class PlayerJoinMessage {
     private int id;
     private String username;
-    private int x;
-    private int y;
+    private Position position;
     private String gameCode;
 
     public PlayerJoinMessage() {
     }
 
-    public PlayerJoinMessage(int id, String username, int x, int y) {
+    public PlayerJoinMessage(int id, String username, Position position) {
         this.id = id;
         this.username = username;
-        this.x = x;
-        this.y = y;
+        this.position = position;
     }
 
 }
