@@ -11,7 +11,6 @@
 package at.fhv.backend.service;
 
 import at.fhv.backend.model.Map;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service

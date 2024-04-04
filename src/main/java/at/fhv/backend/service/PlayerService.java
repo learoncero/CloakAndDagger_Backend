@@ -5,7 +5,6 @@ import at.fhv.backend.repository.PlayerRepository;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
 public class PlayerService {

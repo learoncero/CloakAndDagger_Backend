@@ -38,7 +38,7 @@ public class MapLoader {
             e.printStackTrace();
         }
         return walkableCells;
-    }
+    }//TODO printStackTrace causes warning: probably should be replaced with more robust logging
 
     public static void main(String[] args) {
         /*boolean[][] walkableCells = loadMapFromFile();
