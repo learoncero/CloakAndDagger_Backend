@@ -20,15 +20,6 @@ public class PlayerController {
         this.gameService = gameService;
     }
 
-    @MessageMapping("/join")
-    @SendTo("/topic/playerJoin")
-    public Player createPlayer(@Payload PlayerJoinMessage joinMessage) {
-        System.out.println("Received join message: " + joinMessage.getId() + " " + joinMessage.getUsername() + " " + joinMessage.getPosition().getX() + " " + joinMessage.getPosition().getY());
-        Game game = gameService.getGameByCode(joinMessage.getGameCode());
-        Position position = new Position(joinMessage.getPosition().getX(), joinMessage.getPosition().getY());
-        return playerService.createPlayer(joinMessage.getId(), joinMessage.getUsername(), position, game);
-    }
-
     @MessageMapping("/move")
     @SendTo("/topic/positionChange")
     public Player movePlayer(@Payload PlayerMoveMessage moveMessage) {
