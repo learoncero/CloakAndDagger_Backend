@@ -11,29 +11,53 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class PlayerController {
-    private final PlayerService playerService;
-    private final GameService gameService;
 
-    @Autowired
-    public PlayerController(PlayerService playerService, GameService gameService) {
+    private final PlayerService playerService;
+
+    public PlayerController(PlayerService playerService) {
         this.playerService = playerService;
-        this.gameService = gameService;
     }
 
     @MessageMapping("/move")
     @SendTo("/topic/positionChange")
-    public Player movePlayer(@Payload PlayerMoveMessage moveMessage) {
-        System.out.println("Received move message: " + moveMessage.getId() + " to " + moveMessage.getNewPosition().getX() + ", " + moveMessage.getNewPosition().getY());
-        int playerID = moveMessage.getId();
-        Position newPosition = new Position(moveMessage.getNewPosition().getX(), moveMessage.getNewPosition().getY());
-        System.out.println("newPosition received: "+newPosition.getX()+", "+newPosition.getY());
-        if (playerID != 0) {
-            System.out.println("Updating player position in controller");
-            playerService.updatePlayerPosition(playerID, newPosition);
+    public Player movePlayer(@Payload String keyCode) {
+        int playerId = playerService.getPlayerByID(1).getId();
+        Player player = playerService.getPlayerByID(playerId);
+
+        if (player != null) {
+            Position newPosition = calculateNewPosition(player.getPosition(), keyCode);
+            playerService.updatePlayerPosition(playerId, newPosition);
+            return playerService.getPlayerByID(playerId);
         }
 
-        return playerService.getPlayerByID(playerID);
+        return null;
     }
 
+    private Position calculateNewPosition(Position currentPosition, String keyCode) {
+        //System.out.println("Current position: " + currentPosition.getX() + ", " + currentPosition.getY() + " Key code: " + keyCode);
+        int deltaX = 0, deltaY = 0;
+        switch (keyCode) {
+            case "KeyA":
+                deltaX = -1;
+                break;
+            case "KeyW":
+                deltaY = -1;
+                break;
+            case "KeyD":
+                deltaX = 1;
+                break;
+            case "KeyS":
+                deltaY = 1;
+                break;
+            default: System.out.println("Invalid key code");
+                break;
+        }
 
+        int newX = currentPosition.getX() + deltaX;
+        int newY = currentPosition.getY() + deltaY;
+
+        //System.out.println("New position: " + newX + ", " + newY);
+
+        return new Position(newX, newY);
+    }
 }
