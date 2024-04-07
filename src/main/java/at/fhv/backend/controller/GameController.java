@@ -55,7 +55,6 @@ public class GameController {
     @SendTo("/topic/playerJoined")
     public ResponseEntity<?> createPlayer(@Payload PlayerJoinMessage joinMessage) {
         if (joinMessage == null ||
-                joinMessage.getId() < 1 ||
                 joinMessage.getUsername() == null ||
                 joinMessage.getPosition() == null ||
                 joinMessage.getGameCode() == null) {
@@ -74,7 +73,7 @@ public class GameController {
                 return ResponseEntity.badRequest().body("Game lobby is full");
             }
 
-            Player player = playerService.createPlayer(joinMessage.getId(), joinMessage.getUsername(), joinMessage.getPosition(), game);
+            Player player = playerService.createPlayer(joinMessage.getUsername(), joinMessage.getPosition(), game);
             game.getPlayers().add(player);
 
             return ResponseEntity.ok(game);

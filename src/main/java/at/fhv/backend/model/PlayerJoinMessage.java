@@ -6,7 +6,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class PlayerJoinMessage {
-    private int id;
     private String username;
     private Position position;
     private String gameCode;
@@ -14,8 +13,7 @@ public class PlayerJoinMessage {
     public PlayerJoinMessage() {
     }
 
-    public PlayerJoinMessage(int id, String username, Position position) {
-        this.id = id;
+    public PlayerJoinMessage(String username, Position position) {
         this.username = username;
         this.position = position;
     }

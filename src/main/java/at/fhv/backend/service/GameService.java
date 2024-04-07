@@ -24,7 +24,7 @@ public class GameService {
     public Game createGame(Player player, int numberOfPlayers, int numberOfImpostors, String map) {
         Game game = new Game(generateGameCode(), numberOfPlayers, numberOfImpostors, map, mapService);
         System.out.println("Game Code: " + game.getGameCode() + " Number of Players: " + game.getNumberOfPlayers());
-        Player p = playerService.createPlayer(player.getId(), player.getUsername(), player.getPosition(), game);
+        Player p = playerService.createPlayer(player.getUsername(), player.getPosition(), game);
         game.getPlayers().add(p);
         gameRepository.save(game);
 

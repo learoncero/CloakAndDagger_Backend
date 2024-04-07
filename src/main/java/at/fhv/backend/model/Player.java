@@ -1,13 +1,14 @@
 package at.fhv.backend.model;
 
 public class Player {
+    private static int idCounter = 1;
     private int id;
     private String username;
     private Position position;
     private Game game;
 
-    public Player(int id, String username, Position position, Game game) {
-        this.id = id;
+    public Player(String username, Position position, Game game) {
+        this.id = idCounter++;
         this.username = username;
         this.position = position;
         this.game = game;
