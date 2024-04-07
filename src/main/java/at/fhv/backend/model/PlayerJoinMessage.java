@@ -1,50 +1,21 @@
 package at.fhv.backend.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class PlayerJoinMessage {
-    private int id;
     private String username;
-    private int x;
-    private int y;
+    private Position position;
+    private String gameCode;
 
     public PlayerJoinMessage() {
     }
 
-    public PlayerJoinMessage(int id, String username, int x, int y) {
-        this.id = id;
+    public PlayerJoinMessage(String username, Position position) {
         this.username = username;
-        this.x = x;
-        this.y = y;
+        this.position = position;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
 }

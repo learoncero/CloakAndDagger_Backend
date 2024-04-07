@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2024 Sarah N
- *
- * Project Name:         AmongUs_Replica_Backend
- * Description:
- *
- * Date of Creation/
- * Last Update:          25/03/2024
- */
-
 package at.fhv.backend.model;
 
 import java.io.File;
@@ -15,11 +5,12 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class MapLoader {
-    private static final String pathForMap = "src/main/java/at/fhv/backend/repository/map.txt";
+    private static final String pathForMap = "src/main/java/at/fhv/backend/repository/";
 
-    public static boolean[][] loadMapFromFile() {
+    public static boolean[][] loadMapFromFile(String map) {
         boolean[][] walkableCells = null;
-        try (Scanner scanner = new Scanner(new File(pathForMap))) {
+        String newPathForMap = pathForMap + map.toLowerCase() + ".txt";
+        try (Scanner scanner = new Scanner(new File(newPathForMap))) {
             int rows = 0;
             int cols = 0;
             while (scanner.hasNextLine()) {
@@ -29,7 +20,7 @@ public class MapLoader {
                 //System.out.println("Rows: "+rows+" Cols: "+cols);
             }
             walkableCells = new boolean[rows][cols];
-            try(Scanner booleanchecker = new Scanner(new File(pathForMap))){
+            try(Scanner booleanchecker = new Scanner(new File(newPathForMap))){
                 int row = 0;
                 while (booleanchecker.hasNextLine()) {
                     String line = booleanchecker.nextLine();
@@ -47,7 +38,7 @@ public class MapLoader {
             e.printStackTrace();
         }
         return walkableCells;
-    }
+    }//TODO printStackTrace causes warning: probably should be replaced with more robust logging
 
     public static void main(String[] args) {
         /*boolean[][] walkableCells = loadMapFromFile();

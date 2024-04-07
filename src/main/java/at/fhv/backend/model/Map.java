@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2024 Sarah N
- *
- * Project Name:         AmongUs_Replica_Backend
- * Description:
- *
- * Date of Creation/
- * Last Update:          26/03/2024
- */
-
 package at.fhv.backend.model;
 
 public class Map {
@@ -28,9 +18,9 @@ public class Map {
         map[x][y] = value;
     }
 
-    public void setInitialMap() {
+    public void setInitialMap(String mapName) {
         if (map == null) {
-            map = MapLoader.loadMapFromFile();
+            map = MapLoader.loadMapFromFile(mapName);
         }
     }
 

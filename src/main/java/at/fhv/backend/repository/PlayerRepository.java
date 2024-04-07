@@ -15,7 +15,8 @@ public class PlayerRepository {
     public void save(Player player) {
         players.put(player.getId(), player);
         for (Player p : players.values()) {
-            System.out.println("Repo: Player ID: " + p.getId() + " Username " + p.getUsername());
+            System.out.println("Repo: Player ID: " + p.getId() + " Username " + p.getUsername() +
+                                " Position: " + p.getPosition().getX() + ", " + p.getPosition().getY());
         }
     }
 
