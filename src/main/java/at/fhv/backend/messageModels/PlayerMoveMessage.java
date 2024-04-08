@@ -1,4 +1,6 @@
-package at.fhv.backend.model;
+package at.fhv.backend.messageModels;
+
+import at.fhv.backend.model.Position;
 
 public class PlayerMoveMessage {
     private int id;
