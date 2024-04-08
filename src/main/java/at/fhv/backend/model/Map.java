@@ -1,5 +1,7 @@
 package at.fhv.backend.model;
 
+import at.fhv.backend.utils.MapLoader;
+
 public class Map {
     private boolean[][] map;
 
