@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 
 @Controller
 public class PlayerController {
@@ -20,8 +21,7 @@ public class PlayerController {
 
     @MessageMapping("/move")
     @SendTo("/topic/positionChange")
-    public Player movePlayer(@Payload String keyCode) {
-        int playerId = playerService.getPlayerByID(1).getId();
+    public Player movePlayer(@Payload String keyCode, @CookieValue(value = "playerId", defaultValue = "0") int playerId) {
         Player player = playerService.getPlayerByID(playerId);
 
         if (player != null) {

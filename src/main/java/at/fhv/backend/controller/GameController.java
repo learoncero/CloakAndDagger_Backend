@@ -75,8 +75,11 @@ public class GameController {
 
             Player player = playerService.createPlayer(joinMessage.getUsername(), joinMessage.getPosition(), game);
             game.getPlayers().add(player);
+            System.out.println("Player joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
 
-            return ResponseEntity.ok(game);
+            return ResponseEntity.ok()
+                    .header("playerId", String.valueOf(player.getId()))
+                    .body(game);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating player: " + e.getMessage());
         }
