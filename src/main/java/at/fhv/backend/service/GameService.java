@@ -1,8 +1,9 @@
 package at.fhv.backend.service;
 
 import at.fhv.backend.model.Game;
-import at.fhv.backend.model.GameCodeGenerator;
+import at.fhv.backend.utils.GameCodeGenerator;
 import at.fhv.backend.model.Player;
+import at.fhv.backend.utils.RandomRoleAssigner;
 import at.fhv.backend.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,9 +35,18 @@ public class GameService {
 
         System.out.println("Game Code: " + game.getGameCode() + " Number of Players: " + game.getNumberOfPlayers());
         Player p = playerService.createPlayer(player.getUsername(), player.getPosition(), game);
+
+        // Assign roles to players (get Impostor Player Indices)
+        p = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), p);
+
         game.getPlayers().add(p);
         gameRepository.save(game);
 
+        System.out.println("Player id and their roles in GameServices create Game (Host): ");
+        for (int i = 0; i < game.getPlayers().size(); i++) {
+            System.out.println("Player id: " + game.getPlayers().get(i).getId() +
+                    " Role: " + game.getPlayers().get(i).getRole());
+        }
         return game;
     }
 
