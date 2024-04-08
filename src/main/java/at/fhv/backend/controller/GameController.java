@@ -1,11 +1,11 @@
 package at.fhv.backend.controller;
 
-import at.fhv.backend.model.CreateGameMessage;
-import at.fhv.backend.model.Game;
-import at.fhv.backend.model.Player;
-import at.fhv.backend.model.PlayerJoinMessage;
+import at.fhv.backend.messageModels.CreateGameMessage;
+import at.fhv.backend.messageModels.PlayerJoinMessage;
+import at.fhv.backend.model.*;
 import at.fhv.backend.service.GameService;
 import at.fhv.backend.service.PlayerService;
+import at.fhv.backend.utils.RandomRoleAssigner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +14,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/game")
@@ -76,6 +78,9 @@ public class GameController {
             Player player = playerService.createPlayer(joinMessage.getUsername(), joinMessage.getPosition(), game);
             game.getPlayers().add(player);
 
+            //Assign roles randomly to players
+            game.setPlayers(playerService.setRandomRole(game.getPlayers()));
+
             return ResponseEntity.ok(game);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating player: " + e.getMessage());
@@ -83,18 +88,23 @@ public class GameController {
     }
 
 
-    //Todo: check if null
+    //Todo: check if null and random roles
     @MessageMapping("/{gameCode}/play")
     @SendTo("/topic/{gameCode}/play")
     public Game playGame(@RequestBody Game gameToPlay) {
         Game game = gameService.startGame(gameToPlay.getGameCode());
-        gameService.setGameAttributes(gameToPlay.getGameCode(), gameToPlay.getPlayers());
-        System.out.println("Received request to play game with: " + gameToPlay.getGameCode() +
+        /*System.out.println("Received request to play game with: " + gameToPlay.getGameCode() +
                             ", Player1: "+gameToPlay.getPlayers().get(0).getUsername() +
                             ", Position: "+gameToPlay.getPlayers().get(0).getPosition().getX());
         System.out.println("Game that got returned: "+ game.getGameCode() +
                             ", Player1: "+game.getPlayers().get(0).getUsername() +
-                            ", Position: "+game.getPlayers().get(0).getPosition().getX());
+                            ", Position: "+game.getPlayers().get(0).getPosition().getX());*/
+        System.out.println("Player id and their roles in GameController: ");
+        for (int i = 0; i < game.getPlayers().size(); i++){
+            System.out.println("Player id: " + game.getPlayers().get(i).getId() +
+                               " Role: " + game.getPlayers().get(i).getRole());
+        }
+
         return game;
     }
 
