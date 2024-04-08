@@ -21,10 +21,10 @@ public class GameService {
         this.mapService = mapService;
     }
 
-    public Game createGame(Player player, int numberOfPlayers, int numberOfImpostors, String map) {
+    public Game createGame(Player player, int numberOfPlayers, int numberOfImpostors, String map) throws Exception {
         Game game = new Game(generateGameCode(), numberOfPlayers, numberOfImpostors, map, mapService);
         System.out.println("Game Code: " + game.getGameCode() + " Number of Players: " + game.getNumberOfPlayers());
-        Player p = playerService.createPlayer(player.getUsername(), player.getPosition(), game);
+        Player p = playerService.createPlayer(player.getUsername(), game);
         game.getPlayers().add(p);
         gameRepository.save(game);
 

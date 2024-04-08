@@ -28,7 +28,7 @@ public class GameController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) {
+    public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
         System.out.println("Received request to create game with username: " + createGameMessage.getPlayer().getUsername() + " number of players: " + createGameMessage.getNumberOfPlayers() + " number of impostors: " + createGameMessage.getNumberOfImpostors() + " map: " + createGameMessage.getMap());
 
         Game createdGame = gameService.createGame(createGameMessage.getPlayer(), Integer.parseInt(createGameMessage.getNumberOfPlayers()), Integer.parseInt(createGameMessage.getNumberOfImpostors()), createGameMessage.getMap());
@@ -73,7 +73,7 @@ public class GameController {
                 return ResponseEntity.badRequest().body("Game lobby is full");
             }
 
-            Player player = playerService.createPlayer(joinMessage.getUsername(), joinMessage.getPosition(), game);
+            Player player = playerService.createPlayer(joinMessage.getUsername(), game);
             game.getPlayers().add(player);
 
             return ResponseEntity.ok(game);
