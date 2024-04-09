@@ -1,4 +1,4 @@
-package at.fhv.backend.model;
+package at.fhv.backend.utils;
 
 import java.security.SecureRandom;
 
