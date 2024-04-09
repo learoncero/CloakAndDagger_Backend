@@ -3,7 +3,9 @@ package at.fhv.backend.service;
 import at.fhv.backend.model.Game;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
+import at.fhv.backend.utils.RandomRoleAssigner;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class PlayerService {
@@ -62,5 +64,29 @@ public class PlayerService {
         int newX = currentPosition.getX() + deltaX;
         int newY = currentPosition.getY() + deltaY;
         return new Position(newX, newY);
+    }
+
+    public Player setInitialRandomRole(int numPlayers, int numImpostors, Player player) {
+        //Create List of Random Indices that will be assigned as Impostors
+        List<Integer> impostorsIndices = RandomRoleAssigner.assignRandomRoles(numPlayers, numImpostors);
+        System.out.println("Impostorsindices : " + impostorsIndices);
+        //Assign Impostor if player index matches impostor indeces
+        if (impostorsIndices.contains(0)) {
+            player.setRole("Impostor");
+        }
+        return player;
+    }
+
+    public List<Player> setRandomRole(List<Player> players) {
+        //Create List of Random Indices that will be assigned as Impostors
+        List<Integer> impostorsIndices = RandomRoleAssigner.getImpostorsIndices();
+        System.out.println("Impostorsindices : " + impostorsIndices);
+        //Assign Impostor if player index matches impostor indeces
+        for (int i = 0; i < players.size(); i++) {
+            if (impostorsIndices.contains(i)) {
+                players.get(i).setRole("Impostor");
+            }
+        }
+        return players;
     }
 }
