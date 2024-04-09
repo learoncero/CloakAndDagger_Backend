@@ -1,9 +1,6 @@
 package at.fhv.backend.controller;
 
-import at.fhv.backend.model.CreateGameMessage;
-import at.fhv.backend.model.Game;
-import at.fhv.backend.model.Player;
-import at.fhv.backend.model.PlayerJoinMessage;
+import at.fhv.backend.model.*;
 import at.fhv.backend.service.GameService;
 import at.fhv.backend.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,4 +98,20 @@ public class GameController {
         return game;
     }
 
+    @MessageMapping("/move")
+    @SendTo("/topic/positionChange")
+    public Game movePlayer(@Payload PlayerMoveMessage playerMoveMessage) {
+        int playerId = playerMoveMessage.getId();
+        Game game = gameService.getGameByCode(playerMoveMessage.getGameCode());
+        Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
+
+        if (player != null) {
+            Position newPosition = playerService.calculateNewPosition(player.getPosition(), playerMoveMessage.getKeyCode());
+            playerService.updatePlayerPosition(player, newPosition);
+            System.out.println("Player ID: " + playerId + " moved to position: " + player.getPosition().getX() + ", " + player.getPosition().getY());
+            return game;
+        }
+
+        return null;
+    }
 }

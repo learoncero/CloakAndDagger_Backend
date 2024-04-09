@@ -1,46 +1,35 @@
 package at.fhv.backend.service;
 
 import at.fhv.backend.model.Game;
-import at.fhv.backend.repository.PlayerRepository;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PlayerService {
-    private final PlayerRepository playerRepository;
     private final MapService mapService;
 
-    public PlayerService(PlayerRepository playerRepository, MapService mapservice) {
-        this.playerRepository = playerRepository;
+    public PlayerService(MapService mapservice) {
         this.mapService = mapservice;
     }
 
     public Player createPlayer(String username, Position position, Game game) {
-        Player player = new Player(username, position, game);
-        playerRepository.save(player);
-        return player;
+        return new Player(username, position, game);
     }
 
-    public Player getPlayerByID(int id) {
-        return playerRepository.findById(id).orElse(null);
-    }
-
-    public void updatePlayerPosition(int id, Position position) {
-        System.out.println("updatePlayerPosition called in PlayerService with id: " + id + " and position: " + position.getX() + ", " + position.getY());
-        Player player = playerRepository.findById(id).orElse(null);
-        int x = position.getX();
-        int y = position.getY();
+    public void updatePlayerPosition(Player player, Position newPosition) {
+        System.out.println("updatePlayerPosition called in PlayerService for player: " + player.getId() + " with position: " + newPosition.getX() + ", " + newPosition.getY());
+        int x = newPosition.getX();
+        int y = newPosition.getY();
         boolean outOfBounds =
                 (x < 0) ||
                 (y < 0) ||
-                (y >= mapService.getMap().length) || //zeilen
-                (x >= mapService.getMap()[0].length); //spalten
+                (y >= mapService.getMap().length) ||
+                (x >= mapService.getMap()[0].length);
 
-        if (player != null && mapService != null){
+        if (mapService != null){
             if (!outOfBounds && mapService.isCellWalkable(x, y)) { //if true update repo otherwise do nothing
-                player.setPosition(position);
-                playerRepository.save(player);
+                player.setPosition(newPosition);
                  /*//For debugging purposes
                 List<Player> players = playerRepository.findAll();
                 System.out.println("Validation with following players:");
@@ -49,5 +38,29 @@ public class PlayerService {
                 }*/
             }
         }
+    }
+
+    public Position calculateNewPosition(Position currentPosition, String keyCode) {
+        int deltaX = 0, deltaY = 0;
+        switch (keyCode) {
+            case "KeyA":
+                deltaX = -1;
+                break;
+            case "KeyW":
+                deltaY = -1;
+                break;
+            case "KeyD":
+                deltaX = 1;
+                break;
+            case "KeyS":
+                deltaY = 1;
+                break;
+            default: System.out.println("Invalid key code");
+                break;
+        }
+
+        int newX = currentPosition.getX() + deltaX;
+        int newY = currentPosition.getY() + deltaY;
+        return new Position(newX, newY);
     }
 }
