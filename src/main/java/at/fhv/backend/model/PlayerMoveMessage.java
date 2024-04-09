@@ -1,22 +1,18 @@
 package at.fhv.backend.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class PlayerMoveMessage {
     private int id;
-    private Position newPosition;
+    private String keyCode;
+    private String gameCode;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
+    public PlayerMoveMessage(int id, String keyCode, String gameCode) {
         this.id = id;
-    }
-
-    public Position getNewPosition() {
-        return newPosition;
-    }
-
-    public void setNewPosition(Position newPosition) {
-        this.newPosition = newPosition;
+        this.keyCode = keyCode;
+        this.gameCode = gameCode;
     }
 }
