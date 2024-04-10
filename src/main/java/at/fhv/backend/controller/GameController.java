@@ -51,13 +51,14 @@ public class GameController {
         }
     }
 
-    @MessageMapping("/joinGame")
-    @SendTo("/topic/playerJoined")
+    @MessageMapping("/joinGame/{uuid}")
+    @SendTo("/topic/playerJoined/{uuid}")
     public ResponseEntity<?> createPlayer(@Payload PlayerJoinMessage joinMessage) {
         if (joinMessage == null ||
                 joinMessage.getUsername() == null ||
                 joinMessage.getPosition() == null ||
-                joinMessage.getGameCode() == null) {
+                joinMessage.getGameCode() == null ||
+                joinMessage.getUuid() == null) {
             // Return a response indicating bad request if any required field is missing
             return ResponseEntity.badRequest().body("Invalid join message");
         }

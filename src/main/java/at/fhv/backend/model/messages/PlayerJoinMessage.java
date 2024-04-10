@@ -10,6 +10,7 @@ public class PlayerJoinMessage {
     private String username;
     private Position position;
     private String gameCode;
+    private String uuid;
 
     public PlayerJoinMessage() {
     }
