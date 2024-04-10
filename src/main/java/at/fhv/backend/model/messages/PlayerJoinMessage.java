@@ -1,5 +1,6 @@
-package at.fhv.backend.model;
+package at.fhv.backend.model.messages;
 
+import at.fhv.backend.model.Position;
 import lombok.Getter;
 import lombok.Setter;
 

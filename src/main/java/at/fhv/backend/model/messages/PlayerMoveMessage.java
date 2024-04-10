@@ -1,4 +1,4 @@
-package at.fhv.backend.model;
+package at.fhv.backend.model.messages;
 
 import lombok.Getter;
 import lombok.Setter;

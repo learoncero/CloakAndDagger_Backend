@@ -1,6 +1,9 @@
 package at.fhv.backend.controller;
 
 import at.fhv.backend.model.*;
+import at.fhv.backend.model.messages.CreateGameMessage;
+import at.fhv.backend.model.messages.PlayerJoinMessage;
+import at.fhv.backend.model.messages.PlayerMoveMessage;
 import at.fhv.backend.service.GameService;
 import at.fhv.backend.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +77,8 @@ public class GameController {
             game.getPlayers().add(player);
             System.out.println("Player joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
 
+            //Assign roles randomly to players
+            game.setPlayers(playerService.setRandomRole(game.getPlayers()));
             return ResponseEntity.ok()
                     .header("playerId", String.valueOf(player.getId()))
                     .body(game);
@@ -95,6 +100,13 @@ public class GameController {
         System.out.println("Game that got returned: "+ game.getGameCode() +
                             ", Player1: "+game.getPlayers().get(0).getUsername() +
                             ", Position: "+game.getPlayers().get(0).getPosition().getX());
+
+        System.out.println("Player id and their roles in GameController: ");
+        for (int i = 0; i < game.getPlayers().size(); i++){
+            System.out.println("Player id: " + game.getPlayers().get(i).getId() +
+                    " Role: " + game.getPlayers().get(i).getRole());
+        }
+
         return game;
     }
 
