@@ -9,6 +9,7 @@ import at.fhv.backend.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -51,14 +52,11 @@ public class GameController {
         }
     }
 
-    @MessageMapping("/joinGame/{uuid}")
-    @SendTo("/topic/playerJoined/{uuid}")
-    public ResponseEntity<?> createPlayer(@Payload PlayerJoinMessage joinMessage) {
+    @PostMapping("/joinGame/{playerName}")
+    public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage, @PathVariable String playerName) {
         if (joinMessage == null ||
-                joinMessage.getUsername() == null ||
                 joinMessage.getPosition() == null ||
-                joinMessage.getGameCode() == null ||
-                joinMessage.getUuid() == null) {
+                joinMessage.getGameCode() == null) {
             // Return a response indicating bad request if any required field is missing
             return ResponseEntity.badRequest().body("Invalid join message");
         }
@@ -74,9 +72,13 @@ public class GameController {
                 return ResponseEntity.badRequest().body("Game lobby is full");
             }
 
+            if (game.getPlayers().stream().anyMatch(p -> p.getUsername().equals(joinMessage.getUsername()))) {
+                return ResponseEntity.badRequest().body("Username is already taken");
+            }
+
             Player player = playerService.createPlayer(joinMessage.getUsername(), joinMessage.getPosition(), game);
             game.getPlayers().add(player);
-            System.out.println("Player joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
+            System.out.println("Player " + joinMessage.getUsername() + " joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
 
             //Assign roles randomly to players
             game.setPlayers(playerService.setRandomRole(game.getPlayers()));
