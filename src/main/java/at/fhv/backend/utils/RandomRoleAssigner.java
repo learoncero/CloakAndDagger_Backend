@@ -8,7 +8,6 @@ public class RandomRoleAssigner {
     public static List<Integer> impostors = new ArrayList<>();
 
     public static List<Integer> assignRandomRoles(int numPlayers, int numImpostors) {
-        impostors = new ArrayList<>();
         Random random = new Random();
 
         //fill impostors list with random Indices for players to be impostors

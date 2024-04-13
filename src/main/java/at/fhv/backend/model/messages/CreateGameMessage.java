@@ -8,16 +8,17 @@ import lombok.Setter;
 @Getter
 public class CreateGameMessage {
     private Player player;
-    private String numberOfPlayers;
-    private String numberOfImpostors;
+    private int numberOfPlayers;
+    private int numberOfImpostors;
     private String map;
 
-    public CreateGameMessage(Player player, String numberOfPlayers, String numberOfImpostors, String map) {
+    public CreateGameMessage(Player player, int numberOfPlayers, int numberOfImpostors, String map) {
         this.player = player;
         this.numberOfPlayers = numberOfPlayers;
         this.numberOfImpostors = numberOfImpostors;
         this.map = map;
     }
 
-    public CreateGameMessage() {}
+    public CreateGameMessage() {
+    }
 }
