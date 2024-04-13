@@ -16,6 +16,14 @@ public class Player {
         this.role = "Crewmate";
     }
 
+    public Player(String username, Position position) {
+        this.id = idCounter++;
+        this.username = username;
+        this.position = position;
+        this.game = new Game();
+        this.role = "Crewmate";
+    }
+
     public Player() {
     }
 
