@@ -1,10 +1,15 @@
 package at.fhv.backend.utils;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.security.SecureRandom;
 
+@Getter
+@Setter
 public class GameCodeGenerator {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int CODE_LENGTH = 6; // Length of the game code
+    private static final int CODE_LENGTH = 6;
 
     public static String generateGameCode() {
         SecureRandom random = new SecureRandom();
@@ -16,11 +21,5 @@ public class GameCodeGenerator {
         }
 
         return code.toString();
-    }
-
-    public static void main(String[] args) {
-        // Example usage
-        String gameCode = generateGameCode();
-        System.out.println("Generated Game Code: " + gameCode);
     }
 }
