@@ -11,7 +11,6 @@ import at.fhv.backend.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -54,12 +53,9 @@ public class GameController {
         }
     }
 
-    @PostMapping("/joinGame/{playerName}")
+    @PostMapping("/game/setup/joinGame/{playerName}")
     public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage, @PathVariable String playerName) {
-        if (joinMessage == null ||
-                joinMessage.getPosition() == null ||
-                joinMessage.getGameCode() == null) {
-            // Return a response indicating bad request if any required field is missing
+        if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
             return ResponseEntity.badRequest().body("Invalid join message");
         }
 
@@ -85,7 +81,6 @@ public class GameController {
             //Assign roles randomly to players
             game.setPlayers(playerService.setRandomRole(game.getPlayers()));
             return ResponseEntity.ok()
-                    .header("playerId", String.valueOf(player.getId()))
                     .body(game);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating player: " + e.getMessage());
