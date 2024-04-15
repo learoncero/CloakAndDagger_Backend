@@ -44,7 +44,7 @@ public class GameController {
 
     @GetMapping("/game/{gameCode}")
     public ResponseEntity<Game> getGameByCode(@PathVariable String gameCode) {
-        System.out.println("Received request to get game with code: " + gameCode);
+//        System.out.println("Received request to get game with code: " + gameCode);
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
             return ResponseEntity.ok(game);
@@ -120,7 +120,7 @@ public class GameController {
         if (player != null) {
             Position newPosition = playerService.calculateNewPosition(player.getPosition(), playerMoveMessage.getKeyCode());
             playerService.updatePlayerPosition(player, newPosition);
-            System.out.println("Player ID: " + playerId + " moved to position: " + player.getPosition().getX() + ", " + player.getPosition().getY());
+//            System.out.println("Player ID: " + playerId + " moved to position: " + player.getPosition().getX() + ", " + player.getPosition().getY());
             return game;
         }
 
@@ -129,6 +129,7 @@ public class GameController {
 
     @PostMapping("/game/{gameCode}/kill/{playerId}")
     public ResponseEntity<Game> handleKill(@PathVariable String gameCode, @PathVariable int playerId) {
+        System.out.println("Kill Request received. GameCode: " + gameCode + " PlayerId to be killed: " + playerId);
         Game game = gameService.killPlayer(gameCode, playerId);
         if (game != null) {
             return ResponseEntity.ok(game);

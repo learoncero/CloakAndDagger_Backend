@@ -22,7 +22,7 @@ public class PlayerService {
     }
 
     public void updatePlayerPosition(Player player, Position newPosition) {
-        System.out.println("updatePlayerPosition called in PlayerService for player: " + player.getId() + " with position: " + newPosition.getX() + ", " + newPosition.getY());
+//        System.out.println("updatePlayerPosition called in PlayerService for player: " + player.getId() + " with position: " + newPosition.getX() + ", " + newPosition.getY());
         int x = newPosition.getX();
         int y = newPosition.getY();
         boolean outOfBounds =
