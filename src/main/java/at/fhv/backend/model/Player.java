@@ -6,14 +6,14 @@ public class Player {
     private String username;
     private Position position;
     private Game game;
-    private String role;
+    private Role role;
 
     public Player(String username, Position position, Game game) {
         this.id = idCounter++;
         this.username = username;
         this.position = position;
         this.game = game;
-        this.role = "Crewmate";
+        this.role = Role.CREWMATE;
     }
 
     public Player(String username, Position position) {
@@ -21,7 +21,7 @@ public class Player {
         this.username = username;
         this.position = position;
         this.game = new Game();
-        this.role = "Crewmate";
+        this.role = Role.CREWMATE;
     }
 
     public Player() {
@@ -51,11 +51,11 @@ public class Player {
         this.position = position;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 }
