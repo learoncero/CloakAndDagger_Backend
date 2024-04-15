@@ -25,7 +25,7 @@ public class Game {
         this.numberOfImpostors = numberOfImpostors;
         this.map = new Map();
         this.map.setInitialMap(map);
-        System.out.println("Map: " + Arrays.toString(this.map.getMap()[0]));
+//        System.out.println("Map: " + Arrays.toString(this.map.getMap()[0]));
         this.players = players;
         this.sabotages = new ArrayList<>();
         setGameID();

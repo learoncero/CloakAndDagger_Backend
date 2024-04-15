@@ -41,11 +41,11 @@ public class GameService {
         game.getPlayers().add(p);
         gameRepository.save(game);
 
-        System.out.println("Player id and their roles in GameServices create Game (Host): ");
+        /*System.out.println("Player id and their roles in GameServices create Game (Host): ");
         for (int i = 0; i < game.getPlayers().size(); i++) {
             System.out.println("Player id: " + game.getPlayers().get(i).getId() +
                     " Role: " + game.getPlayers().get(i).getRole());
-        }
+        }*/
 
         return game;
     }
