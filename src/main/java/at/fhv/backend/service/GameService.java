@@ -84,11 +84,12 @@ public class GameService {
         if (game != null) {
             Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
             if (player != null) {
-                if (player.getRole().equals("CREWMATE")) {
+//                System.out.println("Player to kill: " + player.getId());
+                if (player.getRole().equals(Role.CREWMATE)) {
                     player.setRole(Role.CREWMATE_GHOST);
                     gameRepository.save(game);
                     return game;
-                } else if (player.getRole().equals("IMPOSTOR")) {
+                } else if (player.getRole().equals(Role.IMPOSTOR)) {
                     player.setRole(Role.IMPOSTOR_GHOST);
                     gameRepository.save(game);
                     return game;
