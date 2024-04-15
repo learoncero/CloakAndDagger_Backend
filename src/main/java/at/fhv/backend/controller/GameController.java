@@ -76,7 +76,7 @@ public class GameController {
 
             Player player = playerService.createPlayer(joinMessage.getUsername(), joinMessage.getPosition(), game);
             game.getPlayers().add(player);
-            System.out.println("Player " + joinMessage.getUsername() + " joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
+//            System.out.println("Player " + joinMessage.getUsername() + " joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
 
             //Assign roles randomly to players
             game.setPlayers(playerService.setRandomRole(game.getPlayers()));
@@ -94,18 +94,18 @@ public class GameController {
     public Game playGame(@RequestBody Game gameToPlay) {
         Game game = gameService.startGame(gameToPlay.getGameCode());
         gameService.setGameAttributes(gameToPlay.getGameCode(), gameToPlay.getPlayers());
-        System.out.println("Received request to play game with: " + gameToPlay.getGameCode() +
+        /*System.out.println("Received request to play game with: " + gameToPlay.getGameCode() +
                 ", Player1: " + gameToPlay.getPlayers().get(0).getUsername() +
-                ", Position: " + gameToPlay.getPlayers().get(0).getPosition().getX());
-        System.out.println("Game that got returned: " + game.getGameCode() +
+                ", Position: " + gameToPlay.getPlayers().get(0).getPosition().getX());*/
+        /*System.out.println("Game that got returned: " + game.getGameCode() +
                 ", Player1: " + game.getPlayers().get(0).getUsername() +
-                ", Position: " + game.getPlayers().get(0).getPosition().getX());
+                ", Position: " + game.getPlayers().get(0).getPosition().getX());*/
 
-        System.out.println("Player id and their roles in GameController: ");
+        /*System.out.println("Player id and their roles in GameController: ");
         for (int i = 0; i < game.getPlayers().size(); i++) {
             System.out.println("Player id: " + game.getPlayers().get(i).getId() +
                     " Role: " + game.getPlayers().get(i).getRole());
-        }
+        }*/
 
         return game;
     }
