@@ -1,5 +1,6 @@
 package at.fhv.backend.model.messages;
 
+import at.fhv.backend.model.Position;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,12 +8,12 @@ import lombok.Setter;
 @Setter
 public class PlayerMoveMessage {
     private int id;
-    private String keyCode;
+    private Position position;
     private String gameCode;
 
-    public PlayerMoveMessage(int id, String keyCode, String gameCode) {
+    public PlayerMoveMessage(int id, Position position, String gameCode) {
         this.id = id;
-        this.keyCode = keyCode;
+        this.position = position;
         this.gameCode = gameCode;
     }
 }
