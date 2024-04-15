@@ -126,4 +126,14 @@ public class GameController {
 
         return null;
     }
+
+    @PostMapping("/game/{gameCode}/kill/{playerId}")
+    public ResponseEntity<Game> handleKill(@PathVariable String gameCode, @PathVariable int playerId) {
+        Game game = gameService.killPlayer(gameCode, playerId);
+        if (game != null) {
+            return ResponseEntity.ok(game);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
