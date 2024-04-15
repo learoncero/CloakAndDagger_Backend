@@ -53,7 +53,7 @@ public class GameController {
         }
     }
 
-    @PostMapping("/game/setup/joinGame/{playerName}")
+    @PostMapping("/game/join/{playerName}")
     public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage, @PathVariable String playerName) {
         if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
             return ResponseEntity.badRequest().body("Invalid join message");
@@ -118,9 +118,9 @@ public class GameController {
         Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
 
         if (player != null) {
-            Position newPosition = playerService.calculateNewPosition(player.getPosition(), playerMoveMessage.getKeyCode());
+            Position newPosition = playerMoveMessage.getPosition();
             playerService.updatePlayerPosition(player, newPosition);
-            System.out.println("Player ID: " + playerId + " moved to position: " + player.getPosition().getX() + ", " + player.getPosition().getY());
+            System.out.println("Player ID: " + playerId + " moved to position: " + newPosition.getX() + ", " + newPosition.getY());
             return game;
         }
 
