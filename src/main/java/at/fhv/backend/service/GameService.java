@@ -1,6 +1,7 @@
 package at.fhv.backend.service;
 
 import at.fhv.backend.model.Game;
+import at.fhv.backend.model.GameStatus;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Role;
 import at.fhv.backend.repository.GameRepository;
@@ -88,12 +89,16 @@ public class GameService {
                 if (player.getRole().equals(Role.CREWMATE)) {
                     player.setRole(Role.CREWMATE_GHOST);
                     gameRepository.save(game);
-                    return game;
                 } else if (player.getRole().equals(Role.IMPOSTOR)) {
                     player.setRole(Role.IMPOSTOR_GHOST);
                     gameRepository.save(game);
-                    return game;
                 }
+                List<Player> crewmates = game.getPlayers().stream().filter(p -> p.getRole().equals(Role.CREWMATE)).toList();
+                if (crewmates.size() == game.getNumberOfImpostors()) {
+                    game.setGameStatus(GameStatus.IMPOSTORS_WIN);
+                    gameRepository.save(game);
+                }
+                return game;
             }
         }
         return null;

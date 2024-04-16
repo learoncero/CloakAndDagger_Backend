@@ -54,7 +54,7 @@ public class GameController {
     }
 
     @PostMapping("/game/join/{playerName}")
-    public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage, @PathVariable String playerName) {
+    public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage) {
         if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
             return ResponseEntity.badRequest().body("Invalid join message");
         }
@@ -92,6 +92,7 @@ public class GameController {
     @MessageMapping("/{gameCode}/play")
     @SendTo("/topic/{gameCode}/play")
     public Game playGame(@RequestBody Game gameToPlay) {
+        System.out.println(gameToPlay.toString());
         Game game = gameService.startGame(gameToPlay.getGameCode());
         gameService.setGameAttributes(gameToPlay.getGameCode(), gameToPlay.getPlayers());
         /*System.out.println("Received request to play game with: " + gameToPlay.getGameCode() +

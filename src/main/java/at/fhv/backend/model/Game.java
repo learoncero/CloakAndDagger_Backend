@@ -3,46 +3,48 @@ package at.fhv.backend.model;
 import at.fhv.backend.service.MapService;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Setter
 @Getter
+@ToString
 public class Game {
+    private static int nextGameID = 1;
     private String gameCode;
     private int numberOfPlayers;
     private int numberOfImpostors;
     private Map map;
     private List<Player> players;
     private List<Sabotage> sabotages;
-    private int gameID = 0;
+    private int gameID;
+    private GameStatus gameStatus;
 
-    public Game(String gameCode, int numberOfPlayers, int numberOfImpostors, String map, List<Player> players) {
+    // This constructor is used to start a game
+    public Game(String gameCode, int numberOfPlayers, int numberOfImpostors, boolean[][] map, List<Player> players, List<Sabotage> sabotages, int gameID, GameStatus gameStatus) {
         this.gameCode = gameCode;
         this.numberOfPlayers = numberOfPlayers;
         this.numberOfImpostors = numberOfImpostors;
         this.map = new Map();
-        this.map.setInitialMap(map);
-//        System.out.println("Map: " + Arrays.toString(this.map.getMap()[0]));
+        this.map.setMap(map);
         this.players = players;
-        this.sabotages = new ArrayList<>();
-        setGameID();
+        this.sabotages = sabotages;
+        this.gameID = gameID;
+        this.gameStatus = gameStatus;
     }
 
-    public Game(String gameCode, int numberOfPlayers, int numberOfImpostors, String map, MapService mapService) {
-        this(gameCode, numberOfPlayers, numberOfImpostors, map, new ArrayList<>());
+    // This constructor is used to create a game
+    public Game(String gameCode, int numberOfPlayers, int numberOfImpostors, String mapString, MapService mapService) {
+        Map map = new Map();
+        map.setInitialMap(mapString);
+        this(gameCode, numberOfPlayers, numberOfImpostors, map, new ArrayList<>(), new ArrayList<>(), nextGameID++, GameStatus.NOT_FINISHED);
         mapService.setMap(mapService.getInitialMap(map).getMap());
-        setGameID();
     }
 
     public Game() {
         this.map = new Map();
-    }
-
-    private void setGameID() {
-        this.gameID = gameID + 1;
     }
 
     // This method is used to get the map as a 2D boolean array not an Object containing the map
