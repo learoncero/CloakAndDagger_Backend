@@ -24,7 +24,7 @@ public class GameService {
         this.sabotageService = sabotageService;
     }
 
-    public Game createGame(Player player, int numberOfPlayers, int numberOfImpostors, String map) {
+    public Game createGame(Player player, int numberOfPlayers, int numberOfImpostors, String map) throws Exception {
         Game game = new Game(generateGameCode(), numberOfPlayers, numberOfImpostors, map, mapService);
 
         // Check if sabotages have already been added
@@ -33,7 +33,7 @@ public class GameService {
         }
 
         System.out.println("Game Code: " + game.getGameCode() + " Number of Players: " + game.getNumberOfPlayers());
-        Player p = playerService.createPlayer(player.getUsername(), player.getPosition(), game);
+        Player p = playerService.createPlayer(player.getUsername(), game);
 
         // Assign roles to players (get Impostor Player Indices)
         p = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), p);

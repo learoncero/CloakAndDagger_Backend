@@ -15,8 +15,12 @@ public class PlayerService {
         this.mapService = mapservice;
     }
 
-    public Player createPlayer(String username, Position position, Game game) {
-        return new Player(username, position, game);
+    public Player createPlayer(String username, Game game) throws Exception {
+        Position randomPosition = mapService.getRandomWalkablePosition();
+
+        Player player = new Player(username, randomPosition, game);
+
+        return player;
     }
 
     public void updatePlayerPosition(Player player, Position newPosition) {
