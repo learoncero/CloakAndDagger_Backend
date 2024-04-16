@@ -12,7 +12,7 @@ public class GameRepository {
     public void save(Game game) {
         games.put(game.getGameCode(), game);
         for (Game g : games.values()) {
-            System.out.println("Repo: Game Code: " + g.getGameCode() + " Number of Players: " + g.getNumberOfPlayers());
+//            System.out.println("Repo: Game Code: " + g.getGameCode() + " Number of Players: " + g.getNumberOfPlayers());
         }
     }
 
