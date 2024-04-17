@@ -28,11 +28,11 @@ public class PlayerService {
         boolean outOfBounds =
                 (x < 0) ||
                         (y < 0) ||
-                        (y >= mapService.getMap().length) ||
-                        (x >= mapService.getMap()[0].length);
+                        (y >= mapService.getMap("Spaceship").length) ||
+                        (x >= mapService.getMap("Spaceship")[0].length);
 
         if (mapService != null) {
-            if (!outOfBounds && mapService.isCellWalkable(x, y)) { //if true update repo otherwise do nothing
+            if (!outOfBounds && mapService.isCellWalkable("Spaceship", x, y)) { //if true update repo otherwise do nothing
                 player.setPosition(newPosition);
                  /*//For debugging purposes
                 List<Player> players = playerRepository.findAll();

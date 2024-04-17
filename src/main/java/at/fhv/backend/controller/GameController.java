@@ -7,13 +7,16 @@ import at.fhv.backend.model.messages.CreateGameMessage;
 import at.fhv.backend.model.messages.PlayerJoinMessage;
 import at.fhv.backend.model.messages.PlayerMoveMessage;
 import at.fhv.backend.service.GameService;
+import at.fhv.backend.service.MapService;
 import at.fhv.backend.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,17 +25,19 @@ import org.springframework.web.bind.annotation.*;
 public class GameController {
     private final GameService gameService;
     private final PlayerService playerService;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final MapService mapService;
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerservice) {
+    public GameController(GameService gameService, PlayerService playerservice, SimpMessagingTemplate messagingTemplate, MapService mapService) {
         this.gameService = gameService;
         this.playerService = playerservice;
+        this.messagingTemplate = messagingTemplate;
+        this.mapService = mapService;
     }
 
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) {
-//        System.out.println("Received request to create game with username: " + createGameMessage.getPlayer().getUsername() + " number of players: " + createGameMessage.getNumberOfPlayers() + " number of impostors: " + createGameMessage.getNumberOfImpostors() + " map: " + createGameMessage.getMap());
-
         Game createdGame = gameService.createGame(createGameMessage.getPlayer(), createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
 
         if (createdGame != null) {
@@ -54,7 +59,7 @@ public class GameController {
     }
 
     @PostMapping("/game/join/{playerName}")
-    public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage) {
+    public ResponseEntity<?> joinGame(@RequestBody PlayerJoinMessage joinMessage) {
         if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
             return ResponseEntity.badRequest().body("Invalid join message");
         }
@@ -88,27 +93,14 @@ public class GameController {
     }
 
 
-    //Todo: check if null
+    //Todo: handle case when game is null
     @MessageMapping("/{gameCode}/play")
     @SendTo("/topic/{gameCode}/play")
-    public Game playGame(@RequestBody Game gameToPlay) {
-        System.out.println(gameToPlay.toString());
-        Game game = gameService.startGame(gameToPlay.getGameCode());
-        gameService.setGameAttributes(gameToPlay.getGameCode(), gameToPlay.getPlayers());
-        /*System.out.println("Received request to play game with: " + gameToPlay.getGameCode() +
-                ", Player1: " + gameToPlay.getPlayers().get(0).getUsername() +
-                ", Position: " + gameToPlay.getPlayers().get(0).getPosition().getX());*/
-        /*System.out.println("Game that got returned: " + game.getGameCode() +
-                ", Player1: " + game.getPlayers().get(0).getUsername() +
-                ", Position: " + game.getPlayers().get(0).getPosition().getX());*/
-
-        /*System.out.println("Player id and their roles in GameController: ");
-        for (int i = 0; i < game.getPlayers().size(); i++) {
-            System.out.println("Player id: " + game.getPlayers().get(i).getId() +
-                    " Role: " + game.getPlayers().get(i).getRole());
-        }*/
-
-        return game;
+    public void playGame(@DestinationVariable String gameCode) {
+        Game game = gameService.getGameByCode(gameCode);
+        if (game != null) {
+            messagingTemplate.convertAndSend("/topic/" + gameCode + "/play");
+        }
     }
 
     @MessageMapping("/move")

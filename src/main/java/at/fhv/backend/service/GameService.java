@@ -27,14 +27,13 @@ public class GameService {
     }
 
     public Game createGame(Player player, int numberOfPlayers, int numberOfImpostors, String map) {
-        Game game = new Game(generateGameCode(), numberOfPlayers, numberOfImpostors, map, mapService);
+        Game game = new Game(player, numberOfPlayers, numberOfImpostors, map);
 
         // Check if sabotages have already been added
         if (game.getSabotages() == null || game.getSabotages().isEmpty()) {
             addSabotages(game);
         }
 
-        System.out.println("Game Code: " + game.getGameCode() + " Number of Players: " + game.getNumberOfPlayers());
         Player p = playerService.createPlayer(player.getUsername(), player.getPosition(), game);
 
         // Assign roles to players (get Impostor Player Indices)
