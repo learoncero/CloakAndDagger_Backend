@@ -124,7 +124,6 @@ public class GameController {
         if (player != null) {
             Position newPosition = playerService.calculateNewPosition(player.getPosition(), playerMoveMessage.getKeyCode());
             playerService.updatePlayerPosition(player, newPosition);
-            System.out.println("Player ID: " + playerId + " moved to position: " + player.getPosition().getX() + ", " + player.getPosition().getY());
             return game;
         }
 
