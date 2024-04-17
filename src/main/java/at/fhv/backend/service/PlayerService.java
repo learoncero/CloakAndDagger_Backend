@@ -3,8 +3,10 @@ package at.fhv.backend.service;
 import at.fhv.backend.model.Game;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
+import at.fhv.backend.model.Role;
 import at.fhv.backend.utils.RandomRoleAssigner;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -24,16 +26,16 @@ public class PlayerService {
     }
 
     public void updatePlayerPosition(Player player, Position newPosition) {
-        System.out.println("updatePlayerPosition called in PlayerService for player: " + player.getId() + " with position: " + newPosition.getX() + ", " + newPosition.getY());
+//        System.out.println("updatePlayerPosition called in PlayerService for player: " + player.getId() + " with position: " + newPosition.getX() + ", " + newPosition.getY());
         int x = newPosition.getX();
         int y = newPosition.getY();
         boolean outOfBounds =
                 (x < 0) ||
-                (y < 0) ||
-                (y >= mapService.getMap().length) ||
-                (x >= mapService.getMap()[0].length);
+                        (y < 0) ||
+                        (y >= mapService.getMap().length) ||
+                        (x >= mapService.getMap()[0].length);
 
-        if (mapService != null){
+        if (mapService != null) {
             if (!outOfBounds && mapService.isCellWalkable(x, y)) { //if true update repo otherwise do nothing
                 player.setPosition(newPosition);
                  /*//For debugging purposes
@@ -49,10 +51,9 @@ public class PlayerService {
     public Player setInitialRandomRole(int numPlayers, int numImpostors, Player player) {
         //Create List of Random Indices that will be assigned as Impostors
         List<Integer> impostorsIndices = RandomRoleAssigner.assignRandomRoles(numPlayers, numImpostors);
-        System.out.println("Impostorsindices : " + impostorsIndices);
         //Assign Impostor if player index matches impostor indeces
         if (impostorsIndices.contains(0)) {
-            player.setRole("Impostor");
+            player.setRole(Role.IMPOSTOR);
         }
         return player;
     }
@@ -60,11 +61,11 @@ public class PlayerService {
     public List<Player> setRandomRole(List<Player> players) {
         //Create List of Random Indices that will be assigned as Impostors
         List<Integer> impostorsIndices = RandomRoleAssigner.getImpostorsIndices();
-        System.out.println("Impostorsindices : " + impostorsIndices);
+        ;
         //Assign Impostor if player index matches impostor indeces
         for (int i = 0; i < players.size(); i++) {
             if (impostorsIndices.contains(i)) {
-                players.get(i).setRole("Impostor");
+                players.get(i).setRole(Role.IMPOSTOR);
             }
         }
         return players;

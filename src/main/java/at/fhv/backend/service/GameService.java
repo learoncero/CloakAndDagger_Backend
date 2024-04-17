@@ -1,9 +1,10 @@
 package at.fhv.backend.service;
 
 import at.fhv.backend.model.Game;
-import at.fhv.backend.utils.GameCodeGenerator;
 import at.fhv.backend.model.Player;
+import at.fhv.backend.model.Role;
 import at.fhv.backend.repository.GameRepository;
+import at.fhv.backend.utils.GameCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,11 +41,11 @@ public class GameService {
         game.getPlayers().add(p);
         gameRepository.save(game);
 
-        System.out.println("Player id and their roles in GameServices create Game (Host): ");
+        /*System.out.println("Player id and their roles in GameServices create Game (Host): ");
         for (int i = 0; i < game.getPlayers().size(); i++) {
             System.out.println("Player id: " + game.getPlayers().get(i).getId() +
                     " Role: " + game.getPlayers().get(i).getRole());
-        }
+        }*/
 
         return game;
     }
@@ -76,5 +77,25 @@ public class GameService {
             gameRepository.save(game);
         }
         return game;
+    }
+
+    public Game killPlayer(String gameCode, int playerId) {
+        Game game = gameRepository.findByGameCode(gameCode);
+        if (game != null) {
+            Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
+            if (player != null) {
+//                System.out.println("Player to kill: " + player.getId());
+                if (player.getRole().equals(Role.CREWMATE)) {
+                    player.setRole(Role.CREWMATE_GHOST);
+                    gameRepository.save(game);
+                    return game;
+                } else if (player.getRole().equals(Role.IMPOSTOR)) {
+                    player.setRole(Role.IMPOSTOR_GHOST);
+                    gameRepository.save(game);
+                    return game;
+                }
+            }
+        }
+        return null;
     }
 }

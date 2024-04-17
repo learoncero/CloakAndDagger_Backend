@@ -14,7 +14,7 @@ public class MapLoaderTest {
     @Test
     public void testLoadMapFromFile() {
         // Prepare a temporary test file
-        String testMapFileName = "tesmap";
+        String testMapFileName = "testmap";
         String testMapContent = ".#..\n" +
                 "..#.\n" +
                 "....";

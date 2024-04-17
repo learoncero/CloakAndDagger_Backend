@@ -44,7 +44,7 @@ public class GameController {
 
     @GetMapping("/game/{gameCode}")
     public ResponseEntity<Game> getGameByCode(@PathVariable String gameCode) {
-        System.out.println("Received request to get game with code: " + gameCode);
+//        System.out.println("Received request to get game with code: " + gameCode);
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
             return ResponseEntity.ok(game);
@@ -76,7 +76,7 @@ public class GameController {
 
             Player player = playerService.createPlayer(joinMessage.getUsername(), game);
             game.getPlayers().add(player);
-            System.out.println("Player " + joinMessage.getUsername() + " joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
+//            System.out.println("Player " + joinMessage.getUsername() + " joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
 
             //Assign roles randomly to players
             game.setPlayers(playerService.setRandomRole(game.getPlayers()));
@@ -94,18 +94,18 @@ public class GameController {
     public Game playGame(@RequestBody Game gameToPlay) {
         Game game = gameService.startGame(gameToPlay.getGameCode());
         gameService.setGameAttributes(gameToPlay.getGameCode(), gameToPlay.getPlayers());
-        System.out.println("Received request to play game with: " + gameToPlay.getGameCode() +
+        /*System.out.println("Received request to play game with: " + gameToPlay.getGameCode() +
                 ", Player1: " + gameToPlay.getPlayers().get(0).getUsername() +
-                ", Position: " + gameToPlay.getPlayers().get(0).getPosition().getX());
-        System.out.println("Game that got returned: " + game.getGameCode() +
+                ", Position: " + gameToPlay.getPlayers().get(0).getPosition().getX());*/
+        /*System.out.println("Game that got returned: " + game.getGameCode() +
                 ", Player1: " + game.getPlayers().get(0).getUsername() +
-                ", Position: " + game.getPlayers().get(0).getPosition().getX());
+                ", Position: " + game.getPlayers().get(0).getPosition().getX());*/
 
-        System.out.println("Player id and their roles in GameController: ");
+        /*System.out.println("Player id and their roles in GameController: ");
         for (int i = 0; i < game.getPlayers().size(); i++) {
             System.out.println("Player id: " + game.getPlayers().get(i).getId() +
                     " Role: " + game.getPlayers().get(i).getRole());
-        }
+        }*/
 
         return game;
     }
@@ -120,10 +120,21 @@ public class GameController {
         if (player != null) {
             Position newPosition = playerMoveMessage.getPosition();
             playerService.updatePlayerPosition(player, newPosition);
-            System.out.println("Player ID: " + playerId + " moved to position: " + newPosition.getX() + ", " + newPosition.getY());
+
             return game;
         }
 
         return null;
+    }
+
+    @PostMapping("/game/{gameCode}/kill/{playerId}")
+    public ResponseEntity<Game> handleKill(@PathVariable String gameCode, @PathVariable int playerId) {
+        System.out.println("Kill Request received. GameCode: " + gameCode + " PlayerId to be killed: " + playerId);
+        Game game = gameService.killPlayer(gameCode, playerId);
+        if (game != null) {
+            return ResponseEntity.ok(game);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
