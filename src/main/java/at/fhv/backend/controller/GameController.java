@@ -5,6 +5,7 @@ import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
 import at.fhv.backend.model.messages.CreateGameMessage;
 import at.fhv.backend.model.messages.PlayerJoinMessage;
+import at.fhv.backend.model.messages.PlayerKillMessage;
 import at.fhv.backend.model.messages.PlayerMoveMessage;
 import at.fhv.backend.service.GameService;
 import at.fhv.backend.service.PlayerService;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +24,15 @@ import org.springframework.web.bind.annotation.*;
 public class GameController {
     private final GameService gameService;
     private final PlayerService playerService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerservice) {
+    public GameController(GameService gameService, PlayerService playerservice, SimpMessagingTemplate messagingTemplate) {
         this.gameService = gameService;
         this.playerService = playerservice;
+        this.messagingTemplate = messagingTemplate;
     }
+
 
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
@@ -127,14 +132,15 @@ public class GameController {
         return null;
     }
 
-    @PostMapping("/game/{gameCode}/kill/{playerId}")
-    public ResponseEntity<Game> handleKill(@PathVariable String gameCode, @PathVariable int playerId) {
-        System.out.println("Kill Request received. GameCode: " + gameCode + " PlayerId to be killed: " + playerId);
-        Game game = gameService.killPlayer(gameCode, playerId);
+    @MessageMapping("/game/kill")
+    public ResponseEntity<Game> handleKill(@Payload PlayerKillMessage playerKillMessage) {
+        int playerToKillId = Integer.parseInt(playerKillMessage.getPlayerToKillId());
+        String gameCode = playerKillMessage.getGameCode();
+        System.out.println("Kill Request received. GameCode: " + gameCode + " PlayerId to be killed: " + playerToKillId);
+        Game game = gameService.killPlayer(gameCode, playerToKillId);
         if (game != null) {
-            return ResponseEntity.ok(game);
-        } else {
-            return ResponseEntity.notFound().build();
+            messagingTemplate.convertAndSend("/topic/"+gameCode + "/kill/" + playerToKillId, game);
         }
+        return ResponseEntity.notFound().build();
     }
 }
