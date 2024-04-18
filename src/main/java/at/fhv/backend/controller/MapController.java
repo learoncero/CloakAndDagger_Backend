@@ -10,11 +10,14 @@
 
 package at.fhv.backend.controller;
 
+import at.fhv.backend.model.Map;
 import at.fhv.backend.service.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class MapController {
@@ -25,23 +28,9 @@ public class MapController {
         this.mapService = mapService;
     }
 
-    /*@MessageMapping("/mapinitialiser")
-    @SendTo("/topic/mapinitialiser")
-    public Map getInitialMap() {
-        return mapService.getInitialMap();
-    }*/
-
-    @MessageMapping("/mapupdate")
-    @SendTo("/topic/mapupdate")
-    public boolean[][] updateMap(boolean[][] map) {
-        mapService.setMap(map);
-        return map;
-    }
-
-    @MessageMapping("/mapupdatebyposition")
-    @SendTo("/topic/mapupdatebyposition")
-    public boolean[][] updateMapByPosition(int x, int y, boolean value) {
-        mapService.setMapbyPosition(x, y, value);
-        return mapService.getMap();
+    @GetMapping("/map/{mapName}")
+    public boolean[][] getMap(@PathVariable String mapName) {
+        Map map = mapService.getMap(mapName);
+        return map.getMap();
     }
 }

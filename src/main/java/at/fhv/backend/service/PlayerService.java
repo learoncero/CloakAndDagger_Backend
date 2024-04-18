@@ -1,10 +1,10 @@
 package at.fhv.backend.service;
 
-import at.fhv.backend.model.Game;
-import at.fhv.backend.model.Player;
-import at.fhv.backend.model.Position;
-import at.fhv.backend.model.Role;
+import at.fhv.backend.model.*;
+import at.fhv.backend.repository.MapRepository;
+import at.fhv.backend.utils.MapLoader;
 import at.fhv.backend.utils.RandomRoleAssigner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,34 +12,30 @@ import java.util.List;
 @Service
 public class PlayerService {
     private final MapService mapService;
+    private final GameService gameService;
 
-    public PlayerService(MapService mapservice) {
+    public PlayerService(MapService mapservice, GameService gameService) {
         this.mapService = mapservice;
+        this.gameService = gameService;
     }
 
     public Player createPlayer(String username, Position position, Game game) {
         return new Player(username, position, game);
     }
 
-    public void updatePlayerPosition(Player player, Position newPosition) {
-//        System.out.println("updatePlayerPosition called in PlayerService for player: " + player.getId() + " with position: " + newPosition.getX() + ", " + newPosition.getY());
+    public void updatePlayerPosition(Player player, Position newPosition, String gameCode) {
+        String mapName = gameService.getGameByCode(gameCode).getMap();
         int x = newPosition.getX();
         int y = newPosition.getY();
         boolean outOfBounds =
                 (x < 0) ||
                         (y < 0) ||
-                        (y >= mapService.getMap().length) ||
-                        (x >= mapService.getMap()[0].length);
+                        (y >= mapService.getMap(mapName).getMap().length) ||
+                        (x >= mapService.getMap(mapName).getMap()[0].length);
 
         if (mapService != null) {
-            if (!outOfBounds && mapService.isCellWalkable(x, y)) { //if true update repo otherwise do nothing
+            if (!outOfBounds && mapService.isCellWalkable(mapName, x, y)) { //if true update repo otherwise do nothing
                 player.setPosition(newPosition);
-                 /*//For debugging purposes
-                List<Player> players = playerRepository.findAll();
-                System.out.println("Validation with following players:");
-                for(Player p: players) {
-                    System.out.println("Player ID: " + p.getId() + ", Username " + p.getUsername() + ", Position: " + p.getPosition().getX() + ", " + p.getPosition().getY());
-                }*/
             }
         }
     }

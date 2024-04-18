@@ -12,9 +12,11 @@ import at.fhv.backend.service.SabotageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,13 +26,16 @@ public class GameController {
     private final GameService gameService;
     private final PlayerService playerService;
     private final SabotageService sabotageService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerservice, SabotageService sabotageService) {
+    public GameController(GameService gameService, PlayerService playerservice, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate) {
         this.gameService = gameService;
         this.playerService = playerservice;
         this.sabotageService = sabotageService;
+        this.messagingTemplate = messagingTemplate;
     }
+
 
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) {
@@ -65,7 +70,7 @@ public class GameController {
     }
 
     @PostMapping("/game/join/{playerName}")
-    public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage) {
+    public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage, @PathVariable String playerName) {
         if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
             return ResponseEntity.badRequest().body("Invalid join message");
         }
@@ -85,7 +90,7 @@ public class GameController {
                 return ResponseEntity.badRequest().body("Username is already taken");
             }
 
-            Player player = playerService.createPlayer(joinMessage.getUsername(), joinMessage.getPosition(), game);
+            Player player = playerService.createPlayer(joinMessage.getUsername(), game);
             game.getPlayers().add(player);
 //            System.out.println("Player " + joinMessage.getUsername() + " joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
 
@@ -98,28 +103,14 @@ public class GameController {
         }
     }
 
-
-    //Todo: check if null
+    //Todo: handle case when game is null
     @MessageMapping("/{gameCode}/play")
-    @SendTo("/topic/{gameCode}/play")
-    public Game playGame(@RequestBody Game gameToPlay) {
-        System.out.println(gameToPlay.toString());
-        Game game = gameService.startGame(gameToPlay.getGameCode());
-        gameService.setGameAttributes(gameToPlay.getGameCode(), gameToPlay.getPlayers());
-        /*System.out.println("Received request to play game with: " + gameToPlay.getGameCode() +
-                ", Player1: " + gameToPlay.getPlayers().get(0).getUsername() +
-                ", Position: " + gameToPlay.getPlayers().get(0).getPosition().getX());*/
-        /*System.out.println("Game that got returned: " + game.getGameCode() +
-                ", Player1: " + game.getPlayers().get(0).getUsername() +
-                ", Position: " + game.getPlayers().get(0).getPosition().getX());*/
-
-        /*System.out.println("Player id and their roles in GameController: ");
-        for (int i = 0; i < game.getPlayers().size(); i++) {
-            System.out.println("Player id: " + game.getPlayers().get(i).getId() +
-                    " Role: " + game.getPlayers().get(i).getRole());
-        }*/
-
-        return game;
+    public void playGame(@DestinationVariable String gameCode) {
+        Game game = gameService.getGameByCode(gameCode);
+        if (game != null) {
+            // Send the game information to the corresponding topic
+            messagingTemplate.convertAndSend("/topic/" + gameCode + "/play", game);
+        }
     }
 
     @MessageMapping("/move")
@@ -131,7 +122,7 @@ public class GameController {
 
         if (player != null) {
             Position newPosition = playerMoveMessage.getPosition();
-            playerService.updatePlayerPosition(player, newPosition);
+            playerService.updatePlayerPosition(player, newPosition, game.getGameCode());
 
             return game;
         }

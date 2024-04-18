@@ -1,11 +1,9 @@
 package at.fhv.backend.service;
 
 import at.fhv.backend.model.Game;
-import at.fhv.backend.model.GameStatus;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Role;
 import at.fhv.backend.repository.GameRepository;
-import at.fhv.backend.utils.GameCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +19,11 @@ public class GameService {
     }
 
     public Game createGame(int numberOfPlayers, int numberOfImpostors, String map) {
-        Game game = new Game(generateGameCode(), numberOfPlayers, numberOfImpostors, map);
+        Game game = new Game(numberOfPlayers, numberOfImpostors, map);
 
         gameRepository.save(game);
 
         return game;
-    }
-
-    private String generateGameCode() {
-        return GameCodeGenerator.generateGameCode();
     }
 
     public Game getGameByCode(String gameCode) {
@@ -62,16 +56,12 @@ public class GameService {
                 if (player.getRole().equals(Role.CREWMATE)) {
                     player.setRole(Role.CREWMATE_GHOST);
                     gameRepository.save(game);
+                    return game;
                 } else if (player.getRole().equals(Role.IMPOSTOR)) {
                     player.setRole(Role.IMPOSTOR_GHOST);
                     gameRepository.save(game);
+                    return game;
                 }
-                List<Player> crewmates = game.getPlayers().stream().filter(p -> p.getRole().equals(Role.CREWMATE)).toList();
-                if (crewmates.size() == game.getNumberOfImpostors()) {
-                    game.setGameStatus(GameStatus.IMPOSTORS_WIN);
-                    gameRepository.save(game);
-                }
-                return game;
             }
         }
         return null;

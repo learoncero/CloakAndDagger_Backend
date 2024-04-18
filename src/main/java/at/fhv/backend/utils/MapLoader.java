@@ -1,9 +1,12 @@
 package at.fhv.backend.utils;
 
+import org.springframework.stereotype.Component;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+@Component
 public class MapLoader {
     private static final String pathForMap = "src/main/java/at/fhv/backend/repository/";
 
@@ -39,12 +42,4 @@ public class MapLoader {
         }
         return walkableCells;
     }//TODO printStackTrace causes warning: probably should be replaced with more robust logging
-
-    public static void main(String[] args) {
-        /*boolean[][] walkableCells = loadMapFromFile();
-        System.out.println(walkableCells.length + "x" + walkableCells[0].length);
-        System.out.println(walkableCells[0][0]);
-        System.out.println( walkableCells[2][1]);*/
-
-    }
 }
