@@ -8,6 +8,7 @@ import at.fhv.backend.model.messages.PlayerJoinMessage;
 import at.fhv.backend.model.messages.PlayerMoveMessage;
 import at.fhv.backend.service.GameService;
 import at.fhv.backend.service.PlayerService;
+import at.fhv.backend.service.SabotageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,21 +23,31 @@ import org.springframework.web.bind.annotation.*;
 public class GameController {
     private final GameService gameService;
     private final PlayerService playerService;
+    private final SabotageService sabotageService;
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerservice) {
+    public GameController(GameService gameService, PlayerService playerservice, SabotageService sabotageService) {
         this.gameService = gameService;
         this.playerService = playerservice;
+        this.sabotageService = sabotageService;
     }
 
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) {
-//        System.out.println("Received request to create game with username: " + createGameMessage.getPlayer().getUsername() + " number of players: " + createGameMessage.getNumberOfPlayers() + " number of impostors: " + createGameMessage.getNumberOfImpostors() + " map: " + createGameMessage.getMap());
+        Game game = gameService.createGame(createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
 
-        Game createdGame = gameService.createGame(createGameMessage.getPlayer(), createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
+        Player player = playerService.createPlayer(createGameMessage.getPlayer().getUsername(), createGameMessage.getPlayer().getPosition(), game);
+        // Assign roles to players (get Impostor Player Indices)
+        player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
+        game.getPlayers().add(player);
 
-        if (createdGame != null) {
-            return ResponseEntity.ok(createdGame);
+        // Check if sabotages have already been added
+        if (game.getSabotages() == null || game.getSabotages().isEmpty()) {
+            sabotageService.addSabotagesToGame(game);
+        }
+
+        if (game != null) {
+            return ResponseEntity.ok(game);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
