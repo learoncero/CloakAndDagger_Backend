@@ -4,7 +4,6 @@ import at.fhv.backend.model.Map;
 import at.fhv.backend.utils.MapLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +26,16 @@ public class MapRepository {
     }
 
     private void initializeMaps() {
-        boolean[][] spaceshipMap = MapLoader.loadMapFromFile("spaceship");
-        Map map = new Map("Spaceship", spaceshipMap);
-        maps.add(map);
+        boolean[][] spaceshipMapArray = MapLoader.loadMapFromFile("Spaceship");
+        Map spaceshipMap = new Map("Spaceship", spaceshipMapArray);
+        maps.add(spaceshipMap);
+
+        boolean[][] devMap1Array = MapLoader.loadMapFromFile("DevMap1");
+        Map devMap1 = new Map("DevMap1", devMap1Array);
+        maps.add(devMap1);
+
+        boolean[][] devMap2Array = MapLoader.loadMapFromFile("DevMap2");
+        Map devMap2 = new Map("DevMap2", devMap2Array);
+        maps.add(devMap2);
     }
 }

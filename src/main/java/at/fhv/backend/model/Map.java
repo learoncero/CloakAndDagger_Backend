@@ -3,14 +3,16 @@ package at.fhv.backend.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class Map {
+    private static int nextId = 1;
     private int id;
     private boolean[][] map;
     private String name;
-    private static int nextId = 1;
 
     public Map() {
     }

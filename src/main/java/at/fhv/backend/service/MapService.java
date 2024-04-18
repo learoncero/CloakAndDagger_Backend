@@ -24,12 +24,7 @@ public class MapService {
         this.mapRepository = mapRepository;
     }
 
-    public Map getMap(String mapName) {
+    public Map getMapByName(String mapName) {
         return mapRepository.findMapByName(mapName);
-    }
-
-    public boolean isCellWalkable(String mapName, int x, int y) {
-        Map map = mapRepository.findMapByName(mapName);
-        return map.getCellValue(x, y);
     }
 }

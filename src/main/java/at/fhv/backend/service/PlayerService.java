@@ -1,43 +1,37 @@
 package at.fhv.backend.service;
 
 import at.fhv.backend.model.*;
-import at.fhv.backend.repository.MapRepository;
-import at.fhv.backend.utils.MapLoader;
 import at.fhv.backend.utils.RandomRoleAssigner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class PlayerService {
-    private final MapService mapService;
-    private final GameService gameService;
 
-    public PlayerService(MapService mapservice, GameService gameService) {
-        this.mapService = mapservice;
-        this.gameService = gameService;
+    public PlayerService() {
     }
 
     public Player createPlayer(String username, Position position, Game game) {
         return new Player(username, position, game);
     }
 
-    public void updatePlayerPosition(Player player, Position newPosition, String gameCode) {
-        String mapName = gameService.getGameByCode(gameCode).getMap();
+    public void updatePlayerPosition(Player player, Position newPosition, Map map) {
         int x = newPosition.getX();
         int y = newPosition.getY();
         boolean outOfBounds =
                 (x < 0) ||
                         (y < 0) ||
-                        (y >= mapService.getMap(mapName).getMap().length) ||
-                        (x >= mapService.getMap(mapName).getMap()[0].length);
+                        (y >= map.getMap().length) ||
+                        (x >= map.getMap()[0].length);
 
-        if (mapService != null) {
-            if (!outOfBounds && mapService.isCellWalkable(mapName, x, y)) { //if true update repo otherwise do nothing
-                player.setPosition(newPosition);
-            }
+        if (!outOfBounds && isCellWalkable(map, x, y)) { //if true update repo otherwise do nothing
+            player.setPosition(newPosition);
         }
+    }
+
+    private boolean isCellWalkable(Map map, int x, int y) {
+        return map.getCellValue(x, y);
     }
 
     public Player setInitialRandomRole(int numPlayers, int numImpostors, Player player) {

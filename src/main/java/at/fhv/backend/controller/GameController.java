@@ -1,12 +1,14 @@
 package at.fhv.backend.controller;
 
 import at.fhv.backend.model.Game;
+import at.fhv.backend.model.Map;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
 import at.fhv.backend.model.messages.CreateGameMessage;
 import at.fhv.backend.model.messages.PlayerJoinMessage;
 import at.fhv.backend.model.messages.PlayerMoveMessage;
 import at.fhv.backend.service.GameService;
+import at.fhv.backend.service.MapService;
 import at.fhv.backend.service.PlayerService;
 import at.fhv.backend.service.SabotageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +29,15 @@ public class GameController {
     private final PlayerService playerService;
     private final SabotageService sabotageService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final MapService mapservice;
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerservice, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate) {
+    public GameController(GameService gameService, PlayerService playerservice, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapservice) {
         this.gameService = gameService;
         this.playerService = playerservice;
         this.sabotageService = sabotageService;
         this.messagingTemplate = messagingTemplate;
+        this.mapservice = mapservice;
     }
 
 
@@ -51,11 +55,7 @@ public class GameController {
             sabotageService.addSabotagesToGame(game);
         }
 
-        if (game != null) {
-            return ResponseEntity.ok(game);
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.ok(game);
     }
 
     @GetMapping("/game/{gameCode}")
@@ -69,8 +69,8 @@ public class GameController {
         }
     }
 
-    @PostMapping("/game/join/{playerName}")
-    public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage, @PathVariable String playerName) {
+    @PostMapping("/game/join")
+    public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage) {
         if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
             return ResponseEntity.badRequest().body("Invalid join message");
         }
@@ -90,9 +90,8 @@ public class GameController {
                 return ResponseEntity.badRequest().body("Username is already taken");
             }
 
-            Player player = playerService.createPlayer(joinMessage.getUsername(), game);
+            Player player = playerService.createPlayer(joinMessage.getUsername(), new Position(), game);
             game.getPlayers().add(player);
-//            System.out.println("Player " + joinMessage.getUsername() + " joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
 
             //Assign roles randomly to players
             game.setPlayers(playerService.setRandomRole(game.getPlayers()));
@@ -122,7 +121,8 @@ public class GameController {
 
         if (player != null) {
             Position newPosition = playerMoveMessage.getPosition();
-            playerService.updatePlayerPosition(player, newPosition, game.getGameCode());
+            Map map = mapservice.getMapByName(game.getMap());
+            playerService.updatePlayerPosition(player, newPosition, map);
 
             return game;
         }
