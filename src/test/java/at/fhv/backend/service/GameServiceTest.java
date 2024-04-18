@@ -64,7 +64,7 @@ public class GameServiceTest {
     public void createGameSuccessfully() throws IOException {
         Player player = new Player();
         //when(playerService.createPlayer(anyString(), any(), any())).thenReturn(player);
-        when(mapService.getInitialMap(anyString())).thenReturn(new Map());
+//        when(mapService.getInitialMap(anyString())).thenReturn(new Map());
         doAnswer(i -> i.getArguments()[0]).when(gameRepository).save(any(Game.class));
 
         // Create a temporary file and write test data to it

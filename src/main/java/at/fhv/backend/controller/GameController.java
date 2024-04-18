@@ -108,10 +108,11 @@ public class GameController {
         int playerId = playerMoveMessage.getId();
         Game game = gameService.getGameByCode(playerMoveMessage.getGameCode());
         Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
+        String gameCode = playerMoveMessage.getGameCode();
 
         if (player != null) {
             Position newPosition = playerMoveMessage.getPosition();
-            playerService.updatePlayerPosition(player, newPosition);
+            playerService.updatePlayerPosition(player, newPosition, gameCode);
 
             return game;
         }

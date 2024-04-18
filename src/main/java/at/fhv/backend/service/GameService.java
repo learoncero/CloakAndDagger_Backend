@@ -18,7 +18,6 @@ public class GameService {
     private final SabotageService sabotageService;
     private final MapService mapService;
 
-    @Autowired
     public GameService(GameRepository gameRepository, PlayerService playerService, MapService mapService, SabotageService sabotageService) {
         this.gameRepository = gameRepository;
         this.playerService = playerService;

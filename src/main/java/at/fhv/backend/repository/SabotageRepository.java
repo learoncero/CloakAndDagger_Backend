@@ -1,12 +1,13 @@
 package at.fhv.backend.repository;
 
 import at.fhv.backend.model.Sabotage;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
+@Component
 public class SabotageRepository {
     private final List<Sabotage> sabotages;
 
