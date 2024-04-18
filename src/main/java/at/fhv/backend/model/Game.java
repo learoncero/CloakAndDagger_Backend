@@ -23,13 +23,12 @@ public class Game {
     private int gameID;
     private GameStatus gameStatus;
 
-    public Game(Player player, int numberOfPlayers, int numberOfImpostors, String map) {
+    public Game(int numberOfPlayers, int numberOfImpostors, String map) {
         this.gameCode = GameCodeGenerator.generateGameCode();
         this.numberOfPlayers = numberOfPlayers;
         this.numberOfImpostors = numberOfImpostors;
         this.map = map;
         this.players = new ArrayList<>();
-        this.players.add(player);
         this.sabotages = new ArrayList<>();
         this.gameID = nextGameID;
         this.gameStatus = GameStatus.NOT_FINISHED;

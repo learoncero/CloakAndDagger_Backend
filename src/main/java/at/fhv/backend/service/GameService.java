@@ -27,7 +27,7 @@ public class GameService {
     }
 
     public Game createGame(Player player, int numberOfPlayers, int numberOfImpostors, String map) {
-        Game game = new Game(player, numberOfPlayers, numberOfImpostors, map);
+        Game game = new Game(numberOfPlayers, numberOfImpostors, map);
 
         // Check if sabotages have already been added
         if (game.getSabotages() == null || game.getSabotages().isEmpty()) {

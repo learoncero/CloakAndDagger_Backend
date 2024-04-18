@@ -49,7 +49,6 @@ public class GameController {
 
     @GetMapping("/game/{gameCode}")
     public ResponseEntity<Game> getGameByCode(@PathVariable String gameCode) {
-//        System.out.println("Received request to get game with code: " + gameCode);
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
             return ResponseEntity.ok(game);
