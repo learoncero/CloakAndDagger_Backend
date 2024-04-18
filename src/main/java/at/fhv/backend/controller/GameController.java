@@ -94,11 +94,11 @@ public class GameController {
 
     //Todo: handle case when game is null
     @MessageMapping("/{gameCode}/play")
-    @SendTo("/topic/{gameCode}/play")
     public void playGame(@DestinationVariable String gameCode) {
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
-            messagingTemplate.convertAndSend("/topic/" + gameCode + "/play");
+            // Send the game information to the corresponding topic
+            messagingTemplate.convertAndSend("/topic/" + gameCode + "/play", game);
         }
     }
 
