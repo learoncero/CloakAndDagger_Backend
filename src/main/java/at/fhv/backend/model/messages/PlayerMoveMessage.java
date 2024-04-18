@@ -8,12 +8,12 @@ import lombok.Setter;
 @Setter
 public class PlayerMoveMessage {
     private int id;
-    private Position position;
+    private String keyCode;
     private String gameCode;
 
-    public PlayerMoveMessage(int id, Position position, String gameCode) {
+    public PlayerMoveMessage(int id, String keyCode, String gameCode) {
         this.id = id;
-        this.position = position;
+        this.keyCode = keyCode;
         this.gameCode = gameCode;
     }
 }
