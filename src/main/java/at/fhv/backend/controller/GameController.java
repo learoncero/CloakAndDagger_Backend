@@ -6,6 +6,7 @@ import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
 import at.fhv.backend.model.messages.CreateGameMessage;
 import at.fhv.backend.model.messages.PlayerJoinMessage;
+import at.fhv.backend.model.messages.PlayerKillMessage;
 import at.fhv.backend.model.messages.PlayerMoveMessage;
 import at.fhv.backend.service.GameService;
 import at.fhv.backend.service.MapService;
@@ -29,23 +30,24 @@ public class GameController {
     private final PlayerService playerService;
     private final SabotageService sabotageService;
     private final SimpMessagingTemplate messagingTemplate;
-    private final MapService mapservice;
+    private final MapService mapService;
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerservice, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapservice) {
+    public GameController(GameService gameService, PlayerService playerservice, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
         this.gameService = gameService;
         this.playerService = playerservice;
         this.sabotageService = sabotageService;
         this.messagingTemplate = messagingTemplate;
-        this.mapservice = mapservice;
+        this.mapService = mapService;
     }
 
 
     @PostMapping("/game")
-    public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) {
+    public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
         Game game = gameService.createGame(createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
 
-        Player player = playerService.createPlayer(createGameMessage.getPlayer().getUsername(), createGameMessage.getPlayer().getPosition(), game);
+        Position randomPosition = mapService.getRandomWalkablePosition();
+        Player player = playerService.createPlayer(createGameMessage.getPlayer().getUsername(), randomPosition, game);
         // Assign roles to players (get Impostor Player Indices)
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
@@ -60,7 +62,6 @@ public class GameController {
 
     @GetMapping("/game/{gameCode}")
     public ResponseEntity<Game> getGameByCode(@PathVariable String gameCode) {
-//        System.out.println("Received request to get game with code: " + gameCode);
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
             return ResponseEntity.ok(game);
@@ -90,7 +91,8 @@ public class GameController {
                 return ResponseEntity.badRequest().body("Username is already taken");
             }
 
-            Player player = playerService.createPlayer(joinMessage.getUsername(), new Position(), game);
+            Position randomPosition = mapService.getRandomWalkablePosition();
+            Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game);
             game.getPlayers().add(player);
 
             //Assign roles randomly to players
@@ -121,7 +123,7 @@ public class GameController {
 
         if (player != null) {
             Position newPosition = playerMoveMessage.getPosition();
-            Map map = mapservice.getMapByName(game.getMap());
+            Map map = mapService.getMapByName(game.getMap());
             playerService.updatePlayerPosition(player, newPosition, map);
 
             return game;
@@ -130,14 +132,15 @@ public class GameController {
         return null;
     }
 
-    @PostMapping("/game/{gameCode}/kill/{playerId}")
-    public ResponseEntity<Game> handleKill(@PathVariable String gameCode, @PathVariable int playerId) {
-        System.out.println("Kill Request received. GameCode: " + gameCode + " PlayerId to be killed: " + playerId);
-        Game game = gameService.killPlayer(gameCode, playerId);
+    @MessageMapping("/game/kill")
+    public ResponseEntity<Game> handleKill(@Payload PlayerKillMessage playerKillMessage) {
+        int playerToKillId = Integer.parseInt(playerKillMessage.getPlayerToKillId());
+        String gameCode = playerKillMessage.getGameCode();
+        System.out.println("Kill Request received. GameCode: " + gameCode + " PlayerId to be killed: " + playerToKillId);
+        Game game = gameService.killPlayer(gameCode, playerToKillId);
         if (game != null) {
-            return ResponseEntity.ok(game);
-        } else {
-            return ResponseEntity.notFound().build();
+            messagingTemplate.convertAndSend("/topic/" + gameCode + "/kill/" + playerToKillId, game);
         }
+        return ResponseEntity.notFound().build();
     }
 }

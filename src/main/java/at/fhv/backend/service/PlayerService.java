@@ -12,8 +12,10 @@ public class PlayerService {
     public PlayerService() {
     }
 
-    public Player createPlayer(String username, Position position, Game game) {
-        return new Player(username, position, game);
+    public Player createPlayer(String username, Position randomPosition, Game game) {
+        Player player = new Player(username, randomPosition, game);
+
+        return player;
     }
 
     public void updatePlayerPosition(Player player, Position newPosition, Map map) {

@@ -1,19 +1,16 @@
-/*
- * Copyright (c) 2024 Sarah N
- *
- * Project Name:         AmongUs_Replica_Backend
- * Description:
- *
- * Date of Creation/
- * Last Update:          25/03/2024
- */
-
 package at.fhv.backend.service;
 
 import at.fhv.backend.model.Map;
+import at.fhv.backend.model.Position;
 import at.fhv.backend.repository.MapRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @Service
 public class MapService {
@@ -26,5 +23,30 @@ public class MapService {
 
     public Map getMapByName(String mapName) {
         return mapRepository.findMapByName(mapName);
+    }
+
+    public List<Position> loadWalkablePositions() throws Exception {
+        List<String> lines = Files.readAllLines(Paths.get("src/main/java/at/fhv/backend/repository/spaceship.txt"));
+        List<Position> walkablePositions = new ArrayList<>();
+
+        for (int y = 0; y < lines.size(); y++) {
+            String line = lines.get(y);
+            for (int x = 0; x < line.length(); x++) {
+                if (line.charAt(x) == '.') {
+                    walkablePositions.add(new Position(x, y));
+                }
+            }
+        }
+        return walkablePositions;
+    }
+
+    public Position getRandomWalkablePosition() throws Exception {
+        List<Position> walkablePositions = loadWalkablePositions();
+        if (!walkablePositions.isEmpty()) {
+            Random random = new Random();
+            return walkablePositions.get(random.nextInt(walkablePositions.size()));
+        } else {
+            throw new Exception("No walkable positions found.");
+        }
     }
 }
