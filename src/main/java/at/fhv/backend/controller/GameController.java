@@ -117,7 +117,7 @@ public class GameController {
 
     @MessageMapping("/move")
     @SendTo("/topic/positionChange")
-    public Game movePlayer(@Payload PlayerMoveMessage playerMoveMessage) {
+    public ResponseEntity<Game> movePlayer(@Payload PlayerMoveMessage playerMoveMessage) {
         int playerId = playerMoveMessage.getId();
         Game game = gameService.getGameByCode(playerMoveMessage.getGameCode());
         Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
@@ -126,20 +126,21 @@ public class GameController {
             Position newPosition = playerMoveMessage.getPosition();
             playerService.updatePlayerPosition(player, newPosition);
 
-            return game;
+            return ResponseEntity.ok().body(game);
         }
 
-        return null;
+        return ResponseEntity.notFound().build();
     }
 
     @MessageMapping("/game/kill")
+    @SendTo("/topic/playerKill")
     public ResponseEntity<Game> handleKill(@Payload PlayerKillMessage playerKillMessage) {
         int playerToKillId = Integer.parseInt(playerKillMessage.getPlayerToKillId());
         String gameCode = playerKillMessage.getGameCode();
         System.out.println("Kill Request received. GameCode: " + gameCode + " PlayerId to be killed: " + playerToKillId);
         Game game = gameService.killPlayer(gameCode, playerToKillId);
         if (game != null) {
-            messagingTemplate.convertAndSend("/topic/"+gameCode + "/kill/" + playerToKillId, game);
+            return ResponseEntity.ok().body(game);
         }
         return ResponseEntity.notFound().build();
     }
