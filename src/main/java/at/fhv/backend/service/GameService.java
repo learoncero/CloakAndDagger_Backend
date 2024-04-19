@@ -61,7 +61,9 @@ public class GameService {
                 } else if (player.getRole().equals(Role.IMPOSTOR)) {
                     player.setRole(Role.IMPOSTOR_GHOST);
                 }
-                game.setGameStatus(GameStatus.IMPOSTORS_WIN);
+                if (game.getPlayers().stream().filter(p -> p.getRole().equals(Role.CREWMATE)).count() == game.getPlayers().stream().filter(p -> p.getRole().equals(Role.IMPOSTOR)).count()) {
+                    game.setGameStatus(GameStatus.IMPOSTORS_WIN);
+                }
                 gameRepository.save(game);
                 return game;
             }
