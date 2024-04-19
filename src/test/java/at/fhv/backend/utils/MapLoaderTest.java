@@ -1,6 +1,5 @@
-package at.fhv.backend;
+package at.fhv.backend.utils;
 
-import at.fhv.backend.utils.MapLoader;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
