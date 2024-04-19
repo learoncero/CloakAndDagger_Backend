@@ -58,4 +58,28 @@ public class PlayerService {
         }
         return players;
     }
+
+    public Position calculateNewPosition(Position currentPosition, String keyCode) {
+        int deltaX = 0, deltaY = 0;
+        switch (keyCode) {
+            case "KeyA":
+                deltaX = -1;
+                break;
+            case "KeyW":
+                deltaY = -1;
+                break;
+            case "KeyD":
+                deltaX = 1;
+                break;
+            case "KeyS":
+                deltaY = 1;
+                break;
+            default: System.out.println("Invalid key code");
+                break;
+        }
+
+        int newX = currentPosition.getX() + deltaX;
+        int newY = currentPosition.getY() + deltaY;
+        return new Position(newX, newY);
+    }
 }
