@@ -1,22 +1,16 @@
-/*
- * Copyright (c) 2024 Sarah N
- *
- * Project Name:         AmongUs_Replica_Backend
- * Description:
- *
- * Date of Creation/
- * Last Update:          25/03/2024
- */
-
 package at.fhv.backend.controller;
 
+import at.fhv.backend.model.Map;
 import at.fhv.backend.service.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/api")
 public class MapController {
     private final MapService mapService;
 
@@ -25,23 +19,11 @@ public class MapController {
         this.mapService = mapService;
     }
 
-    /*@MessageMapping("/mapinitialiser")
-    @SendTo("/topic/mapinitialiser")
-    public Map getInitialMap() {
-        return mapService.getInitialMap();
-    }*/
+    @GetMapping("/map/{mapName}")
+    public ResponseEntity<Map> getMap(@PathVariable String mapName) {
+        Map map = mapService.getMapByName(mapName);
 
-    @MessageMapping("/mapupdate")
-    @SendTo("/topic/mapupdate")
-    public boolean[][] updateMap(boolean[][] map) {
-        mapService.setMap(map);
-        return map;
-    }
-
-    @MessageMapping("/mapupdatebyposition")
-    @SendTo("/topic/mapupdatebyposition")
-    public boolean[][] updateMapByPosition(int x, int y, boolean value) {
-        mapService.setMapbyPosition(x, y, value);
-        return mapService.getMap();
+        System.out.println("Get map called: " + map.getName());
+        return ResponseEntity.ok(map);
     }
 }

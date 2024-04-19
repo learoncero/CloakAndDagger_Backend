@@ -1,9 +1,6 @@
 package at.fhv.backend.service;
 
-import at.fhv.backend.model.Game;
-import at.fhv.backend.model.Player;
-import at.fhv.backend.model.Position;
-import at.fhv.backend.model.Role;
+import at.fhv.backend.model.*;
 import at.fhv.backend.utils.RandomRoleAssigner;
 import org.springframework.stereotype.Service;
 
@@ -11,41 +8,32 @@ import java.util.List;
 
 @Service
 public class PlayerService {
-    private final MapService mapService;
 
-    public PlayerService(MapService mapservice) {
-        this.mapService = mapservice;
+    public PlayerService() {
     }
 
-    public Player createPlayer(String username, Game game) throws Exception {
-        Position randomPosition = mapService.getRandomWalkablePosition();
-
+    public Player createPlayer(String username, Position randomPosition, Game game) {
         Player player = new Player(username, randomPosition, game);
 
         return player;
     }
 
-    public void updatePlayerPosition(Player player, Position newPosition) {
-//        System.out.println("updatePlayerPosition called in PlayerService for player: " + player.getId() + " with position: " + newPosition.getX() + ", " + newPosition.getY());
+    public void updatePlayerPosition(Player player, Position newPosition, Map map) {
         int x = newPosition.getX();
         int y = newPosition.getY();
         boolean outOfBounds =
                 (x < 0) ||
                         (y < 0) ||
-                        (y >= mapService.getMap().length) ||
-                        (x >= mapService.getMap()[0].length);
+                        (y >= map.getMap().length) ||
+                        (x >= map.getMap()[0].length);
 
-        if (mapService != null) {
-            if (!outOfBounds && mapService.isCellWalkable(x, y)) { //if true update repo otherwise do nothing
-                player.setPosition(newPosition);
-                 /*//For debugging purposes
-                List<Player> players = playerRepository.findAll();
-                System.out.println("Validation with following players:");
-                for(Player p: players) {
-                    System.out.println("Player ID: " + p.getId() + ", Username " + p.getUsername() + ", Position: " + p.getPosition().getX() + ", " + p.getPosition().getY());
-                }*/
-            }
+        if (!outOfBounds && isCellWalkable(map, x, y)) { //if true update repo otherwise do nothing
+            player.setPosition(newPosition);
         }
+    }
+
+    private boolean isCellWalkable(Map map, int x, int y) {
+        return map.getCellValue(x, y);
     }
 
     public Player setInitialRandomRole(int numPlayers, int numImpostors, Player player) {

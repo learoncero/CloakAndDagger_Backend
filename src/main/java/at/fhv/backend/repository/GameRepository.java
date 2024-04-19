@@ -1,11 +1,12 @@
 package at.fhv.backend.repository;
 
 import at.fhv.backend.model.Game;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 
-@Repository
+@Component
 public class GameRepository {
     private final HashMap<String, Game> games = new HashMap<>();
 

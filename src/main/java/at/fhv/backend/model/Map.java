@@ -1,33 +1,29 @@
 package at.fhv.backend.model;
 
-import at.fhv.backend.utils.MapLoader;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
 public class Map {
+    private static int nextId = 1;
+    private int id;
     private boolean[][] map;
+    private String name;
 
     public Map() {
     }
 
-    public boolean[][] getMap() {
-        return map;
-    }
-
-    public void setMap(boolean[][] mapArray) {
-        this.map = mapArray;
-    }
-
-    public void setMapbyPosition(int x, int y, boolean value) {
-        map[x][y] = value;
-    }
-
-    public void setInitialMap(String mapName) {
-        if (map == null) {
-            map = MapLoader.loadMapFromFile(mapName);
-        }
+    public Map(String name, boolean[][] map) {
+        this.id = nextId++;
+        this.map = map;
+        this.name = name;
     }
 
     public boolean getCellValue(int x, int y) {
         return map[y][x];
     }
-
 }
