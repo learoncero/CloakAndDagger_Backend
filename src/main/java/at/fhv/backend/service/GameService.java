@@ -55,16 +55,15 @@ public class GameService {
         if (game != null) {
             Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
             if (player != null) {
-//                System.out.println("Player to kill: " + player.getId());
                 if (player.getRole().equals(Role.CREWMATE)) {
                     player.setRole(Role.CREWMATE_GHOST);
-                    gameRepository.save(game);
-                    return game;
+
                 } else if (player.getRole().equals(Role.IMPOSTOR)) {
                     player.setRole(Role.IMPOSTOR_GHOST);
-                    gameRepository.save(game);
-                    return game;
                 }
+                game.setGameStatus(GameStatus.IMPOSTORS_WIN);
+                gameRepository.save(game);
+                return game;
             }
         }
         return null;

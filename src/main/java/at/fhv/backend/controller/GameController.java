@@ -137,13 +137,12 @@ public class GameController {
     public ResponseEntity<Game> handleKill(@Payload PlayerKillMessage playerKillMessage) {
         int playerToKillId = Integer.parseInt(playerKillMessage.getPlayerToKillId());
         String gameCode = playerKillMessage.getGameCode();
-        System.out.println("Kill Request received. GameCode: " + gameCode + " PlayerId to be killed: " + playerToKillId);
         Game game = gameService.killPlayer(gameCode, playerToKillId);
 
         if (game != null) {
             return ResponseEntity.ok().body(game);
         }
-        
+
         return ResponseEntity.notFound().build();
     }
 }
