@@ -30,7 +30,7 @@ public class Game {
         this.players = new ArrayList<>();
         this.sabotages = new ArrayList<>();
         this.gameID = nextGameID;
-        this.gameStatus = GameStatus.NOT_FINISHED;
+        this.gameStatus = GameStatus.LOBBY;
     }
 
     public Game() {

@@ -1,6 +1,7 @@
 package at.fhv.backend.service;
 
 import at.fhv.backend.model.Game;
+import at.fhv.backend.model.GameStatus;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Role;
 import at.fhv.backend.repository.GameRepository;
@@ -30,12 +31,14 @@ public class GameService {
         return gameRepository.findByGameCode(gameCode);
     }
 
-    public Game startGame(String gameCode) {
+    public boolean startGame(String gameCode) {
         Game game = gameRepository.findByGameCode(gameCode);
         if (game != null) {
+            game.setGameStatus(GameStatus.IN_GAME);
             gameRepository.save(game);
+            return true;
         }
-        return game;
+        return false;
     }
 
     public Game setGameAttributes(String gameCode, List<Player> players) {

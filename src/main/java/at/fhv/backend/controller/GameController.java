@@ -46,7 +46,7 @@ public class GameController {
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
         Game game = gameService.createGame(createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
 
-        Position randomPosition = mapService.getRandomWalkablePosition();
+        Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
         Player player = playerService.createPlayer(createGameMessage.getPlayer().getUsername(), randomPosition, game);
         // Assign roles to players (get Impostor Player Indices)
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
@@ -91,7 +91,7 @@ public class GameController {
                 return ResponseEntity.badRequest().body("Username is already taken");
             }
 
-            Position randomPosition = mapService.getRandomWalkablePosition();
+            Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
             Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game);
             game.getPlayers().add(player);
 
@@ -107,10 +107,9 @@ public class GameController {
     //Todo: handle case when game is null
     @MessageMapping("/{gameCode}/play")
     public void playGame(@DestinationVariable String gameCode) {
-        Game game = gameService.getGameByCode(gameCode);
-        if (game != null) {
+        if (gameService.startGame(gameCode)) {
             // Send the game information to the corresponding topic
-            messagingTemplate.convertAndSend("/topic/" + gameCode + "/play", game);
+            messagingTemplate.convertAndSend("/topic/" + gameCode + "/play", gameCode);
         }
     }
 

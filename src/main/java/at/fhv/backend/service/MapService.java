@@ -25,8 +25,8 @@ public class MapService {
         return mapRepository.findMapByName(mapName);
     }
 
-    public List<Position> loadWalkablePositions() throws Exception {
-        List<String> lines = Files.readAllLines(Paths.get("src/main/java/at/fhv/backend/repository/spaceship.txt"));
+    public List<Position> loadWalkablePositions(String mapName) throws Exception {
+        List<String> lines = Files.readAllLines(Paths.get("src/main/java/at/fhv/backend/repository/" + mapName + ".txt"));
         List<Position> walkablePositions = new ArrayList<>();
 
         for (int y = 0; y < lines.size(); y++) {
@@ -40,8 +40,8 @@ public class MapService {
         return walkablePositions;
     }
 
-    public Position getRandomWalkablePosition() throws Exception {
-        List<Position> walkablePositions = loadWalkablePositions();
+    public Position getRandomWalkablePosition(String mapName) throws Exception {
+        List<Position> walkablePositions = loadWalkablePositions(mapName);
         if (!walkablePositions.isEmpty()) {
             Random random = new Random();
             return walkablePositions.get(random.nextInt(walkablePositions.size()));
