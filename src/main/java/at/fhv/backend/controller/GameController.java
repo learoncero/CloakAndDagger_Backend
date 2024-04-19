@@ -1,5 +1,6 @@
 package at.fhv.backend.controller;
 
+import at.fhv.backend.model.ApiResponse;
 import at.fhv.backend.model.Game;
 import at.fhv.backend.model.Player;
 import at.fhv.backend.model.Position;
@@ -59,36 +60,39 @@ public class GameController {
     }
 
     @PostMapping("/game/join/{playerName}")
-    public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage, @PathVariable String playerName) {
+    public ResponseEntity<?> joinGame(@RequestBody PlayerJoinMessage joinMessage, @PathVariable String playerName) {
         if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
-            return ResponseEntity.badRequest().body("Invalid join message");
+            System.out.println("Invalid join message");
+            return ResponseEntity.badRequest().body(new ApiResponse<>(400, "Invalid join message", null));
         }
 
         try {
             Game game = gameService.getGameByCode(joinMessage.getGameCode());
 
             if (game == null) {
+                System.out.println("Game not found");
                 return ResponseEntity.notFound().build();
             }
 
             if (game.getPlayers().size() >= game.getNumberOfPlayers()) {
-                return ResponseEntity.badRequest().body("Game lobby is full");
+                System.out.println("Game lobby is full");
+                return ResponseEntity.badRequest().body(new ApiResponse<>(400, "Game lobby is full", null));
             }
 
             if (game.getPlayers().stream().anyMatch(p -> p.getUsername().equals(joinMessage.getUsername()))) {
-                return ResponseEntity.badRequest().body("Username is already taken");
+                System.out.println("Username is already taken");
+                return ResponseEntity.badRequest().body(new ApiResponse<>(400, "Username is already taken", null));
             }
 
             Player player = playerService.createPlayer(joinMessage.getUsername(), game);
             game.getPlayers().add(player);
-//            System.out.println("Player " + joinMessage.getUsername() + " joined game with code: " + joinMessage.getGameCode() + " and Player ID: " + player.getId());
 
             //Assign roles randomly to players
             game.setPlayers(playerService.setRandomRole(game.getPlayers()));
-            return ResponseEntity.ok()
-                    .body(game);
+            return ResponseEntity.ok().body(game);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating player: " + e.getMessage());
+            System.out.println("Error creating player: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(500, "Error creating player: " + e.getMessage(), null));
         }
     }
 
@@ -117,29 +121,29 @@ public class GameController {
 
     @MessageMapping("/move")
     @SendTo("/topic/positionChange")
-    public Game movePlayer(@Payload PlayerMoveMessage playerMoveMessage) {
+    public ResponseEntity<Game> movePlayer(@Payload PlayerMoveMessage playerMoveMessage) {
         int playerId = playerMoveMessage.getId();
         Game game = gameService.getGameByCode(playerMoveMessage.getGameCode());
         Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
 
         if (player != null) {
-            Position newPosition = playerMoveMessage.getPosition();
+            Position newPosition = playerService.calculateNewPosition(player.getPosition(), playerMoveMessage.getKeyCode());
             playerService.updatePlayerPosition(player, newPosition);
-
-            return game;
+            return ResponseEntity.ok().body(game);
         }
 
-        return null;
+        return ResponseEntity.notFound().build();
     }
 
     @MessageMapping("/game/kill")
+    @SendTo("/topic/playerKill")
     public ResponseEntity<Game> handleKill(@Payload PlayerKillMessage playerKillMessage) {
         int playerToKillId = Integer.parseInt(playerKillMessage.getPlayerToKillId());
         String gameCode = playerKillMessage.getGameCode();
         System.out.println("Kill Request received. GameCode: " + gameCode + " PlayerId to be killed: " + playerToKillId);
         Game game = gameService.killPlayer(gameCode, playerToKillId);
         if (game != null) {
-            messagingTemplate.convertAndSend("/topic/"+gameCode + "/kill/" + playerToKillId, game);
+            return ResponseEntity.ok().body(game);
         }
         return ResponseEntity.notFound().build();
     }
