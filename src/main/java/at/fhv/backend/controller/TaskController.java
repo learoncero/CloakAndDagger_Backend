@@ -7,6 +7,7 @@ import at.fhv.backend.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,5 +33,12 @@ public class TaskController {
 
         System.out.println("Current sum: " + taskService.getCurrentSum());
         return ResponseEntity.ok(taskService.getCurrentSum());
+    }
+
+    @GetMapping("/task/passcode/random")
+    public ResponseEntity<Integer> getRandomSum() {
+        int randomValue = taskService.generateRandomSum();
+        System.out.println("Random value: " + randomValue);
+        return ResponseEntity.ok(randomValue);
     }
 }

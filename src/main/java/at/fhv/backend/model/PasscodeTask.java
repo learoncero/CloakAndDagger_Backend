@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 @Setter
 public class PasscodeTask {
     private int currentSum;
+    private int randomSum;
 
     public PasscodeTask() {
         this.currentSum = 0;
+        this.randomSum = 0;
     }
 }
