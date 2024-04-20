@@ -5,11 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 public class RandomRoleAssigner {
-    public static List<Integer> impostors = new ArrayList<>();
 
     public static List<Integer> assignRandomRoles(int numPlayers, int numImpostors) {
         Random random = new Random();
-
+        List<Integer> impostors = new ArrayList<>();
         //fill impostors list with random Indices for players to be impostors
         while (impostors.size() < numImpostors) {
             int randomIndex = random.nextInt(numPlayers);
@@ -19,9 +18,4 @@ public class RandomRoleAssigner {
         }
         return impostors;
     }
-
-    public static List<Integer> getImpostorsIndices() {
-        return impostors;
-    }
-
 }
