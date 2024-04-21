@@ -2,7 +2,8 @@ name: Run Tests
 
 on:
   schedule:
-    - cron:  '30 5,17 * * *' # Runs at 5:30 AM and 5:30 PM UTC time (adjust according to your timezone)
+    - cron: '30 5,17 * * *' # Runs at 5:30 AM and 5:30 PM UTC time (adjust according to your timezone)
+  workflow_dispatch:  # This trigger allows manual execution of the workflow
 
 jobs:
   my_job:
@@ -10,12 +11,12 @@ jobs:
     runs-on: self-hosted
     
     steps:
-    - uses: actions/checkout@v1
-    - name: Build with Maven
-      run: |
-        chmod u+x mvnw
-        ./mvnw compile
-    - name: Test with Maven
-      run: |
-        chmod u+x mvnw
-        ./mvnw test
+      - uses: actions/checkout@v1
+      - name: Build with Maven
+        run: |
+          chmod u+x mvnw
+          ./mvnw compile
+      - name: Test with Maven
+        run: |
+          chmod u+x mvnw
+          ./mvnw test
