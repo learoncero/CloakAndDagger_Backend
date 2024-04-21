@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
-public class TaskService {
+public class PasscodeTaskService {
     private final PasscodeTask passcodeTask;
     private Integer randomSum;
 
     @Autowired
-    public TaskService(PasscodeTask passcodeTask) {
+    public PasscodeTaskService(PasscodeTask passcodeTask) {
         this.passcodeTask = passcodeTask;
         this.randomSum = passcodeTask.getRandomSum();
     }
@@ -21,7 +21,7 @@ public class TaskService {
         passcodeTask.setCurrentSum(passcodeTask.getCurrentSum() + value);
     }
 
-    public Integer getCurrentSum() {
+    public int getCurrentSum() {
         return passcodeTask.getCurrentSum();
     }
 
@@ -34,5 +34,17 @@ public class TaskService {
 
     public void resetSum() {
         passcodeTask.setCurrentSum(0);
+    }
+
+    public int getRandomSum() {
+        return randomSum;
+    }
+
+    public void setTaskDone(boolean taskDone) {
+        passcodeTask.setTaskDone(taskDone);
+    }
+
+    public boolean isTaskDone() {
+        return passcodeTask.isTaskDone();
     }
 }
