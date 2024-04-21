@@ -19,7 +19,6 @@ public class TaskService {
 
     public void addToSum(int value) {
         passcodeTask.setCurrentSum(passcodeTask.getCurrentSum() + value);
-        System.out.println("Current sum: " + passcodeTask.getCurrentSum());
     }
 
     public Integer getCurrentSum() {
@@ -31,5 +30,9 @@ public class TaskService {
             randomSum = ThreadLocalRandom.current().nextInt(1, 51);
         }
         return randomSum;
+    }
+
+    public void resetSum() {
+        passcodeTask.setCurrentSum(0);
     }
 }

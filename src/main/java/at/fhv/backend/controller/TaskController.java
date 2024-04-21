@@ -41,4 +41,10 @@ public class TaskController {
         System.out.println("Random value: " + randomValue);
         return ResponseEntity.ok(randomValue);
     }
+
+    @PostMapping("/task/passcode/reset")
+    public ResponseEntity<Integer> resetSum() {
+        taskService.resetSum();
+        return ResponseEntity.ok(taskService.getCurrentSum());
+    }
 }
