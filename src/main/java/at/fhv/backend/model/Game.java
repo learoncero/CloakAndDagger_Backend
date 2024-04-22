@@ -21,6 +21,7 @@ public class Game {
     private List<Sabotage> sabotages;
     private int gameID;
     private GameStatus gameStatus;
+    private List<Integer> reportedBodies;
 
     public Game(int numberOfPlayers, int numberOfImpostors, String map) {
         this.gameCode = GameCodeGenerator.generateGameCode();
@@ -31,6 +32,7 @@ public class Game {
         this.sabotages = new ArrayList<>();
         this.gameID = nextGameID;
         this.gameStatus = GameStatus.LOBBY;
+        this.reportedBodies = new ArrayList<>();
     }
 
     public Game() {

@@ -70,4 +70,15 @@ public class GameService {
         }
         return null;
     }
+
+    public Game reportBody(String gameCode, int bodyToReportId) {
+        Game game = gameRepository.findByGameCode(gameCode);
+        if (game != null) {
+            Player bodyToReport = game.getPlayers().stream().filter(p -> p.getId() == bodyToReportId).findFirst().orElse(null);
+            if (bodyToReport != null) {
+                game.getReportedBodies().add(bodyToReport.getId());
+            }
+        }
+        return game;
+    }
 }

@@ -1,10 +1,7 @@
 package at.fhv.backend.controller;
 
 import at.fhv.backend.model.*;
-import at.fhv.backend.model.messages.CreateGameMessage;
-import at.fhv.backend.model.messages.PlayerJoinMessage;
-import at.fhv.backend.model.messages.PlayerKillMessage;
-import at.fhv.backend.model.messages.PlayerMoveMessage;
+import at.fhv.backend.model.messages.*;
 import at.fhv.backend.service.GameService;
 import at.fhv.backend.service.MapService;
 import at.fhv.backend.service.PlayerService;
@@ -138,6 +135,20 @@ public class GameController {
         int playerToKillId = Integer.parseInt(playerKillMessage.getPlayerToKillId());
         String gameCode = playerKillMessage.getGameCode();
         Game game = gameService.killPlayer(gameCode, playerToKillId);
+
+        if (game != null) {
+            return ResponseEntity.ok().body(game);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @MessageMapping("/game/report")
+    @SendTo("/topic/bodyReport")
+    public ResponseEntity<Game> handleReportBody(@Payload BodyReportMessage bodyReportMessage) {
+        int bodyToReportId = Integer.parseInt(bodyReportMessage.getBodyToReportId());
+        String gameCode = bodyReportMessage.getGameCode();
+        Game game = gameService.reportBody(gameCode, bodyToReportId);
 
         if (game != null) {
             return ResponseEntity.ok().body(game);
