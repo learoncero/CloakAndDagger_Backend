@@ -18,8 +18,8 @@
     <description>Backend for AmongUs_Replica</description>
 
     <modules>
-        <module>GameMS</module>
-        <module>ChatMS</module>
+        <module>Game</module>
+        <module>Chat</module>
     </modules>
 
     <properties>

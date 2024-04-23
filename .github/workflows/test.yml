@@ -1,0 +1,23 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch:  # This trigger allows manual execution of the workflow
+
+jobs:
+  my_job:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build with Maven
+        run: |
+          chmod u+x mvnw
+          ./mvnw compile
+      - name: Test with Maven
+        run: |
+          chmod u+x mvnw
+          ./mvnw test
