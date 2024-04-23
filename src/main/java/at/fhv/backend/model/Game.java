@@ -1,9 +1,11 @@
 package at.fhv.backend.model;
 
+import at.fhv.backend.repository.PasscodeTaskRepository;
 import at.fhv.backend.utils.GameCodeGenerator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.scheduling.config.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ public class Game {
     private int numberOfImpostors;
     private String map;
     private List<Player> players;
+    private PasscodeTask passcodeTask;
     private List<Sabotage> sabotages;
     private int gameID;
     private GameStatus gameStatus;
@@ -28,6 +31,7 @@ public class Game {
         this.numberOfImpostors = numberOfImpostors;
         this.map = map;
         this.players = new ArrayList<>();
+        this.passcodeTask = new PasscodeTask();
         this.sabotages = new ArrayList<>();
         this.gameID = nextGameID;
         this.gameStatus = GameStatus.LOBBY;

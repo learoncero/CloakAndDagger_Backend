@@ -5,10 +5,7 @@ import at.fhv.backend.model.messages.CreateGameMessage;
 import at.fhv.backend.model.messages.PlayerJoinMessage;
 import at.fhv.backend.model.messages.PlayerKillMessage;
 import at.fhv.backend.model.messages.PlayerMoveMessage;
-import at.fhv.backend.service.GameService;
-import at.fhv.backend.service.MapService;
-import at.fhv.backend.service.PlayerService;
-import at.fhv.backend.service.SabotageService;
+import at.fhv.backend.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +22,16 @@ import org.springframework.web.bind.annotation.*;
 public class GameController {
     private final GameService gameService;
     private final PlayerService playerService;
+    private final PasscodeTaskService passcodeTaskService;
     private final SabotageService sabotageService;
     private final SimpMessagingTemplate messagingTemplate;
     private final MapService mapService;
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerservice, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
+    public GameController(GameService gameService, PlayerService playerservice, PasscodeTaskService passcodeTaskService, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
         this.gameService = gameService;
         this.playerService = playerservice;
+        this.passcodeTaskService = passcodeTaskService;
         this.sabotageService = sabotageService;
         this.messagingTemplate = messagingTemplate;
         this.mapService = mapService;
@@ -48,6 +47,11 @@ public class GameController {
         // Assign roles to players (get Impostor Player Indices)
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
+
+        // Check if (passcode) task(s) have already been added
+        if (game.getPasscodeTask() == null) {
+            passcodeTaskService.addTasksToGame(game);
+        }
 
         // Check if sabotages have already been added
         if (game.getSabotages() == null || game.getSabotages().isEmpty()) {

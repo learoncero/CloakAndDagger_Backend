@@ -1,20 +1,26 @@
 package at.fhv.backend.service;
 
+import at.fhv.backend.model.Game;
 import at.fhv.backend.model.PasscodeTask;
+import at.fhv.backend.repository.PasscodeTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class PasscodeTaskService {
     private final PasscodeTask passcodeTask;
     private Integer randomSum;
+    private final PasscodeTaskRepository passcodeTaskRepository;
 
     @Autowired
-    public PasscodeTaskService(PasscodeTask passcodeTask) {
+    public PasscodeTaskService(PasscodeTask passcodeTask, PasscodeTaskRepository passcodeTaskRepository) {
         this.passcodeTask = passcodeTask;
         this.randomSum = passcodeTask.getRandomSum();
+        this.passcodeTaskRepository = passcodeTaskRepository;
     }
 
     public void addToSum(int value) {
@@ -46,5 +52,13 @@ public class PasscodeTaskService {
 
     public boolean isTaskDone() {
         return passcodeTask.isTaskDone();
+    }
+
+    public void addTasksToGame(Game game) {
+        game.setPasscodeTask(getAllTasks());
+    }
+
+    private PasscodeTask getAllTasks() {
+        return passcodeTaskRepository.getAllTasks();
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @Setter
-public class PasscodeTask {
+public class PasscodeTask extends Task {
     private int currentSum;
     private int randomSum;
     private boolean taskDone;
