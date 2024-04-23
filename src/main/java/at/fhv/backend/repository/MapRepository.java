@@ -26,15 +26,15 @@ public class MapRepository {
     }
 
     private void initializeMaps() {
-        boolean[][] spaceshipMapArray = MapLoader.loadMapFromFile("Spaceship");
+        char[][] spaceshipMapArray = MapLoader.loadMapFromFile("Spaceship");
         Map spaceshipMap = new Map("Spaceship", spaceshipMapArray);
         maps.add(spaceshipMap);
 
-        boolean[][] devMap1Array = MapLoader.loadMapFromFile("DevMap1");
+        char[][] devMap1Array = MapLoader.loadMapFromFile("DevMap1");
         Map devMap1 = new Map("DevMap1", devMap1Array);
         maps.add(devMap1);
 
-        boolean[][] devMap2Array = MapLoader.loadMapFromFile("DevMap2");
+        char[][] devMap2Array = MapLoader.loadMapFromFile("DevMap2");
         Map devMap2 = new Map("DevMap2", devMap2Array);
         maps.add(devMap2);
     }
