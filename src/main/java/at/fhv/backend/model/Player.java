@@ -7,6 +7,8 @@ public class Player {
     private Position position;
     private Game game;
     private Role role;
+    private boolean isMirrored;
+    private boolean isMoving;
 
     public Player(String username, Position position, Game game) {
         this.id = idCounter++;
@@ -14,6 +16,8 @@ public class Player {
         this.position = position;
         this.game = game;
         this.role = Role.CREWMATE;
+        this.isMirrored = false;
+        this.isMoving = false;
     }
 
     public Player(String username, Position position) {
@@ -22,6 +26,8 @@ public class Player {
         this.position = position;
         this.game = new Game();
         this.role = Role.CREWMATE;
+        this.isMirrored = false;
+        this.isMoving = false;
     }
 
     public Player() {
@@ -57,5 +63,18 @@ public class Player {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+    public boolean isMirrored() {
+        return isMirrored;
+    }
+    public void setMirrored(boolean mirrored) {
+        this.isMirrored = mirrored;
+    }
+
+    public boolean isMoving() {
+        return isMoving;
+    }
+    public void setMoving(boolean moving) {
+        this.isMoving = moving;
     }
 }

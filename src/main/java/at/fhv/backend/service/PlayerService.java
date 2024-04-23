@@ -82,4 +82,19 @@ public class PlayerService {
         int newY = currentPosition.getY() + deltaY;
         return new Position(newX, newY);
     }
+
+    public void updatePlayerMirrored(Player player , boolean isMirrored) {
+        if (player != null) {
+            player.setMirrored(isMirrored);
+
+
+        }
+    }
+    public void updatePlayerisMoving(Player player , boolean isMoving) {
+        if (player != null) {
+            player.setMoving(isMoving);
+
+
+        }
+    }
 }

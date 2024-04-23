@@ -17,8 +17,11 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/api")
@@ -126,6 +129,9 @@ public class GameController {
             Map map = mapService.getMapByName(game.getMap());
             playerService.updatePlayerPosition(player, newPosition, map);
 
+            playerService.updatePlayerMirrored(player, playerMoveMessage.isMirrored());
+            playerService.updatePlayerisMoving(player, playerMoveMessage.isMoving());
+            gameService.updatePlayerActivity(player.getId(), game.getGameCode());
             return ResponseEntity.ok().body(game);
         }
 
@@ -144,5 +150,23 @@ public class GameController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+    @Scheduled(fixedRate = 1000)
+    public void handleInactivity() {
+        List<PlayerMoveMessage> inactiveMessages = gameService.checkInactivity();
+        inactiveMessages.forEach(message -> {
+            int playerId = message.getId();
+            Game updatedGame = gameService.getGameByCode(message.getGameCode());
+            Player player = updatedGame.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
+            if (updatedGame != null) {
+
+                playerService.updatePlayerisMoving(player, message.isMoving());
+
+
+                messagingTemplate.convertAndSend("/topic/IdleChange",ResponseEntity.ok().body(updatedGame));
+
+
+            }
+        });
     }
 }
