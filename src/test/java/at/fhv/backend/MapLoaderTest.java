@@ -15,14 +15,17 @@ public class MapLoaderTest {
     public void testLoadMapFromFile() {
         // Prepare a temporary test file
         String testMapFileName = "testmap";
-        String testMapContent = ".#..\n" +
-                "..#.\n" +
-                "....";
+        String testMapContent =             //textblock instead of concatenation
+                                """
+                                .#..
+                                ..#.
+                                ..T.
+                                """;
         String testMapFilePath = "src/main/java/at/fhv/backend/repository/" + testMapFileName + ".txt";
         createTestMapFile(testMapFilePath, testMapContent);
 
         // Load the map from the test file
-        boolean[][] loadedMap = MapLoader.loadMapFromFile(testMapFileName);
+        char[][] loadedMap = MapLoader.loadMapFromFile(testMapFileName);
 
         // Check if the loaded map is not null
         assertNotNull(loadedMap);
@@ -32,18 +35,18 @@ public class MapLoaderTest {
         assertEquals(4, loadedMap[0].length);
 
         // Check specific cells to ensure correct loading
-        assertTrue(loadedMap[0][0]); // Should be walkable
-        assertFalse(loadedMap[0][1]); // Should not be walkable
-        assertTrue(loadedMap[0][2]); // Should not be walkable
-        assertTrue(loadedMap[0][3]); // Should be walkable
-        assertTrue(loadedMap[1][0]); // Should not be walkable
-        assertTrue(loadedMap[1][1]); // Should not be walkable
-        assertFalse(loadedMap[1][2]); // Should be walkable
-        assertTrue(loadedMap[1][3]); // Should not be walkable
-        assertTrue(loadedMap[2][0]); // Should not be walkable
-        assertTrue(loadedMap[2][1]); // Should not be walkable
-        assertTrue(loadedMap[2][2]); // Should not be walkable
-        assertTrue(loadedMap[2][3]); // Should not be walkable
+        assertEquals('.', loadedMap[0][0]); // Should be walkable
+        assertEquals('#', loadedMap[0][1]); // Should not be walkable
+        assertEquals('.', loadedMap[0][2]); // Should not be walkable
+        assertEquals('.', loadedMap[0][3]); // Should be walkable
+        assertEquals('.', loadedMap[1][0]); // Should not be walkable
+        assertEquals('.', loadedMap[1][1]); // Should not be walkable
+        assertEquals('#', loadedMap[1][2]); // Should be walkable
+        assertEquals('.', loadedMap[1][3]); // Should not be walkable
+        assertEquals('.', loadedMap[2][0]); // Should not be walkable
+        assertEquals('.', loadedMap[2][1]); // Should not be walkable
+        assertEquals('T', loadedMap[2][2]); // Should not be walkable
+        assertEquals('.', loadedMap[2][3]); // Should not be walkable
 
         // Clean up the test file
         deleteTestMapFile(testMapFilePath);
