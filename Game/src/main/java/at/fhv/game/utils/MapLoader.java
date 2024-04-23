@@ -10,8 +10,8 @@ import java.util.Scanner;
 public class MapLoader {
     private static final String pathForMap = "Game/src/main/java/at/fhv/game/repository/";
 
-    public static boolean[][] loadMapFromFile(String map) {
-        boolean[][] walkableCells = null;
+    public static char[][] loadMapFromFile(String map) {
+        char[][] mapCells = null;
         String newPathForMap = pathForMap + map.toLowerCase() + ".txt";
         try (Scanner scanner = new Scanner(new File(newPathForMap))) {
             int rows = 0;
@@ -22,14 +22,14 @@ public class MapLoader {
                 cols = Math.max(cols, line.length());
                 //System.out.println("Rows: "+rows+" Cols: "+cols);
             }
-            walkableCells = new boolean[rows][cols];
-            try (Scanner booleanchecker = new Scanner(new File(newPathForMap))) {
+            mapCells = new char[rows][cols];
+            try(Scanner mapScanner = new Scanner(new File(newPathForMap))){
                 int row = 0;
-                while (booleanchecker.hasNextLine()) {
-                    String line = booleanchecker.nextLine();
+                while (mapScanner.hasNextLine()) {
+                    String line = mapScanner.nextLine();
                     //System.out.println("Line: "+line);
                     for (int col = 0; col < line.length(); col++) {
-                        walkableCells[row][col] = line.charAt(col) == '.';
+                        mapCells[row][col] = line.charAt(col);
                     }
                     row++;
                 }
@@ -40,6 +40,6 @@ public class MapLoader {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return walkableCells;
+        return mapCells;
     }//TODO printStackTrace causes warning: probably should be replaced with more robust logging
 }
