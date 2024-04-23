@@ -10,10 +10,15 @@ public class PlayerMoveMessage {
     private int id;
     private String keyCode;
     private String gameCode;
+    private boolean isMirrored;
+    private boolean isMoving;
 
-    public PlayerMoveMessage(int id, String keyCode, String gameCode) {
+
+    public PlayerMoveMessage(int id, String keyCode, String gameCode, boolean Mirrored, boolean isMoving) {
         this.id = id;
         this.keyCode = keyCode;
         this.gameCode = gameCode;
+        this.isMirrored = Mirrored;
+        this.isMoving = isMoving;
     }
 }
