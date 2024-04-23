@@ -1,8 +1,9 @@
 name: Run Tests
 
 on:
-  schedule:
-    - cron: '30 5,17 * * *' # Runs at 5:30 AM and 5:30 PM UTC time (adjust according to your timezone)
+  pull_request:
+    branches:
+    - main
   workflow_dispatch:  # This trigger allows manual execution of the workflow
 
 jobs:
