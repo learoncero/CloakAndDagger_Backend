@@ -8,8 +8,6 @@ import at.fhv.backend.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class GameService {
     private final GameRepository gameRepository;
@@ -41,15 +39,6 @@ public class GameService {
         return false;
     }
 
-    public Game setGameAttributes(String gameCode, List<Player> players) {
-        Game game = gameRepository.findByGameCode(gameCode);
-        if (game != null) {
-            game.setPlayers(players);
-            gameRepository.save(game);
-        }
-        return game;
-    }
-
     public Game killPlayer(String gameCode, int playerId) {
         Game game = gameRepository.findByGameCode(gameCode);
         if (game != null) {
@@ -65,9 +54,8 @@ public class GameService {
                     game.setGameStatus(GameStatus.IMPOSTORS_WIN);
                 }
                 gameRepository.save(game);
-                return game;
             }
         }
-        return null;
+        return game;
     }
 }
