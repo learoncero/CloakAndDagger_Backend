@@ -8,7 +8,7 @@
  * Last Update:          25/03/2024
  */
 
-package at.fhv.chat.controller;
+package at.fhv.chat;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

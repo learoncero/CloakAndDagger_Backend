@@ -1,4 +1,4 @@
-package at.fhv.chat.controller;
+package at.fhv.chat;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
