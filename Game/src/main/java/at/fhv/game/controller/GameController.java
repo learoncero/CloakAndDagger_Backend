@@ -2,10 +2,7 @@ package at.fhv.game.controller;
 
 import at.fhv.game.model.*;
 import at.fhv.game.model.messages.*;
-import at.fhv.game.service.GameService;
-import at.fhv.game.service.MapService;
-import at.fhv.game.service.PlayerService;
-import at.fhv.game.service.SabotageService;
+import at.fhv.game.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +22,16 @@ import java.util.List;
 public class GameController {
     private final GameService gameService;
     private final PlayerService playerService;
+    private final TaskService taskService;
     private final SabotageService sabotageService;
     private final SimpMessagingTemplate messagingTemplate;
     private final MapService mapService;
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerservice, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
+    public GameController(GameService gameService, PlayerService playerservice, TaskService taskService, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
         this.gameService = gameService;
         this.playerService = playerservice;
+        this.taskService = taskService;
         this.sabotageService = sabotageService;
         this.messagingTemplate = messagingTemplate;
         this.mapService = mapService;
@@ -41,13 +40,21 @@ public class GameController {
 
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
+        //Create game
         Game game = gameService.createGame(createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
 
+        //Create player, assign random position and role
         Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
         Player player = playerService.createPlayer(createGameMessage.getPlayer().getUsername(), randomPosition, game);
-        // Assign roles to players (get Impostor Player Indices)
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
+
+        //Get tasks, add Position and assign to game
+        List<Position> taskPositions = mapService.getTaskPositions(game.getMap());
+        List<Task> tasks = taskService.getAllTasks();
+        if (tasks != null || taskPositions != null) {
+            taskService.addTasksToGame(game, tasks, taskPositions);
+        }
 
         // Check if sabotages have already been added
         if (game.getSabotages() == null || game.getSabotages().isEmpty()) {
