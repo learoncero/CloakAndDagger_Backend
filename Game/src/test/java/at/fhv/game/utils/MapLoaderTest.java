@@ -1,13 +1,13 @@
-package at.fhv.game;
+package at.fhv.game.utils;
 
-import at.fhv.game.utils.MapLoader;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class MapLoaderTest {
 
@@ -15,13 +15,13 @@ public class MapLoaderTest {
     public void testLoadMapFromFile() {
         // Prepare a temporary test file
         String testMapFileName = "testmap";
-        String testMapContent =             //textblock instead of concatenation
-                                """
-                                .#..
-                                ..#.
-                                ..T.
-                                """;
-        String testMapFilePath = "src/main/java/at/fhv/backend/repository/" + testMapFileName + ".txt";
+        String testMapContent =
+                """
+                        .#..
+                        ..#.
+                        ..T.
+                        """;
+        String testMapFilePath = "Game/src/main/java/at/fhv/game/repository/" + testMapFileName + ".txt";
         createTestMapFile(testMapFilePath, testMapContent);
 
         // Load the map from the test file
@@ -59,6 +59,7 @@ public class MapLoaderTest {
             writer.write(content);
             writer.close();
         } catch (IOException e) {
+            System.err.println("Error creating FileWriter:");
             e.printStackTrace();
         }
     }
