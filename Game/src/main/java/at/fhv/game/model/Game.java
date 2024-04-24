@@ -1,7 +1,6 @@
 package at.fhv.game.model;
 
 import at.fhv.game.utils.GameCodeGenerator;
-import at.fhv.game.repository.PasscodeTaskRepository;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,7 +18,7 @@ public class Game {
     private int numberOfImpostors;
     private String map;
     private List<Player> players;
-    private PasscodeTask passcodeTask;
+    private List<Task> tasks;
     private List<Sabotage> sabotages;
     private int gameID;
     private GameStatus gameStatus;
@@ -31,7 +30,7 @@ public class Game {
         this.numberOfImpostors = numberOfImpostors;
         this.map = map;
         this.players = new ArrayList<>();
-        this.passcodeTask = new PasscodeTask();
+        this.tasks = new ArrayList<>();
         this.sabotages = new ArrayList<>();
         this.gameID = nextGameID;
         this.gameStatus = GameStatus.LOBBY;

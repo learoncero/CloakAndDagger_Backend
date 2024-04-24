@@ -6,7 +6,7 @@ import at.fhv.game.service.GameService;
 import at.fhv.game.service.MapService;
 import at.fhv.game.service.PlayerService;
 import at.fhv.game.service.SabotageService;
-import at.fhv.game.service.PasscodeTaskService;
+import at.fhv.game.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,16 +26,16 @@ import java.util.List;
 public class GameController {
     private final GameService gameService;
     private final PlayerService playerService;
-    private final PasscodeTaskService passcodeTaskService;
+    private final TaskService taskService;
     private final SabotageService sabotageService;
     private final SimpMessagingTemplate messagingTemplate;
     private final MapService mapService;
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerservice, PasscodeTaskService passcodeTaskService, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
+    public GameController(GameService gameService, PlayerService playerservice, TaskService taskService, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
         this.gameService = gameService;
         this.playerService = playerservice;
-        this.passcodeTaskService = passcodeTaskService;
+        this.taskService = taskService;
         this.sabotageService = sabotageService;
         this.messagingTemplate = messagingTemplate;
         this.mapService = mapService;
@@ -52,9 +52,9 @@ public class GameController {
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
 
-        // Check if (passcode) task(s) have already been added
-        if (game.getPasscodeTask() == null) {
-            passcodeTaskService.addTasksToGame(game);
+        // Check if tasks have already been added
+        if (game.getTasks() == null) {
+            taskService.addTasksToGame(game);
         }
 
         // Check if sabotages have already been added
