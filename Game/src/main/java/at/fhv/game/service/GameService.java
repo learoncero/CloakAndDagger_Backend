@@ -112,4 +112,15 @@ public class GameService {
         }
         return game;
     }
+
+    public Game sabotage(String gameCode, int sabotageId, Position position) {
+        Game game = gameRepository.findByGameCode(gameCode);
+        if (game != null) {
+            Sabotage sabotage = game.getSabotages().stream().findFirst().filter(s -> s.getId() == sabotageId).orElse(null);
+            if (sabotage != null) {
+                sabotage.setPosition(position);
+            }
+        }
+        return game;
+    }
 }
