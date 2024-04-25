@@ -32,7 +32,7 @@ public class PasscodeTaskController {
         int currentValue = passcodeTaskMessage.getValue();
         passcodeTaskService.addToSum(currentValue, gameCode);
         int currentSum = passcodeTaskService.getCurrentSum(gameCode);
-        int randomSum = passcodeTaskService.getRandomSum();
+        int randomSum = passcodeTaskService.getRandomSum(gameCode);
 
         if (currentSum == randomSum) {
             passcodeTaskService.setTaskDone(true);

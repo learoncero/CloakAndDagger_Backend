@@ -57,8 +57,9 @@ public class PasscodeTaskService {
         }
     }
 
-    public int getRandomSum() {
-        return randomSum;
+    public int getRandomSum(String gameCode) {
+        PasscodeTask task = passcodeTaskRepository.getFirstTaskForGame(gameCode);
+        return task != null ? task.getRandomSum() : 0;
     }
 
     public void setTaskDone(boolean taskDone) {
