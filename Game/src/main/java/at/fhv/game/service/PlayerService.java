@@ -36,7 +36,7 @@ public class PlayerService {
     }
 
     private boolean isCellWalkable(Map map, int x, int y) {
-        return map.getCellValue(x, y) != '#';
+        return map.getCellValue(x, y) == '.';
     }
 
     public Player setInitialRandomRole(int numPlayers, int numImpostors, Player player) {
