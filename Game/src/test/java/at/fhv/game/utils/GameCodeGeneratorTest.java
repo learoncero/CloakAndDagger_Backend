@@ -1,6 +1,5 @@
-package at.fhv.game;
+package at.fhv.game.utils;
 
-import at.fhv.game.utils.GameCodeGenerator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
