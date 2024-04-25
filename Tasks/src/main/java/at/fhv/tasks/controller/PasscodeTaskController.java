@@ -5,10 +5,7 @@ import at.fhv.tasks.service.PasscodeTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/api")
@@ -20,41 +17,47 @@ public class PasscodeTaskController {
         this.passcodeTaskService = passcodeTaskService;
     }
 
-    @PostMapping("/task/passcode/add")
-    public ResponseEntity<Integer> addToSum(@RequestBody PasscodeTaskMessage passcodeTaskMessage) {
-        if (passcodeTaskService.isTaskDone()) {
-            return ResponseEntity.ok(passcodeTaskService.getCurrentSum());
+    @PostMapping("/task/passcode/create")
+    public ResponseEntity<Void> createTasksForGame(@RequestParam String gameCode) {
+        passcodeTaskService.createTasksForGame(gameCode);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/task/{gameCode}/passcode/add")
+    public ResponseEntity<Integer> addToSum(@RequestBody PasscodeTaskMessage passcodeTaskMessage, @PathVariable String gameCode) {
+        if (passcodeTaskService.isTaskDone(gameCode)) {
+            return ResponseEntity.ok(passcodeTaskService.getCurrentSum(gameCode));
         }
 
         int currentValue = passcodeTaskMessage.getValue();
-        passcodeTaskService.addToSum(currentValue);
-        int currentSum = passcodeTaskService.getCurrentSum();
+        passcodeTaskService.addToSum(currentValue, gameCode);
+        int currentSum = passcodeTaskService.getCurrentSum(gameCode);
         int randomSum = passcodeTaskService.getRandomSum();
 
         if (currentSum == randomSum) {
             passcodeTaskService.setTaskDone(true);
             System.out.println("Task done");
         } else if (currentSum > randomSum) {
-            passcodeTaskService.resetSum();
+            passcodeTaskService.resetSum(gameCode);
         }
 
         return ResponseEntity.ok(currentSum);
     }
 
-    @GetMapping("/task/passcode/random")
-    public ResponseEntity<Integer> getRandomSum() {
-        int randomValue = passcodeTaskService.generateRandomSum();
+    @GetMapping("/task/{gameCode}/passcode/random")
+    public ResponseEntity<Integer> getRandomSum(@PathVariable String gameCode) {
+        int randomValue = passcodeTaskService.generateRandomSum(gameCode);
         System.out.println("Random value: " + randomValue);
         return ResponseEntity.ok(randomValue);
     }
 
-    @PostMapping("/task/passcode/reset")
-    public ResponseEntity<Integer> resetSum() {
-        if (passcodeTaskService.isTaskDone()) {
+    @PostMapping("/task/{gameCode}/passcode/reset")
+    public ResponseEntity<Integer> resetSum(@PathVariable String gameCode) {
+        if (passcodeTaskService.isTaskDone(gameCode)) {
             return ResponseEntity.badRequest().build();
         }
 
-        passcodeTaskService.resetSum();
-        return ResponseEntity.ok(passcodeTaskService.getCurrentSum());
+        passcodeTaskService.resetSum(gameCode);
+        return ResponseEntity.ok(passcodeTaskService.getCurrentSum(gameCode));
     }
 }

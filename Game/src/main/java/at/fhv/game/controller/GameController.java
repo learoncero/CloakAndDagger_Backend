@@ -30,6 +30,7 @@ public class GameController {
     private final SabotageService sabotageService;
     private final SimpMessagingTemplate messagingTemplate;
     private final MapService mapService;
+    private final org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
 
     @Autowired
     public GameController(GameService gameService, PlayerService playerservice, TaskService taskService, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
@@ -56,6 +57,8 @@ public class GameController {
         if (game.getTasks() == null) {
             taskService.addTasksToGame(game);
         }
+
+        restTemplate.postForObject("http://localhost:5022/api/task/passcode/create?gameCode=" + game.getGameCode(), null, Void.class);
 
         // Check if sabotages have already been added
         if (game.getSabotages() == null || game.getSabotages().isEmpty()) {

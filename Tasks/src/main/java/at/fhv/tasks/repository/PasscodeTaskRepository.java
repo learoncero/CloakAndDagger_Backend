@@ -5,26 +5,35 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 @Component
 public class PasscodeTaskRepository {
-    private final List<PasscodeTask> tasks;
+    private final Map<String, List<PasscodeTask>> taskMap;
 
-    public PasscodeTaskRepository(List<PasscodeTask> tasks) {
-        this.tasks = tasks;
-        initializeTasks();
+    public PasscodeTaskRepository() {
+        this.taskMap = new HashMap<>();
     }
 
-    private void initializeTasks() {
-        tasks.add(new PasscodeTask());
-        // TODO: Add more tasks
+    public void saveTasksForGame(String gameCode, List<PasscodeTask> tasks) {
+        taskMap.put(gameCode, tasks);
     }
 
-    public PasscodeTask getAllTasks() {
-        return tasks.get(0);
+    public PasscodeTask getFirstTaskForGame(String gameCode) {
+        List<PasscodeTask> tasks = taskMap.get(gameCode);
+        if (tasks != null && !tasks.isEmpty()) {
+            return tasks.get(0);
+        }
+        return null;
     }
 
+    public List<PasscodeTask> getTasksForGame(String gameCode) {
+        return taskMap.getOrDefault(gameCode, new ArrayList<>());
+    }
 }
+
