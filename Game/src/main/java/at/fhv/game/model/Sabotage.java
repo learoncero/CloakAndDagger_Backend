@@ -4,6 +4,7 @@ public class Sabotage {
     private int id;
     private String title;
     private String description;
+    private Position position;
 
     public Sabotage(int id, String title, String description) {
         this.id = id;
@@ -37,5 +38,13 @@ public class Sabotage {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
     }
 }
