@@ -18,6 +18,7 @@ public class Game {
     private int numberOfImpostors;
     private String map;
     private List<Player> players;
+    private List<Task> tasks;
     private List<Sabotage> sabotages;
     private int gameID;
     private GameStatus gameStatus;

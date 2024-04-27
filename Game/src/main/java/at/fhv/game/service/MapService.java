@@ -32,7 +32,7 @@ public class MapService {
         for (int y = 0; y < lines.size(); y++) {
             String line = lines.get(y);
             for (int x = 0; x < line.length(); x++) {
-                if (line.charAt(x) != '#') {
+                if (line.charAt(x) == '.') {
                     walkablePositions.add(new Position(x, y));
                 }
             }
@@ -48,5 +48,24 @@ public class MapService {
         } else {
             throw new Exception("No walkable positions found.");
         }
+    }
+
+    public List<Position> getTaskPositions(String mapName) throws Exception {
+        List<String> lines = Files.readAllLines(Paths.get("Game/src/main/java/at/fhv/game/repository/" + mapName + ".txt"));
+        List<Position> taskPositions = new ArrayList<>();
+
+        for (int y = 0; y < lines.size(); y++) {
+            String line = lines.get(y);
+            for (int x = 0; x < line.length(); x++) {
+                if (line.charAt(x) == 'T') {
+                    taskPositions.add(new Position(x, y));
+                }
+            }
+        }
+        /*System.out.println("Task positions: ");
+        for (Position p: taskPositions){
+            System.out.println("x: "+p.getX() + ", " +"y: "+ p.getY());
+        }*/
+        return taskPositions;
     }
 }
