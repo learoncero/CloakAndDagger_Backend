@@ -1,6 +1,5 @@
-package at.fhv.game;
+package at.fhv.game.utils;
 
-import at.fhv.game.utils.RandomRoleAssigner;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

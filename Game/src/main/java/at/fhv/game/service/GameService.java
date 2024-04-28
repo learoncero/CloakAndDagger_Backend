@@ -53,13 +53,17 @@ public class GameService {
                 } else if (player.getRole().equals(Role.IMPOSTOR)) {
                     player.setRole(Role.IMPOSTOR_GHOST);
                 }
-                if (game.getPlayers().stream().filter(p -> p.getRole().equals(Role.CREWMATE)).count() == game.getPlayers().stream().filter(p -> p.getRole().equals(Role.IMPOSTOR)).count()) {
-                    game.setGameStatus(GameStatus.IMPOSTORS_WIN);
-                }
+                checkImpostorWin(game);
                 gameRepository.save(game);
             }
         }
         return game;
+    }
+
+    private void checkImpostorWin(Game game) {
+        if (game.getPlayers().stream().filter(p -> p.getRole().equals(Role.CREWMATE)).count() == game.getPlayers().stream().filter(p -> p.getRole().equals(Role.IMPOSTOR)).count()) {
+            game.setGameStatus(GameStatus.IMPOSTORS_WIN);
+        }
     }
 
     public void updatePlayerActivity(int playerId, String gameCode) {
@@ -110,6 +114,15 @@ public class GameService {
                 game.getReportedBodies().add(bodyToReport.getId());
             }
         }
+        return game;
+    }
+
+    public Game endGame(String gameCode) {
+        Game game = gameRepository.findByGameCode(gameCode);
+        game.setGameStatus(GameStatus.CREWMATES_WIN);
+
+        gameRepository.save(game);
+
         return game;
     }
 }

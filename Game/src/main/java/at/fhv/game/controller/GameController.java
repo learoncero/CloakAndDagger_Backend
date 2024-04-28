@@ -2,11 +2,7 @@ package at.fhv.game.controller;
 
 import at.fhv.game.model.*;
 import at.fhv.game.model.messages.*;
-import at.fhv.game.service.GameService;
-import at.fhv.game.service.MapService;
-import at.fhv.game.service.PlayerService;
-import at.fhv.game.service.SabotageService;
-import at.fhv.game.service.TaskService;
+import at.fhv.game.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,17 +41,25 @@ public class GameController {
 
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
+        //Create game
         Game game = gameService.createGame(createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
 
+        //Create player, assign random position and role
         Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
         Player player = playerService.createPlayer(createGameMessage.getPlayer().getUsername(), randomPosition, game);
-        // Assign roles to players (get Impostor Player Indices)
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
 
+        //Get tasks, add Position and assign to game
+        List<Position> taskPositions = mapService.getTaskPositions(game.getMap());
+        List<Task> tasks = taskService.getAllTasks();
+        if (tasks != null || taskPositions != null) {
+            taskService.addTasksToGame(game, tasks, taskPositions);
+        }
+
         // Check if tasks have already been added
         if (game.getTasks() == null) {
-            taskService.addTasksToGame(game);
+            taskService.addTasksToGame(game ,tasks, taskPositions);
         }
 
         restTemplate.postForObject("http://localhost:5022/api/task/passcode/create?gameCode=" + game.getGameCode(), null, Void.class);
@@ -188,5 +192,14 @@ public class GameController {
                 messagingTemplate.convertAndSend("/topic/IdleChange", ResponseEntity.ok().body(updatedGame));
             }
         });
+    }
+
+    @MessageMapping("/game/end")
+    @SendTo("/topic/gameEnd")
+    public ResponseEntity<Game> endGame(@Payload EndGameMessage endGameMessage) {
+        Game game = gameService.endGame(endGameMessage.getGameCode());
+
+        System.out.println("Game ended");
+        return ResponseEntity.ok().body(game);
     }
 }
