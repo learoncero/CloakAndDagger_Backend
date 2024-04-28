@@ -57,11 +57,6 @@ public class GameController {
             taskService.addTasksToGame(game, tasks, taskPositions);
         }
 
-        // Check if tasks have already been added
-        if (game.getTasks() == null) {
-            taskService.addTasksToGame(game ,tasks, taskPositions);
-        }
-
         restTemplate.postForObject("http://localhost:5022/api/task/passcode/create?gameCode=" + game.getGameCode(), null, Void.class);
 
         // Check if sabotages have already been added

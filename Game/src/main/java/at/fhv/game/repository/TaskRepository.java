@@ -23,7 +23,7 @@ public class TaskRepository {
     }
 
     private void initialiseTasks() {
-        tasks.add(new Task(1, "Connect cables", "Enables electricity supply to critical systems"));
+        tasks.add(new Task(1, "Passcode", "Sum up numbers to get the right passcode"));
         tasks.add(new Task(2, "Updating system", "Updates data und ensures smooth operations"));
         tasks.add(new Task(3, "Enable security cameras", "Makes sure surveillance is up and running"));
         /*tasks.add(new Task(4, "Connect network", "Enables devices to connect to each other"));
