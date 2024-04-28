@@ -185,4 +185,13 @@ public class GameController {
             }
         });
     }
+
+    @MessageMapping("/game/end")
+    @SendTo("/topic/gameEnd")
+    public ResponseEntity<Game> endGame(@Payload EndGameMessage endGameMessage) {
+        Game game = gameService.endGame(endGameMessage.getGameCode());
+
+        System.out.println("Game ended");
+        return ResponseEntity.ok().body(game);
+    }
 }
