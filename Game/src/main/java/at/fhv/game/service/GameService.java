@@ -118,6 +118,7 @@ public class GameService {
         return game;
     }
 
+
     public Game sabotage(String gameCode, int sabotageId, Position position) {
         Game game = gameRepository.findByGameCode(gameCode);
         //System.out.println("Sabotage called in GameService: " + sabotageId + ", " + gameCode + ", (" + position.getX() + ", " + position.getY()+")");
@@ -135,6 +136,14 @@ public class GameService {
         /*for(Sabotage s: game.getSabotages()){
             System.out.println("Sabotage: " + s.getId() + ", (" + s.getPosition().getX() + ", " + s.getPosition().getY()+")");
         }*/
+        return game;
+    }
+
+    public Game endGame(String gameCode) {
+        Game game = gameRepository.findByGameCode(gameCode);
+        game.setGameStatus(GameStatus.CREWMATES_WIN);
+
+        gameRepository.save(game);
         return game;
     }
 }
