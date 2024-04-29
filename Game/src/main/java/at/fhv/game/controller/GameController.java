@@ -170,6 +170,21 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
+    @MessageMapping("/game/sabotage")
+    @SendTo("/topic/sabotage")
+    public ResponseEntity<Game> handleSabotage(@Payload SabotageMessage sabotageMessage) throws Exception {
+        int sabotageId = Integer.parseInt(sabotageMessage.getSabotageId());
+        String gameCode = sabotageMessage.getGameCode();
+        String mapName = sabotageMessage.getMap();
+        Position randomPosition = mapService.getRandomWalkablePosition(mapName);
+        Game game = gameService.sabotage(gameCode, sabotageId, randomPosition);
+        if (game != null) {
+            return ResponseEntity.ok().body(game);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
     @Scheduled(fixedRate = 1000)
     public void handleInactivity() {
         List<PlayerMoveMessage> inactiveMessages = gameService.checkInactivity();

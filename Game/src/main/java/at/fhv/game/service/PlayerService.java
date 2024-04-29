@@ -30,12 +30,15 @@ public class PlayerService {
                         (y >= map.getMap().length) ||
                         (x >= map.getMap()[0].length);
 
-        if (!outOfBounds && isCellWalkable(map, x, y)) { //if true update repo otherwise do nothing
+        if (!outOfBounds && isCellWalkable(map, x, y, player.getRole())) { //if true update repo otherwise do nothing
             player.setPosition(newPosition);
         }
     }
 
-    private boolean isCellWalkable(Map map, int x, int y) {
+    private boolean isCellWalkable(Map map, int x, int y, Role playerRole) {
+        if (playerRole == Role.IMPOSTOR) {
+            return map.getCellValue(x, y) == '.' || map.getCellValue(x, y) == 'T';
+        }
         return map.getCellValue(x, y) == '.';
     }
 
