@@ -14,7 +14,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -53,10 +52,10 @@ public class GameController {
 
         //Get tasks, add Position and assign to game
         List<Position> taskPositions = mapService.getTaskPositions(game.getMap());
-        // TODO get minigames from minigame service
-        List<MiniGame> minigames = restTemplate.getForObject("http://localhost:5022/api/minigame-ids", List.class);
-        if (minigames != null || taskPositions != null) {
-            taskService.addMiniGamesToGame(game, minigames, taskPositions);
+        // TODO get miniGames from minigame service
+        List<MiniGame> miniGames = restTemplate.getForObject("http://localhost:5022/api/minigames", List.class);
+        if (miniGames != null && taskPositions != null) {
+            taskService.addMiniGamesToGame(game, miniGames, taskPositions);
         }
 
         // Check if sabotages have already been added
@@ -196,10 +195,10 @@ public class GameController {
     }
 
     @PostMapping("/game/task/{gameCode}/done")
-    public ResponseEntity<Void> taskDone(@PathVariable String gameCode, @RequestBody Integer taskId) {
+    public ResponseEntity<Void> taskDone(@PathVariable String gameCode, @RequestBody int taskId) {
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
-            if(taskService.taskDone(game, taskId)) {
+            if (taskService.taskDone(game, taskId)) {
                 // TODO: subscribe in frontend to this topic
                 messagingTemplate.convertAndSend("/topic/taskDone", game);
                 return ResponseEntity.ok().build();

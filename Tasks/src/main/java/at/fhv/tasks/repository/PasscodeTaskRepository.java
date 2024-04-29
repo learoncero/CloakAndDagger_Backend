@@ -1,6 +1,6 @@
 package at.fhv.tasks.repository;
 
-import at.fhv.tasks.model.PasscodeTask;
+import at.fhv.tasks.model.PasscodeMiniGame;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
@@ -14,20 +14,16 @@ import java.util.Map;
 @Setter
 @Component
 public class PasscodeTaskRepository {
-    private final Map<String, List<PasscodeTask>> taskMap;
+    private final Map<String, List<PasscodeMiniGame>> taskMap;
 
     public PasscodeTaskRepository() {
         this.taskMap = new HashMap<>();
     }
 
-    public void saveTasksForGame(String gameCode, List<PasscodeTask> tasks) {
-        taskMap.put(gameCode, tasks);
-    }
-
-    public PasscodeTask getFirstTaskForGame(String gameCode) {
-        List<PasscodeTask> tasks = taskMap.get(gameCode);
+    public PasscodeMiniGame getFirstTaskForGame(String gameCode) {
+        List<PasscodeMiniGame> tasks = taskMap.get(gameCode);
         if (tasks != null && !tasks.isEmpty()) {
-            for (PasscodeTask task : tasks) {
+            for (PasscodeMiniGame task : tasks) {
                 if (!task.isTaskDone()) {
                     return task;
                 }
@@ -36,8 +32,14 @@ public class PasscodeTaskRepository {
         return null;
     }
 
-    public List<PasscodeTask> getTasksForGame(String gameCode) {
+    public List<PasscodeMiniGame> getTasksForGame(String gameCode) {
         return taskMap.getOrDefault(gameCode, new ArrayList<>());
+    }
+
+    public void createNewInstance(String gameCode, PasscodeMiniGame miniGame) {
+        List<PasscodeMiniGame> tasks = taskMap.getOrDefault(gameCode, new ArrayList<>());
+        tasks.add(miniGame);
+        taskMap.put(gameCode, tasks);
     }
 }
 

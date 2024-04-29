@@ -1,9 +1,9 @@
 package at.fhv.game.service;
 
 import at.fhv.game.model.Game;
+import at.fhv.game.model.MiniGame;
 import at.fhv.game.model.Position;
 import at.fhv.game.model.Task;
-import at.fhv.game.model.MiniGame;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,15 +25,15 @@ public class TaskService {
         for (int i = 0; i < positions.size(); i++) {
             //get values from tasks to create new Tasks
             int miniGamesIndex = i % miniGames.size();
-            int miniGameId = miniGames.get(miniGamesIndex).getId();
             String name = miniGames.get(miniGamesIndex).getName();
+            int miniGameId = miniGames.get(miniGamesIndex).getId();
             String description = miniGames.get(miniGamesIndex).getDescription();
 
             Task newTask = new Task(miniGameId, name, description);
             newTask.setPosition(positions.get(i));
             gameTasks.add(newTask);
         }
-        System.out.println("GameTasks in setTaskPositions: "+gameTasks.size());
+        System.out.println("GameTasks in setTaskPositions: " + gameTasks.size());
         return gameTasks;
     }
 

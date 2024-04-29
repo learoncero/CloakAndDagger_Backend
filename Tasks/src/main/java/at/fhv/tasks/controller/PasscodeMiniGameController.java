@@ -10,11 +10,12 @@ import org.springframework.web.client.RestTemplate;
 
 @Controller
 @RequestMapping("/api")
-public class PasscodeTaskController {
+public class PasscodeMiniGameController {
     private final PasscodeTaskService passcodeTaskService;
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
-    public PasscodeTaskController(PasscodeTaskService passcodeTaskService) {
+    public PasscodeMiniGameController(PasscodeTaskService passcodeTaskService) {
         this.passcodeTaskService = passcodeTaskService;
     }
 
@@ -26,7 +27,6 @@ public class PasscodeTaskController {
         int randomSum = passcodeTaskService.getRandomSum(gameCode);
 
         if (currentSum == randomSum) {
-            RestTemplate restTemplate = new RestTemplate();
             restTemplate.postForEntity("http://localhost:5010/api/game/task/" + gameCode + "/done", passcodeTaskMessage.getTaskId(), Void.class);
             System.out.println("Task done");
         } else if (currentSum > randomSum) {
