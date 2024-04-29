@@ -14,6 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -52,12 +53,11 @@ public class GameController {
 
         //Get tasks, add Position and assign to game
         List<Position> taskPositions = mapService.getTaskPositions(game.getMap());
-        List<Task> tasks = taskService.getAllTasks();
-        if (tasks != null || taskPositions != null) {
-            taskService.addTasksToGame(game, tasks, taskPositions);
+        // TODO get minigames from minigame service
+        List<MiniGame> minigames = restTemplate.getForObject("http://localhost:5022/api/minigame-ids", List.class);
+        if (minigames != null || taskPositions != null) {
+            taskService.addMiniGamesToGame(game, minigames, taskPositions);
         }
-
-        restTemplate.postForObject("http://localhost:5022/api/task/passcode/create?gameCode=" + game.getGameCode(), null, Void.class);
 
         // Check if sabotages have already been added
         if (game.getSabotages() == null || game.getSabotages().isEmpty()) {
@@ -180,12 +180,9 @@ public class GameController {
             int playerId = message.getId();
             Game updatedGame = gameService.getGameByCode(message.getGameCode());
             Player player = updatedGame.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
-            if (updatedGame != null) {
+            playerService.updatePlayerisMoving(player, message.isMoving());
 
-                playerService.updatePlayerisMoving(player, message.isMoving());
-
-                messagingTemplate.convertAndSend("/topic/IdleChange", ResponseEntity.ok().body(updatedGame));
-            }
+            messagingTemplate.convertAndSend("/topic/IdleChange", ResponseEntity.ok().body(updatedGame));
         });
     }
 
@@ -196,5 +193,18 @@ public class GameController {
 
         System.out.println("Game ended");
         return ResponseEntity.ok().body(game);
+    }
+
+    @PostMapping("/game/task/{gameCode}/done")
+    public ResponseEntity<Void> taskDone(@PathVariable String gameCode, @RequestBody Integer taskId) {
+        Game game = gameService.getGameByCode(gameCode);
+        if (game != null) {
+            if(taskService.taskDone(game, taskId)) {
+                // TODO: subscribe in frontend to this topic
+                messagingTemplate.convertAndSend("/topic/taskDone", game);
+                return ResponseEntity.ok().build();
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 }

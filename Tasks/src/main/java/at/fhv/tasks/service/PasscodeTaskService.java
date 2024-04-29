@@ -22,6 +22,8 @@ public class PasscodeTaskService {
         this.passcodeTaskRepository = passcodeTaskRepository;
     }
 
+    //TODO: Implement logic that it doesn't get the first task, but the next one that is not done
+
     public void createTasksForGame(String gameCode) {
         List<PasscodeTask> tasks = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -64,10 +66,5 @@ public class PasscodeTaskService {
 
     public void setTaskDone(boolean taskDone) {
         passcodeTask.setTaskDone(taskDone);
-    }
-
-    public boolean isTaskDone(String gameCode) {
-        PasscodeTask task = passcodeTaskRepository.getFirstTaskForGame(gameCode);
-        return task != null && task.isTaskDone();
     }
 }

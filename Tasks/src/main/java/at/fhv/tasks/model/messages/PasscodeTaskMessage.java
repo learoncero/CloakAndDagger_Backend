@@ -7,11 +7,13 @@ import lombok.Setter;
 @Setter
 public class PasscodeTaskMessage {
     private int value;
+    private int taskId;
 
     public PasscodeTaskMessage() {
     }
 
-    public PasscodeTaskMessage(int value) {
+    public PasscodeTaskMessage(int value, int taskId) {
         this.value = value;
+        this.taskId = taskId;
     }
 }

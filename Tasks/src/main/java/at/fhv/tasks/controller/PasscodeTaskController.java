@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 @Controller
 @RequestMapping("/api")
@@ -17,25 +18,16 @@ public class PasscodeTaskController {
         this.passcodeTaskService = passcodeTaskService;
     }
 
-    @PostMapping("/task/passcode/create")
-    public ResponseEntity<Void> createTasksForGame(@RequestParam String gameCode) {
-        passcodeTaskService.createTasksForGame(gameCode);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/task/{gameCode}/passcode/add")
     public ResponseEntity<Integer> addToSum(@RequestBody PasscodeTaskMessage passcodeTaskMessage, @PathVariable String gameCode) {
-        if (passcodeTaskService.isTaskDone(gameCode)) {
-            return ResponseEntity.ok(passcodeTaskService.getCurrentSum(gameCode));
-        }
-
         int currentValue = passcodeTaskMessage.getValue();
         passcodeTaskService.addToSum(currentValue, gameCode);
         int currentSum = passcodeTaskService.getCurrentSum(gameCode);
         int randomSum = passcodeTaskService.getRandomSum(gameCode);
 
         if (currentSum == randomSum) {
-            passcodeTaskService.setTaskDone(true);
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.postForEntity("http://localhost:5010/api/game/task/" + gameCode + "/done", passcodeTaskMessage.getTaskId(), Void.class);
             System.out.println("Task done");
         } else if (currentSum > randomSum) {
             passcodeTaskService.resetSum(gameCode);
@@ -53,10 +45,6 @@ public class PasscodeTaskController {
 
     @PostMapping("/task/{gameCode}/passcode/reset")
     public ResponseEntity<Integer> resetSum(@PathVariable String gameCode) {
-        if (passcodeTaskService.isTaskDone(gameCode)) {
-            return ResponseEntity.badRequest().build();
-        }
-
         passcodeTaskService.resetSum(gameCode);
         return ResponseEntity.ok(passcodeTaskService.getCurrentSum(gameCode));
     }

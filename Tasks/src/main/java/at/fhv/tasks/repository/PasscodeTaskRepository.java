@@ -27,7 +27,11 @@ public class PasscodeTaskRepository {
     public PasscodeTask getFirstTaskForGame(String gameCode) {
         List<PasscodeTask> tasks = taskMap.get(gameCode);
         if (tasks != null && !tasks.isEmpty()) {
-            return tasks.get(0);
+            for (PasscodeTask task : tasks) {
+                if (!task.isTaskDone()) {
+                    return task;
+                }
+            }
         }
         return null;
     }
