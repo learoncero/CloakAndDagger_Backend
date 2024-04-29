@@ -16,41 +16,29 @@ public class PasscodeTaskService {
         this.passcodeTaskRepository = passcodeTaskRepository;
     }
 
-    //TODO: Implement logic that it doesn't get the first task, but the next one that is not done
+    public PasscodeMiniGame getInstance(String gameCode, int taskId) {
+        return passcodeTaskRepository.getInstance(gameCode, taskId);
+    }
 
-    public void addToSum(int value, String gameCode) {
-        PasscodeMiniGame task = passcodeTaskRepository.getFirstTaskForGame(gameCode);
-        if (task != null) {
-            task.setCurrentSum(task.getCurrentSum() + value);
+    public void addToSum(int value, int taskId, String gameCode) {
+        PasscodeMiniGame passcodeMiniGame = passcodeTaskRepository.getInstance(gameCode, taskId);
+        if (passcodeMiniGame != null) {
+            passcodeMiniGame.setCurrentSum(passcodeMiniGame.getCurrentSum() + value);
         }
     }
 
-    public int getCurrentSum(String gameCode) {
-        PasscodeMiniGame task = passcodeTaskRepository.getFirstTaskForGame(gameCode);
-        return task != null ? task.getCurrentSum() : 0;
-    }
-
-    public int generateRandomSum(String gameCode) {
-        PasscodeMiniGame task = passcodeTaskRepository.getFirstTaskForGame(gameCode);
-        if (task != null && task.getRandomSum() == 0) {
-            task.setRandomSum(ThreadLocalRandom.current().nextInt(1, 51));
+    public PasscodeMiniGame generateRandomSum(PasscodeMiniGame passcodeMiniGame) {
+        if (passcodeMiniGame.getRandomSum() == 0) {
+            passcodeMiniGame.setRandomSum(ThreadLocalRandom.current().nextInt(31, 83));
         }
-        return task != null ? task.getRandomSum() : 0;
+        return passcodeMiniGame;
     }
 
-    public void resetSum(String gameCode) {
-        PasscodeMiniGame task = passcodeTaskRepository.getFirstTaskForGame(gameCode);
-        if (task != null) {
-            task.setCurrentSum(0);
-        }
+    public void saveNewInstance(String gameCode, int taskId, PasscodeMiniGame miniGame) {
+        passcodeTaskRepository.saveNewInstance(gameCode, taskId, miniGame);
     }
 
-    public int getRandomSum(String gameCode) {
-        PasscodeMiniGame task = passcodeTaskRepository.getFirstTaskForGame(gameCode);
-        return task != null ? task.getRandomSum() : 0;
-    }
-
-    public void createNewInstance(String gameCode, PasscodeMiniGame miniGame) {
-        passcodeTaskRepository.createNewInstance(gameCode, miniGame);
+    public void deleteInstance(String gameCode, int taskId) {
+        passcodeTaskRepository.removeInstance(gameCode, taskId);
     }
 }

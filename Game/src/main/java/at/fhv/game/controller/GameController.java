@@ -4,6 +4,8 @@ import at.fhv.game.model.*;
 import at.fhv.game.model.messages.*;
 import at.fhv.game.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -52,8 +54,14 @@ public class GameController {
 
         //Get tasks, add Position and assign to game
         List<Position> taskPositions = mapService.getTaskPositions(game.getMap());
-        // TODO get miniGames from minigame service
-        List<MiniGame> miniGames = restTemplate.getForObject("http://localhost:5022/api/minigames", List.class);
+        ResponseEntity<List<MiniGame>> responseEntity = restTemplate.exchange(
+                "http://localhost:5022/api/minigames",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<MiniGame>>() {
+                });
+        // Retrieve the list of MiniGame objects from the response entity
+        List<MiniGame> miniGames = responseEntity.getBody();
         if (miniGames != null && taskPositions != null) {
             taskService.addMiniGamesToGame(game, miniGames, taskPositions);
         }
@@ -199,7 +207,6 @@ public class GameController {
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
             if (taskService.taskDone(game, taskId)) {
-                // TODO: subscribe in frontend to this topic
                 messagingTemplate.convertAndSend("/topic/taskDone", game);
                 return ResponseEntity.ok().build();
             }

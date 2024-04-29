@@ -2,6 +2,7 @@ package at.fhv.tasks.controller;
 
 import at.fhv.tasks.model.MiniGame;
 import at.fhv.tasks.model.PasscodeMiniGame;
+import at.fhv.tasks.model.messages.StartMiniGameMessage;
 import at.fhv.tasks.service.MiniGameService;
 import at.fhv.tasks.service.PasscodeTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,12 @@ public class MiniGameController {
     }
 
     @PostMapping("/minigame/{gameCode}/start")
-    public ResponseEntity<Void> startTask(@PathVariable String gameCode, @RequestBody int miniGameId) {
-        MiniGame miniGame = taskService.getMiniGameById(miniGameId);
+    public ResponseEntity<Void> startTask(@PathVariable("gameCode") String gameCode, @RequestBody StartMiniGameMessage startMiniGameMessage) {
+        MiniGame miniGame = taskService.getMiniGameById(startMiniGameMessage.getMiniGameId());
         if (miniGame != null) {
             if (miniGame instanceof PasscodeMiniGame) {
-                passcodeTaskService.createNewInstance(gameCode, (PasscodeMiniGame) miniGame);
+                passcodeTaskService.generateRandomSum((PasscodeMiniGame) miniGame);
+                passcodeTaskService.saveNewInstance(gameCode, startMiniGameMessage.getTaskId(), (PasscodeMiniGame) miniGame);
             }
         }
 

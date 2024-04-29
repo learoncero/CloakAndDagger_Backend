@@ -9,12 +9,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MiniGame {
     private int id;
-    private String name;
+    private String title;
     private String description;
 
-    public MiniGame(int id, String name, String description) {
+    public MiniGame(int id, String title, String description) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.description = description;
     }
 }

@@ -5,41 +5,43 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
 @Component
 public class PasscodeTaskRepository {
-    private final Map<String, List<PasscodeMiniGame>> taskMap;
+    private final Map<String, Map<Integer, PasscodeMiniGame>> taskMap;
 
     public PasscodeTaskRepository() {
         this.taskMap = new HashMap<>();
     }
 
-    public PasscodeMiniGame getFirstTaskForGame(String gameCode) {
-        List<PasscodeMiniGame> tasks = taskMap.get(gameCode);
-        if (tasks != null && !tasks.isEmpty()) {
-            for (PasscodeMiniGame task : tasks) {
-                if (!task.isTaskDone()) {
-                    return task;
-                }
-            }
+    public void saveNewInstance(String gameCode, int taskId, PasscodeMiniGame miniGame) {
+        // Retrieve the map for the specified game code or create a new one if it doesn't exist
+        Map<Integer, PasscodeMiniGame> gameTasks = taskMap.computeIfAbsent(gameCode, k -> new HashMap<>());
+
+        gameTasks.put(taskId, miniGame);
+    }
+
+    public PasscodeMiniGame getInstance(String gameCode, int taskId) {
+        // Retrieve the map for the specified game code
+        Map<Integer, PasscodeMiniGame> gameTasks = taskMap.get(gameCode);
+
+        // Return the mini-game instance for the specified task ID if it exists
+        return gameTasks != null ? gameTasks.get(taskId) : null;
+    }
+
+    // Method to remove a mini-game instance by game code and task ID
+    public void removeInstance(String gameCode, int taskId) {
+        // Retrieve the map for the specified game code
+        Map<Integer, PasscodeMiniGame> gameTasks = taskMap.get(gameCode);
+
+        // Remove the mini-game instance for the specified task ID if it exists
+        if (gameTasks != null) {
+            gameTasks.remove(taskId);
         }
-        return null;
-    }
-
-    public List<PasscodeMiniGame> getTasksForGame(String gameCode) {
-        return taskMap.getOrDefault(gameCode, new ArrayList<>());
-    }
-
-    public void createNewInstance(String gameCode, PasscodeMiniGame miniGame) {
-        List<PasscodeMiniGame> tasks = taskMap.getOrDefault(gameCode, new ArrayList<>());
-        tasks.add(miniGame);
-        taskMap.put(gameCode, tasks);
     }
 }
 

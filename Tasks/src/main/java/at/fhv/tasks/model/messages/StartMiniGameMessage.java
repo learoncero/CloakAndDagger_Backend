@@ -7,9 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class PasscodeTaskMessage {
-    private int value;
+@NoArgsConstructor
+public class StartMiniGameMessage {
+    private int miniGameId;
     private int taskId;
 }

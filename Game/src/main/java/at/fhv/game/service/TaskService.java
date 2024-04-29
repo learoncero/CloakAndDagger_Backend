@@ -15,8 +15,8 @@ public class TaskService {
     public TaskService() {
     }
 
-    public void addMiniGamesToGame(Game game, List<MiniGame> miniGameList, List<Position> positions) {
-        List<Task> gameTasks = setTaskPositions(miniGameList, positions);
+    public void addMiniGamesToGame(Game game, List<MiniGame> miniGames, List<Position> positions) {
+        List<Task> gameTasks = setTaskPositions(miniGames, positions);
         game.setTasks(gameTasks);
     }
 
@@ -25,8 +25,8 @@ public class TaskService {
         for (int i = 0; i < positions.size(); i++) {
             //get values from tasks to create new Tasks
             int miniGamesIndex = i % miniGames.size();
-            String name = miniGames.get(miniGamesIndex).getName();
             int miniGameId = miniGames.get(miniGamesIndex).getId();
+            String name = miniGames.get(miniGamesIndex).getTitle();
             String description = miniGames.get(miniGamesIndex).getDescription();
 
             Task newTask = new Task(miniGameId, name, description);
