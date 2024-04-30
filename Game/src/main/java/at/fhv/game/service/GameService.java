@@ -119,7 +119,7 @@ public class GameService {
 
     public Game endGame(String gameCode) {
         Game game = gameRepository.findByGameCode(gameCode);
-        game.setGameStatus(GameStatus.CREWMATES_WIN);
+        game.setGameStatus(GameStatus.IMPOSTORS_WIN);
 
         gameRepository.save(game);
 
