@@ -57,7 +57,7 @@ public class GameController {
         }
 
         // Check if sabotages have already been added
-        if (game.getSabotages() == null || game.getSabotages().isEmpty()) {
+        if (game.getSabotages() != null || game.getSabotages().isEmpty()) {
             sabotageService.addSabotagesToGame(game);
         }
 
