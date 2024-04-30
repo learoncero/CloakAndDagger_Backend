@@ -4,6 +4,8 @@ import at.fhv.game.model.*;
 import at.fhv.game.model.messages.*;
 import at.fhv.game.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -26,6 +28,7 @@ public class GameController {
     private final SabotageService sabotageService;
     private final SimpMessagingTemplate messagingTemplate;
     private final MapService mapService;
+    private final org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
 
     @Autowired
     public GameController(GameService gameService, PlayerService playerservice, TaskService taskService, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
@@ -51,9 +54,16 @@ public class GameController {
 
         //Get tasks, add Position and assign to game
         List<Position> taskPositions = mapService.getTaskPositions(game.getMap());
-        List<Task> tasks = taskService.getAllTasks();
-        if (tasks != null || taskPositions != null) {
-            taskService.addTasksToGame(game, tasks, taskPositions);
+        ResponseEntity<List<MiniGame>> responseEntity = restTemplate.exchange(
+                "http://localhost:5022/api/minigames",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<MiniGame>>() {
+                });
+        // Retrieve the list of MiniGame objects from the response entity
+        List<MiniGame> miniGames = responseEntity.getBody();
+        if (miniGames != null && taskPositions != null) {
+            taskService.addMiniGamesToGame(game, miniGames, taskPositions);
         }
 
         // Check if sabotages have already been added
@@ -192,12 +202,9 @@ public class GameController {
             int playerId = message.getId();
             Game updatedGame = gameService.getGameByCode(message.getGameCode());
             Player player = updatedGame.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
-            if (updatedGame != null) {
+            playerService.updatePlayerisMoving(player, message.isMoving());
 
-                playerService.updatePlayerisMoving(player, message.isMoving());
-
-                messagingTemplate.convertAndSend("/topic/IdleChange", ResponseEntity.ok().body(updatedGame));
-            }
+            messagingTemplate.convertAndSend("/topic/IdleChange", ResponseEntity.ok().body(updatedGame));
         });
     }
 
@@ -208,5 +215,16 @@ public class GameController {
 
         System.out.println("Game ended");
         return ResponseEntity.ok().body(game);
+    }
+
+    @PostMapping("/game/task/{gameCode}/done")
+    public ResponseEntity<Void> taskDone(@PathVariable String gameCode, @RequestBody int taskId) {
+        Game game = gameService.getGameByCode(gameCode);
+        if (game != null) {
+            if (taskService.taskDone(game, taskId)) {
+                return ResponseEntity.ok().build();
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 }

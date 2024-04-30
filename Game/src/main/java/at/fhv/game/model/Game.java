@@ -30,6 +30,7 @@ public class Game {
         this.numberOfImpostors = numberOfImpostors;
         this.map = map;
         this.players = new ArrayList<>();
+        this.tasks = new ArrayList<>();
         this.sabotages = new ArrayList<>();
         this.gameID = nextGameID;
         this.gameStatus = GameStatus.LOBBY;
