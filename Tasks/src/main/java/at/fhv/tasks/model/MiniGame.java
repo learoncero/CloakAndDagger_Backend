@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public abstract class MiniGame {
+public class MiniGame {
     private int id;
     private String title;
     private String description;
