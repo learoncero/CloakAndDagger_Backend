@@ -67,7 +67,7 @@ public class GameController {
         }
 
         // Check if sabotages have already been added
-        if (game.getSabotages() == null || game.getSabotages().isEmpty()) {
+        if (game.getSabotages() != null) {
             sabotageService.addSabotagesToGame(game);
         }
 
@@ -173,6 +173,21 @@ public class GameController {
         String gameCode = bodyReportMessage.getGameCode();
         Game game = gameService.reportBody(gameCode, bodyToReportId);
 
+        if (game != null) {
+            return ResponseEntity.ok().body(game);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @MessageMapping("/game/sabotage")
+    @SendTo("/topic/sabotage")
+    public ResponseEntity<Game> handleSabotage(@Payload SabotageMessage sabotageMessage) throws Exception {
+        int sabotageId = Integer.parseInt(sabotageMessage.getSabotageId());
+        String gameCode = sabotageMessage.getGameCode();
+        String mapName = sabotageMessage.getMap();
+        Position randomPosition = mapService.getRandomWalkablePosition(mapName);
+        Game game = gameService.sabotage(gameCode, sabotageId, randomPosition);
         if (game != null) {
             return ResponseEntity.ok().body(game);
         }

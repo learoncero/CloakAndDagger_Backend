@@ -4,11 +4,14 @@ public class Sabotage {
     private int id;
     private String title;
     private String description;
+    private Position position = new Position();
 
     public Sabotage(int id, String title, String description) {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.position.setX(-1);
+        this.position.setY(-1);
     }
 
     public Sabotage() {
@@ -37,5 +40,13 @@ public class Sabotage {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
     }
 }
