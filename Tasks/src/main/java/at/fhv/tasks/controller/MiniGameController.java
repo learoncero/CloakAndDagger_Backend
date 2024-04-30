@@ -31,11 +31,14 @@ public class MiniGameController {
 
     @PostMapping("/minigame/{gameCode}/start")
     public ResponseEntity<Void> startTask(@PathVariable("gameCode") String gameCode, @RequestBody StartMiniGameMessage startMiniGameMessage) {
-        MiniGame miniGame = taskService.getMiniGameById(startMiniGameMessage.getMiniGameId());
-        if (miniGame != null) {
-            if (miniGame instanceof PasscodeMiniGame) {
-                passcodeTaskService.generateRandomSum((PasscodeMiniGame) miniGame);
-                passcodeTaskService.saveNewInstance(gameCode, startMiniGameMessage.getTaskId(), (PasscodeMiniGame) miniGame);
+        MiniGame miniGameTemplate = taskService.getMiniGameById(startMiniGameMessage.getMiniGameId());
+        MiniGame miniGameClone = taskService.cloneMiniGame(miniGameTemplate);
+        if (miniGameClone != null) {
+            if (miniGameClone instanceof PasscodeMiniGame) {
+                int randomSum = passcodeTaskService.generateRandomSum();
+                PasscodeMiniGame passcodeMiniGame = (PasscodeMiniGame) miniGameClone;
+                passcodeMiniGame.setRandomSum(randomSum);
+                passcodeTaskService.saveNewInstance(gameCode, startMiniGameMessage.getTaskId(), passcodeMiniGame);
             }
         }
 

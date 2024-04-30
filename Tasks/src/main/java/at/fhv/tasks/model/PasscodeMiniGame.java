@@ -1,10 +1,12 @@
 package at.fhv.tasks.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class PasscodeMiniGame extends MiniGame {
     private int currentSum;
     private int randomSum;

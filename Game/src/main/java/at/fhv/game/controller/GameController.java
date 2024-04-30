@@ -207,7 +207,6 @@ public class GameController {
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
             if (taskService.taskDone(game, taskId)) {
-                messagingTemplate.convertAndSend("/topic/taskDone", game);
                 return ResponseEntity.ok().build();
             }
         }

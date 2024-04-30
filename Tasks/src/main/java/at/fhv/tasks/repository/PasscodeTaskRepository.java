@@ -18,7 +18,7 @@ public class PasscodeTaskRepository {
         this.taskMap = new HashMap<>();
     }
 
-    public void saveNewInstance(String gameCode, int taskId, PasscodeMiniGame miniGame) {
+    public void saveInstance(String gameCode, int taskId, PasscodeMiniGame miniGame) {
         // Retrieve the map for the specified game code or create a new one if it doesn't exist
         Map<Integer, PasscodeMiniGame> gameTasks = taskMap.computeIfAbsent(gameCode, k -> new HashMap<>());
 
