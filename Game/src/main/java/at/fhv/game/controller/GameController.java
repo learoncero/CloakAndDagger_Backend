@@ -180,15 +180,27 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
-    @MessageMapping("/game/sabotage")
-    @SendTo("/topic/sabotage")
-    public ResponseEntity<Game> handleSabotage(@Payload SabotageMessage sabotageMessage) throws Exception {
+    @MessageMapping("/game/startSabotage")
+    @SendTo("/topic/sabotageStart")
+    public ResponseEntity<Game> startSabotage(@Payload SabotageMessage sabotageMessage) throws Exception {
         int sabotageId = Integer.parseInt(sabotageMessage.getSabotageId());
         String gameCode = sabotageMessage.getGameCode();
         String mapName = sabotageMessage.getMap();
         Position randomPosition = mapService.getRandomWalkablePosition(mapName);
-        Game game = gameService.sabotage(gameCode, sabotageId, randomPosition);
+        Game game = gameService.setRandomSabotagePosition(gameCode, sabotageId, randomPosition);
         if (game != null) {
+            return ResponseEntity.ok().body(game);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @MessageMapping("/game/{gameCode}/cancelSabotage")
+    @SendTo("/topic/sabotageCancel")
+    public ResponseEntity<Game> cancelSabotage(@DestinationVariable String gameCode) {
+        Game game = gameService.getGameByCode(gameCode);
+        if (game != null) {
+            game = gameService.cancelSabotage(game);
             return ResponseEntity.ok().body(game);
         }
 

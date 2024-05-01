@@ -1,9 +1,6 @@
 package at.fhv.game.service;
 
-import at.fhv.game.model.Game;
-import at.fhv.game.model.GameStatus;
-import at.fhv.game.model.Player;
-import at.fhv.game.model.Role;
+import at.fhv.game.model.*;
 import at.fhv.game.repository.GameRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -153,5 +150,58 @@ public class GameServiceTest {
 
         // Check if the game status is impostors win
         assertEquals(GameStatus.IMPOSTORS_WIN, game.getGameStatus());
+    }
+
+    @Test
+    public void setRandomSabotagePositionSuccessfully() {
+        Game game = new Game();
+        List<Sabotage> sabotages = new ArrayList<>();
+        Sabotage sabotage = new Sabotage();
+        sabotage.setId(1);
+        sabotages.add(sabotage);
+        game.setSabotages(sabotages);
+
+        when(gameRepository.findByGameCode(any())).thenReturn(game);
+
+        Position newPosition = new Position(10, 10);
+        Game updatedGame = gameService.setRandomSabotagePosition("gameCode", 1, newPosition);
+
+        assertEquals(newPosition, updatedGame.getSabotages().get(0).getPosition());
+    }
+
+    @Test
+    public void setRandomSabotagePositionWithInvalidGame() {
+        when(gameRepository.findByGameCode(any())).thenReturn(null);
+
+        Game updatedGame = gameService.setRandomSabotagePosition("invalidGameCode", 1, new Position(10, 10));
+
+        assertNull(updatedGame);
+    }
+
+    @Test
+    public void endGameSuccessfully() {
+        Game game = new Game();
+
+        when(gameRepository.findByGameCode(any())).thenReturn(game);
+
+        Game endedGame = gameService.endGame("gameCode");
+
+        assertEquals(GameStatus.IMPOSTORS_WIN, endedGame.getGameStatus());
+    }
+
+    @Test
+    public void cancelSabotageSuccessfully() {
+        Game game = new Game();
+        List<Sabotage> sabotages = new ArrayList<>();
+        Sabotage sabotage = new Sabotage();
+        sabotage.setPosition(new Position(10, 10));
+        sabotages.add(sabotage);
+        game.setSabotages(sabotages);
+
+        Game updatedGame = gameService.cancelSabotage(game);
+
+        for (Sabotage s : updatedGame.getSabotages()) {
+            assertNull(s.getPosition());
+        }
     }
 }
