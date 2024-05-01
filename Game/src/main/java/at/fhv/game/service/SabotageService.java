@@ -1,7 +1,6 @@
 package at.fhv.game.service;
 
 import at.fhv.game.model.Game;
-import at.fhv.game.model.Position;
 import at.fhv.game.model.Sabotage;
 import at.fhv.game.repository.SabotageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +23,5 @@ public class SabotageService {
 
     public void addSabotagesToGame(Game game) {
         game.setSabotages(getAllSabotages());
-    }
-
-    private void setSabotagePosition(Sabotage sabotage, Position position) {
-        sabotage.setPosition(position);
     }
 }

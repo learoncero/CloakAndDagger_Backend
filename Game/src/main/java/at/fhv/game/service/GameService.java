@@ -122,23 +122,17 @@ public class GameService {
     }
 
 
-    public Game sabotage(String gameCode, int sabotageId, Position position) {
+    public Game setRandomSabotagePosition(String gameCode, int sabotageId, Position position) {
         Game game = gameRepository.findByGameCode(gameCode);
-        //System.out.println("Sabotage called in GameService: " + sabotageId + ", " + gameCode + ", (" + position.getX() + ", " + position.getY()+")");
         if (game != null) {
             Optional<Sabotage> sabotage = game.getSabotages().stream()
                     .filter(s -> s.getId() == sabotageId)
                     .findFirst();
             if (sabotage.isPresent()) {
-//                System.out.println("Sabotage found in GameService: " + sabotage.get().getId() + ", (" + sabotage.get().getPosition().getX() + ", " + sabotage.get().getPosition().getY() + ")");
                 sabotage.get().setPosition(position);
             }
         }
-//        System.out.println("All Sabotages and positions after setting pos:");
-        assert game != null;
-        /*for(Sabotage s: game.getSabotages()){
-            System.out.println("Sabotage: " + s.getId() + ", (" + s.getPosition().getX() + ", " + s.getPosition().getY()+")");
-        }*/
+
         return game;
     }
 
@@ -146,6 +140,16 @@ public class GameService {
         Game game = gameRepository.findByGameCode(gameCode);
         game.setGameStatus(GameStatus.IMPOSTORS_WIN);
 
+        gameRepository.save(game);
+        return game;
+    }
+
+    public Game cancelSabotage(Game game) {
+        for (Sabotage s : game.getSabotages()) {
+            if (s.getPosition() != null) {
+                s.setPosition(null);
+            }
+        }
         gameRepository.save(game);
         return game;
     }
