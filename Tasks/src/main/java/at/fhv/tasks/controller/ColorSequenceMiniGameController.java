@@ -15,23 +15,43 @@ import java.util.List;
 @RequestMapping("/api")
 public class ColorSequenceMiniGameController {
 
-    @Autowired
+
     private ColorSequenceMiniGameService service;
 
-    @GetMapping("/colors/{gameCode}/start")
-    public ResponseEntity<List<String>> startGame(@RequestBody ColorSeqMiniGameMessage ColorSeqMiniGameMessage, @PathVariable("gameCode") String gameCode) {
-        Collections.shuffle(ColorSeqMiniGameMessage.getColors());
-        List<String> sequence = service.createShuffledSequence(ColorSeqMiniGameMessage.getColors());
+    @Autowired
+    public ColorSequenceMiniGameController(ColorSequenceMiniGameService colorSequenceMiniGameService) {
+        this.service = colorSequenceMiniGameService;
+    }
+
+
+    @PostMapping("/colors/{gameCode}/getShuffledColors")
+    public ResponseEntity<List<String>> getShuffledColors( @PathVariable("gameCode") String gameCode,@RequestBody int taskId) {
+        System.out.println("Shuffled Colors:");
+        System.out.println("GameCode:" + gameCode + "TaskID:" + taskId);
+        ColorSeqMiniGame colorSeqMiniGame = service.getInstance(gameCode, taskId);
+
+        List<String> sequence = service.createShuffledSequence(colorSeqMiniGame.getColors());
 
         return ResponseEntity.ok(sequence);
     }
 
     @PostMapping("/colors/{gameCode}/submit")
-    public ResponseEntity<String> submitColors(@RequestBody ColorSeqMiniGameMessage submission) {
-        if (service.verifySequence(submission.getColors(), submission.getShuffledColors())) {
+    public ResponseEntity<String> submitColors(@RequestBody ColorSeqMiniGameMessage submission, @PathVariable("gameCode") String gameCode ) {
+        if (service.verifySequence(submission.getColors(), submission.getShuffledColors(),submission.getTaskId(), gameCode )) {
             return ResponseEntity.ok("Task Completed");
         } else {
             return ResponseEntity.badRequest().body("Incorrect sequence");
         }
     }
+
+    @PostMapping("/colors/{gameCode}/getInitialColors")
+    public ResponseEntity<List<String>> getInitialColor( @PathVariable("gameCode") String gameCode,@RequestBody int taskId ) {
+        System.out.println("Initial Colors:");
+        System.out.println("GameCode:" + gameCode + "TaskID:" + taskId);
+        ColorSeqMiniGame colorSeqMiniGame = service.getInstance(gameCode, taskId);
+
+        return ResponseEntity.ok(colorSeqMiniGame.getColors());
+
+    }
+
 }

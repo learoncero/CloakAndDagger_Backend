@@ -1,7 +1,6 @@
 package at.fhv.tasks.repository;
 
 import at.fhv.tasks.model.ColorSeqMiniGame;
-import at.fhv.tasks.model.PasscodeMiniGame;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
