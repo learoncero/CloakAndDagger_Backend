@@ -227,4 +227,30 @@ public class GameController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/game/task/{gameCode}/status")
+    public ResponseEntity<Boolean> getActiveStatus(@PathVariable String gameCode, @RequestBody int taskId) {
+        Game game = gameService.getGameByCode(gameCode);
+
+        if (game != null) {
+            return ResponseEntity.ok(taskService.getStatus(game, taskId));
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/game/task/{gameCode}/active")
+    public ResponseEntity<Boolean> setActiveStatus(@PathVariable String gameCode, @RequestBody int taskId) {
+        Game game = gameService.getGameByCode(gameCode);
+
+        if (game != null && !taskService.getStatus(game, taskId)) {
+            taskService.setStatus(game, taskId, true);
+            return ResponseEntity.ok(true);
+        } else if (game != null) {
+            taskService.setStatus(game, taskId, false);
+            return ResponseEntity.ok(false);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
 }
