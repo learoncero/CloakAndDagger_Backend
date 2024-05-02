@@ -23,5 +23,10 @@ public class SabotageService {
 
     public void addSabotagesToGame(Game game) {
         game.setSabotages(getAllSabotages());
+        System.out.println("Sabotages after adding them to game in SabotageService: ");
+        for (Sabotage s: game.getSabotages()){
+            System.out.println("Sabotage id: " + s.getId() +
+                    ", Position: " + s.getPosition().getX() + ", " + s.getPosition().getY());
+        }
     }
 }
