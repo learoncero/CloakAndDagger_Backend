@@ -147,7 +147,7 @@ public class GameService {
     public Game cancelSabotage(Game game) {
         for (Sabotage s : game.getSabotages()) {
             if (s.getPosition() != null) {
-                s.setPosition(null);
+                s.setPosition(new Position(-1, -1));
             }
         }
         gameRepository.save(game);
