@@ -1,8 +1,10 @@
 package at.fhv.tasks.repository;
 
+import at.fhv.tasks.model.ColorSeqMiniGame;
 import at.fhv.tasks.model.MiniGame;
 import at.fhv.tasks.model.PasscodeMiniGame;
 import org.springframework.stereotype.Component;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ public class MiniGameRepository {
 
     private void initialiseMiniGames() {
         miniGames.add(new PasscodeMiniGame(1, "Passcode", "Sum up numbers to get the right passcode"));
+        miniGames.add(new ColorSeqMiniGame(2, "ColorSequence", "Choose the right order of Colors"));
     }
 
     public MiniGame getMiniGameById(int id) {

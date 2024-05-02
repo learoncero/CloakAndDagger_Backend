@@ -1,5 +1,6 @@
 package at.fhv.tasks.service;
 
+import at.fhv.tasks.model.ColorSeqMiniGame;
 import at.fhv.tasks.model.MiniGame;
 import at.fhv.tasks.model.PasscodeMiniGame;
 import at.fhv.tasks.repository.MiniGameRepository;
@@ -39,6 +40,19 @@ public class MiniGameService {
             clonedPasscodeGame.setRandomSum(originalPasscodeGame.getRandomSum());
 
             clone = clonedPasscodeGame;
+
+        } else if(miniGameTemplate instanceof ColorSeqMiniGame) {
+            ColorSeqMiniGame originalColorSeqGame = (ColorSeqMiniGame) miniGameTemplate;
+            ColorSeqMiniGame clonedColorSeqGame = new ColorSeqMiniGame();
+
+            // Copy properties from original to cloned mini-game
+            clonedColorSeqGame.setId(originalColorSeqGame.getId());
+            clonedColorSeqGame.setTitle(originalColorSeqGame.getTitle());
+            clonedColorSeqGame.setDescription(originalColorSeqGame.getDescription());
+            clonedColorSeqGame.setShuffledColors(originalColorSeqGame.getShuffledColors());
+
+            clone = clonedColorSeqGame;
+
         }
 
         return clone;
