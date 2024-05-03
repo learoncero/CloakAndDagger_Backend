@@ -84,6 +84,11 @@ public class GameController {
         return ResponseEntity.ok(game);
     }
 
+    @Operation(summary = "Get game by code")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Game found"),
+            @ApiResponse(responseCode = "404", description = "Game not found")
+    })
     @GetMapping("/game/{gameCode}")
     public ResponseEntity<Game> getGameByCode(@PathVariable String gameCode) {
         Game game = gameService.getGameByCode(gameCode);
@@ -94,6 +99,13 @@ public class GameController {
         }
     }
 
+    @Operation(summary = "Join a game")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Player joined successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid join request"),
+            @ApiResponse(responseCode = "404", description = "Game not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/game/join")
     public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage) {
         if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
@@ -239,6 +251,11 @@ public class GameController {
         return ResponseEntity.ok().body(game);
     }
 
+    @Operation(summary = "Mark a task as done")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task marked as done successfully"),
+            @ApiResponse(responseCode = "404", description = "Game or task not found")
+    })
     @PostMapping("/game/task/{gameCode}/done")
     public ResponseEntity<Void> taskDone(@PathVariable String gameCode, @RequestBody int taskId) {
         Game game = gameService.getGameByCode(gameCode);
