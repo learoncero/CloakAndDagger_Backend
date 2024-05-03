@@ -15,6 +15,7 @@ public class Task {
     private String description;
     private boolean isCompleted;
     private Position position;
+    private boolean isActive;
 
     public Task(int id, String title, String description) {
         this.taskId = nextTaskID++;

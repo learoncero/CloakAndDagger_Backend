@@ -44,6 +44,25 @@ public class TaskService {
                 return true;
             }
         }
+
         return false;
+    }
+
+    public Task getTaskById(Game game, int taskId) {
+        for (Task t : game.getTasks()) {
+            if (t.getTaskId() == taskId) {
+                return t;
+            }
+        }
+
+        return null;
+    }
+
+    public boolean getStatus(Game game, int taskId) {
+        return getTaskById(game, taskId).isActive();
+    }
+
+    public void setStatus(Game game, int taskId, boolean status) {
+        getTaskById(game, taskId).setActive(status);
     }
 }

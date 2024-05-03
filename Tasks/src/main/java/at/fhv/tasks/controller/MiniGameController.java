@@ -40,9 +40,8 @@ public class MiniGameController {
         MiniGame miniGameTemplate = taskService.getMiniGameById(startMiniGameMessage.getMiniGameId());
         MiniGame miniGameClone = taskService.cloneMiniGame(miniGameTemplate);
         if (miniGameClone != null) {
-            if (miniGameClone instanceof PasscodeMiniGame) {
+            if (miniGameClone instanceof PasscodeMiniGame passcodeMiniGame) {
                 int randomSum = passcodeTaskService.generateRandomSum();
-                PasscodeMiniGame passcodeMiniGame = (PasscodeMiniGame) miniGameClone;
                 passcodeMiniGame.setRandomSum(randomSum);
                 passcodeTaskService.saveNewInstance(gameCode, startMiniGameMessage.getTaskId(), passcodeMiniGame);
             }
