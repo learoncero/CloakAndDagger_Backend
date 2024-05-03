@@ -3,6 +3,10 @@ package at.fhv.game.controller;
 import at.fhv.game.model.*;
 import at.fhv.game.model.messages.*;
 import at.fhv.game.service.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -40,7 +44,13 @@ public class GameController {
         this.mapService = mapService;
     }
 
-
+    @Operation(summary = "Create a new game")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Game created successfully",
+                    content = {@io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Game.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid request body")
+    })
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
         //Create game
@@ -88,7 +98,7 @@ public class GameController {
     public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage) {
         if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
             System.out.println("Invalid join message");
-            return ResponseEntity.badRequest().body(new ApiResponse<>(400, "Invalid join message", null));
+            return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Invalid join message", null));
         }
 
         try {
@@ -101,12 +111,12 @@ public class GameController {
 
             if (game.getPlayers().size() >= game.getNumberOfPlayers()) {
                 System.out.println("Game lobby is full");
-                return ResponseEntity.badRequest().body(new ApiResponse<>(400, "Game lobby is full", null));
+                return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Game lobby is full", null));
             }
 
             if (game.getPlayers().stream().anyMatch(p -> p.getUsername().equals(joinMessage.getUsername()))) {
                 System.out.println("Username is already taken");
-                return ResponseEntity.badRequest().body(new ApiResponse<>(400, "Username is already taken", null));
+                return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Username is already taken", null));
             }
 
             Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
@@ -118,7 +128,7 @@ public class GameController {
             return ResponseEntity.ok().body(game);
         } catch (Exception e) {
             System.out.println("Error creating player: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(500, "Error creating player: " + e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new CustomApiResponse<>(500, "Error creating player: " + e.getMessage(), null));
         }
     }
 
