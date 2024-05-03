@@ -33,7 +33,7 @@ public class TaskService {
             newTask.setPosition(positions.get(i));
             gameTasks.add(newTask);
         }
-        System.out.println("GameTasks in setTaskPositions: " + gameTasks.size());
+        //System.out.println("GameTasks in setTaskPositions: " + gameTasks.size());
         return gameTasks;
     }
 

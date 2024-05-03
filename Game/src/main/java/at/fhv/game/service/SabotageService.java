@@ -32,10 +32,10 @@ public class SabotageService {
         List<Sabotage> sabotages;
         sabotages = resetSabotagePositions(getAllSabotages());
         game.setSabotages(sabotages);
-        System.out.println("Sabotages after adding them to game in SabotageService: ");
-        for (Sabotage s: game.getSabotages()){
+        //System.out.println("Sabotages after adding them to game in SabotageService: ");
+        /*for (Sabotage s: game.getSabotages()){
             System.out.println("Sabotage id: " + s.getId() +
                     ", Position: " + s.getPosition().getX() + ", " + s.getPosition().getY());
-        }
+        }*/
     }
 }
