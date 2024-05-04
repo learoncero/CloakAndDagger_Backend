@@ -7,12 +7,14 @@ import at.fhv.tasks.model.messages.StartMiniGameMessage;
 import at.fhv.tasks.service.ColorSequenceMiniGameService;
 import at.fhv.tasks.service.MiniGameService;
 import at.fhv.tasks.service.PasscodeTaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -30,11 +32,21 @@ public class MiniGameController {
 
     }
 
+    @Operation(summary = "Get all mini games")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Mini games retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "No mini games found")
+    })
     @GetMapping("/minigames")
     public ResponseEntity<List<MiniGame>> getAllMiniGames() {
         return ResponseEntity.ok(taskService.getAllMiniGames());
     }
 
+    @Operation(summary = "Start a mini game")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Mini game started successfully"),
+            @ApiResponse(responseCode = "404", description = "Mini game not found")
+    })
     @PostMapping("/minigame/{gameCode}/start")
     public ResponseEntity<Void> startTask(@PathVariable("gameCode") String gameCode, @RequestBody StartMiniGameMessage startMiniGameMessage) {
         MiniGame miniGameTemplate = taskService.getMiniGameById(startMiniGameMessage.getMiniGameId());

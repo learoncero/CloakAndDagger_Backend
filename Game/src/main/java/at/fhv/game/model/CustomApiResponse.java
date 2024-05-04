@@ -5,12 +5,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiResponse<T> {
+public class CustomApiResponse<T> {
     private int status;
     private String message;
     private T data;
 
-    public ApiResponse(int status, String message, T data) {
+    public CustomApiResponse(int status, String message, T data) {
         this.status = status;
         this.message = message;
         this.data = data;

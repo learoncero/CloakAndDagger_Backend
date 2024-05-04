@@ -1,17 +1,25 @@
 package at.fhv.game.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class Sabotage {
+    @Schema(description = "The ID of the sabotage")
     private int id;
+
+    @Schema(description = "The title of the sabotage")
     private String title;
+
+    @Schema(description = "The description of the sabotage")
     private String description;
-    private Position position = new Position();
+
+    @Schema(description = "The position of the sabotage")
+    private Position position;
 
     public Sabotage(int id, String title, String description) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.position.setX(-1);
-        this.position.setY(-1);
+        this.position = new Position(-1, -1);
     }
 
     public Sabotage() {
