@@ -1,12 +1,12 @@
 package at.fhv.minigames.controller;
 
-import at.fhv.minigames.service.MiniGameService;
-import at.fhv.minigames.service.PasscodeMiniGameService;
 import at.fhv.minigames.model.ColorSeqMiniGame;
 import at.fhv.minigames.model.MiniGame;
 import at.fhv.minigames.model.PasscodeMiniGame;
-import at.fhv.minigames.model.messages.StartMiniGameMessage;
+import at.fhv.minigames.model.messages.MiniGameMessage;
 import at.fhv.minigames.service.ColorSequenceMiniGameService;
+import at.fhv.minigames.service.MiniGameService;
+import at.fhv.minigames.service.PasscodeMiniGameService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -48,17 +48,37 @@ public class MiniGameController {
             @ApiResponse(responseCode = "404", description = "Mini game not found")
     })
     @PostMapping("/minigame/{gameCode}/start")
-    public ResponseEntity<Void> startTask(@PathVariable("gameCode") String gameCode, @RequestBody StartMiniGameMessage startMiniGameMessage) {
-        MiniGame miniGameTemplate = miniGameService.getMiniGameById(startMiniGameMessage.getMiniGameId());
+    public ResponseEntity<Void> startTask(@PathVariable("gameCode") String gameCode, @RequestBody MiniGameMessage miniGameMessage) {
+        MiniGame miniGameTemplate = miniGameService.getMiniGameById(miniGameMessage.getMiniGameId());
         MiniGame miniGameClone = miniGameService.cloneMiniGame(miniGameTemplate);
         if (miniGameClone != null) {
             if (miniGameClone instanceof PasscodeMiniGame passcodeMiniGame) {
                 int randomSum = passcodeMiniGameService.generateRandomSum();
                 passcodeMiniGame.setRandomSum(randomSum);
-                passcodeMiniGameService.saveNewInstance(gameCode, startMiniGameMessage.getTaskId(), passcodeMiniGame);
+                passcodeMiniGameService.saveNewInstance(gameCode, miniGameMessage.getTaskId(), passcodeMiniGame);
             }
             if (miniGameClone instanceof ColorSeqMiniGame colorSeqMiniGame) {
-                colorSeqMiniGameService.saveNewInstance(gameCode, startMiniGameMessage.getTaskId(), colorSeqMiniGame);
+                colorSeqMiniGameService.saveNewInstance(gameCode, miniGameMessage.getTaskId(), colorSeqMiniGame);
+            }
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Cancel a mini game")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Mini game cancelled successfully"),
+            @ApiResponse(responseCode = "404", description = "Mini game not found")
+    })
+    @PostMapping("/minigame/{gameCode}/cancel")
+    public ResponseEntity<Void> cancelTask(@PathVariable("gameCode") String gameCode, @RequestBody MiniGameMessage miniGameMessage) {
+        MiniGame miniGame = miniGameService.getMiniGameById(miniGameMessage.getMiniGameId());
+        if (miniGame != null) {
+            if (miniGame instanceof PasscodeMiniGame) {
+                passcodeMiniGameService.deleteInstance(gameCode, miniGameMessage.getTaskId());
+            }
+            if (miniGame instanceof ColorSeqMiniGame) {
+                colorSeqMiniGameService.deleteInstance(gameCode, miniGameMessage.getTaskId());
             }
         }
 

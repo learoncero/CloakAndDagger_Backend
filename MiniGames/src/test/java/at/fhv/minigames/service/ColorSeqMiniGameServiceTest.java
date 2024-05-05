@@ -1,6 +1,5 @@
 package at.fhv.minigames.service;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+
 import at.fhv.minigames.model.ColorSeqMiniGame;
 import at.fhv.minigames.repository.ColorSeqMiniGameRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +11,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ColorSequenceMiniGameServiceTest {
 
@@ -44,7 +46,7 @@ class ColorSequenceMiniGameServiceTest {
 
     @Test
     void testCreateShuffledSequence() {
-        List<String> colors = Arrays.asList("red", "blue", "green","yellow");
+        List<String> colors = Arrays.asList("red", "blue", "green", "yellow");
         List<String> original = List.copyOf(colors);
 
         List<String> shuffled = colorSequenceMiniGameService.createShuffledSequence(colors);
@@ -56,7 +58,7 @@ class ColorSequenceMiniGameServiceTest {
     void testVerifySequence_Correct() {
         String gameCode = "game1";
         int taskId = 1;
-        List<String> correctSequence = Arrays.asList("red", "blue", "green","yellow");
+        List<String> correctSequence = Arrays.asList("red", "blue", "green", "yellow");
         ColorSeqMiniGame miniGame = new ColorSeqMiniGame();
 
         when(colorSeqMiniGameRepository.getInstance(gameCode, taskId)).thenReturn(miniGame);
@@ -73,7 +75,7 @@ class ColorSequenceMiniGameServiceTest {
         String gameCode = "game2";
         int taskId = 2;
         List<String> submitted = Arrays.asList("red", "green", "blue", "yellow");
-        List<String> correct = Arrays.asList("red", "blue", "green","yellow");
+        List<String> correct = Arrays.asList("red", "blue", "green", "yellow");
         ColorSeqMiniGame miniGame = new ColorSeqMiniGame();
 
         when(colorSeqMiniGameRepository.getInstance(gameCode, taskId)).thenReturn(miniGame);

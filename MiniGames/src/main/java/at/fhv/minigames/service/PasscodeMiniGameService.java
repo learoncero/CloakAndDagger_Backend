@@ -52,7 +52,7 @@ public class PasscodeMiniGameService {
         passcodeTaskRepository.saveInstance(gameCode, taskId, miniGame);
     }
 
-    private void deleteInstance(String gameCode, int taskId) {
+    public void deleteInstance(String gameCode, int taskId) {
         passcodeTaskRepository.removeInstance(gameCode, taskId);
     }
 }

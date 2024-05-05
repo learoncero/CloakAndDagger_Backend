@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StartMiniGameMessage {
+public class MiniGameMessage {
     private int miniGameId;
     private int taskId;
 }
