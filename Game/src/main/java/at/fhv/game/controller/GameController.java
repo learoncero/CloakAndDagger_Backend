@@ -267,6 +267,11 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
+    @Operation(summary = "Get the isActive status of a task")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task status retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Game or task not found")
+    })
     @PostMapping("/game/task/{gameCode}/status")
     public ResponseEntity<Boolean> getActiveStatus(@PathVariable String gameCode, @RequestBody int taskId) {
         Game game = gameService.getGameByCode(gameCode);
@@ -278,6 +283,11 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
+    @Operation(summary = "Set the isActive status of a task")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task status set successfully"),
+            @ApiResponse(responseCode = "404", description = "Game or task not found")
+    })
     @PostMapping("/game/task/{gameCode}/active")
     public ResponseEntity<Boolean> setActiveStatus(@PathVariable String gameCode, @RequestBody int taskId) {
         Game game = gameService.getGameByCode(gameCode);
