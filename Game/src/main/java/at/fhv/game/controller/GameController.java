@@ -252,19 +252,22 @@ public class GameController {
         return ResponseEntity.ok().body(game);
     }
 
-    @Operation(summary = "Mark a task as done")
+    @Operation(summary = "Conditionally mark a task as done")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task marked as done successfully"),
             @ApiResponse(responseCode = "404", description = "Game or task not found")
     })
     @PostMapping("/game/task/{gameCode}/done")
-    public ResponseEntity<Void> taskDone(@PathVariable String gameCode, @RequestBody int taskId) {
+    public ResponseEntity<Boolean> taskDone(@PathVariable String gameCode, @RequestBody int taskId) {
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
             if (taskService.taskDone(game, taskId)) {
                 return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.ok(true);
             }
         }
+
         return ResponseEntity.notFound().build();
     }
 

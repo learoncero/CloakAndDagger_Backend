@@ -39,8 +39,12 @@ public class TaskService {
     public boolean taskDone(Game game, int taskId) {
         for (Task t : game.getTasks()) {
             if (t.getTaskId() == taskId) {
-                t.setCompleted(true);
-                return true;
+                if (t.isCompleted()) {
+                    return false;
+                } else {
+                    t.setCompleted(true);
+                    return true;
+                }
             }
         }
 
