@@ -18,9 +18,11 @@ import lombok.Setter;
 public class PlayerKillMessage {
     private String gameCode;
     private String playerToKillId;
+    private String nearbyTask;
 
-    public PlayerKillMessage(String gameCode, String playerToKillId) {
+    public PlayerKillMessage(String gameCode, String playerToKillId, String nearbyTask) {
         this.gameCode = gameCode;
         this.playerToKillId = playerToKillId;
+        this.nearbyTask = nearbyTask;
     }
 }
