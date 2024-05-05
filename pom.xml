@@ -21,6 +21,8 @@
         <module>Game</module>
         <module>Chat</module>
         <module>Tasks</module>
+        <module>AdminServer</module>
+        <module>EurekaServer</module>
     </modules>
 
     <properties>
