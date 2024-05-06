@@ -177,7 +177,10 @@ public class GameController {
     @MessageMapping("/game/kill")
     @SendTo("/topic/playerKill")
     public ResponseEntity<Game> handleKill(@Payload PlayerKillMessage playerKillMessage) {
-        int taskId = Integer.parseInt(playerKillMessage.getNearbyTask());
+        int taskId = -1;
+        if (playerKillMessage.getNearbyTask() != null) {
+            taskId = Integer.parseInt(playerKillMessage.getNearbyTask());
+        }
         int playerToKillId = Integer.parseInt(playerKillMessage.getPlayerToKillId());
         String gameCode = playerKillMessage.getGameCode();
         Game game = gameService.killPlayer(gameCode, playerToKillId, taskId);

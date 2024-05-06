@@ -51,7 +51,7 @@ public class GameService {
     public Game killPlayer(String gameCode, int playerId, int taskId) {
         Game game = gameRepository.findByGameCode(gameCode);
         if (game != null) {
-            if (taskService.getStatus(game, taskId)) {
+            if (taskId != -1 && taskService.getStatus(game, taskId)) {
                 taskService.setStatus(game, taskId, false);
             }
 
