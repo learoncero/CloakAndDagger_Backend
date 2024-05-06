@@ -14,11 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class GameService {
     private final GameRepository gameRepository;
+    private final TaskService taskService;
     private ConcurrentHashMap<Integer, PlayerActivity> playerActivities = new ConcurrentHashMap<>();
 
     @Autowired
-    public GameService(GameRepository gameRepository) {
+    public GameService(GameRepository gameRepository, TaskService taskService) {
         this.gameRepository = gameRepository;
+        this.taskService = taskService;
     }
 
     public Game createGame(int numberOfPlayers, int numberOfImpostors, String map) {
@@ -46,9 +48,13 @@ public class GameService {
         return false;
     }
 
-    public Game killPlayer(String gameCode, int playerId) {
+    public Game killPlayer(String gameCode, int playerId, int taskId) {
         Game game = gameRepository.findByGameCode(gameCode);
         if (game != null) {
+            if (taskId != -1 && taskService.getStatus(game, taskId)) {
+                taskService.setStatus(game, taskId, false);
+            }
+
             Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
             if (player != null) {
                 if (player.getRole().equals(Role.CREWMATE)) {
