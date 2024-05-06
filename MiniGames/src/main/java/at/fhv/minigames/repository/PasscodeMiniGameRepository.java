@@ -36,6 +36,10 @@ public class PasscodeMiniGameRepository {
         if (gameTasks != null) {
             gameTasks.remove(taskId);
         }
+
+        if (gameTasks != null && gameTasks.isEmpty()) {
+            taskMap.remove(gameCode);
+        }
     }
 }
 

@@ -1,11 +1,11 @@
 package at.fhv.minigames.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import at.fhv.minigames.model.ColorSeqMiniGame;
 import at.fhv.minigames.repository.ColorSeqMiniGameRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class ColorSeqMiniGameRepositoryTest {
     private ColorSeqMiniGameRepository repository;

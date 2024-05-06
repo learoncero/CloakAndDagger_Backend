@@ -30,13 +30,13 @@ public class ColorSequenceMiniGameService {
 
     public boolean verifySequence(List<String> submittedColors, List<String> shuffledColors, int taskId, String gameCode) {
         ColorSeqMiniGame colorSeqMiniGame = colorSeqMiniGameRepository.getInstance(gameCode, taskId);
-        if(colorSeqMiniGame != null) {
+        if (colorSeqMiniGame != null) {
             colorSeqMiniGame.setEqual(submittedColors.equals(shuffledColors));
-            if(colorSeqMiniGame.isEqual()) {
+            if (colorSeqMiniGame.isEqual()) {
                 restTemplate.postForEntity("http://localhost:5010/api/game/task/" + gameCode + "/done", taskId, Void.class);
                 deleteInstance(gameCode, taskId);
             } else {
-                colorSeqMiniGameRepository.saveInstance(gameCode,taskId,colorSeqMiniGame);
+                colorSeqMiniGameRepository.saveInstance(gameCode, taskId, colorSeqMiniGame);
             }
 
         }
@@ -44,11 +44,12 @@ public class ColorSequenceMiniGameService {
         assert colorSeqMiniGame != null;
         return colorSeqMiniGame.isEqual();
     }
+
     public void saveNewInstance(String gameCode, int taskId, ColorSeqMiniGame miniGame) {
         colorSeqMiniGameRepository.saveInstance(gameCode, taskId, miniGame);
     }
 
-    private void deleteInstance(String gameCode, int taskId) {
+    public void deleteInstance(String gameCode, int taskId) {
         colorSeqMiniGameRepository.removeInstance(gameCode, taskId);
     }
 }
