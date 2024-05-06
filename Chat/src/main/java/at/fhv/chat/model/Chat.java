@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,10 +14,14 @@ public class Chat {
     private String id;
 
     @Schema(description = "List of usernames of active players in the chat")
-    private List<String> activePlayersUsernames;
+    private List<ChatMessage> chatMessages;
 
-    public Chat(String gameCode, List<String> activePlayersUsernames) {
-        this.id = "Chat for game with game code: " + gameCode;
-        this.activePlayersUsernames = activePlayersUsernames;
+    public Chat(String gameCode) {
+        this.id = "Chat_" + gameCode;
+        this.chatMessages = new ArrayList<>();
+    }
+
+    public void addMessage(String message, String sender) {
+        chatMessages.add(new ChatMessage(message, sender));
     }
 }
