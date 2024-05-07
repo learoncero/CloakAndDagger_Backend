@@ -24,4 +24,8 @@ public class ChatRepository {
                 .findFirst()
                 .orElse(null);
     }
+
+    public void removeChat(Chat chat) {
+        chats.remove(chat);
+    }
 }

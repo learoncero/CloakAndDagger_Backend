@@ -28,12 +28,33 @@ public class ChatController {
 
     @Operation(summary = "Start a chat")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Chat started successfully")
+            @ApiResponse(responseCode = "200", description = "Chat started successfully"),
+            @ApiResponse(responseCode = "404", description = "Chat could not be started successfully")
     })
-    @PostMapping("/{gameCode}/chat")
+    @PostMapping("/chat/{gameCode}/start")
     public ResponseEntity<Chat> startChat(@PathVariable String gameCode) {
         Chat chat = chatService.startChat(gameCode);
-        return ResponseEntity.ok(chat);
+
+        if (chat != null) {
+            return ResponseEntity.ok(chat);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @Operation(summary = "End a chat")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Chat ended successfully"),
+            @ApiResponse(responseCode = "404", description = "Chat not found")
+    })
+    @PostMapping("/{gameCode}/chat/end")
+    public ResponseEntity<Void> endChat(@PathVariable String gameCode) {
+        Chat chat = chatService.endChat(gameCode);
+
+        if (chat != null) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @MessageMapping("/chat/sendMessage")

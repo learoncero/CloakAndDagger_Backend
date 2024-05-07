@@ -27,4 +27,11 @@ public class ChatService {
 
         return chat;
     }
+
+    public Chat endChat(String gameCode) {
+        Chat chat = chatRepository.getChat(gameCode);
+        chatRepository.removeChat(chat);
+
+        return chat;
+    }
 }
