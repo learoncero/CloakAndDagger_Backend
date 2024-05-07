@@ -11,12 +11,15 @@ public class PlayerJoinMessage {
     private Position position;
     private String gameCode;
 
+    private String playerColor;
+
     public PlayerJoinMessage() {
     }
 
-    public PlayerJoinMessage(String username, Position position) {
+    public PlayerJoinMessage(String username, Position position, String playerColor) {
         this.username = username;
         this.position = position;
+        this.playerColor = playerColor;
     }
 
 }

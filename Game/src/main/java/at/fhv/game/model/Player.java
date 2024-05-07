@@ -24,8 +24,11 @@ public class Player {
 
     @Schema(description = "Flag indicating if the player is currently moving")
     private boolean isMoving;
+    @Schema(description = "The color of the Player")
+    private boolean playerColor;
 
-    public Player(String username, Position position, Game game) {
+
+    public Player(String username, Position position, Game game, String playerColor) {
         this.id = idCounter++;
         this.username = username;
         this.position = position;
