@@ -1,7 +1,10 @@
 package at.fhv.game.service;
 
 import at.fhv.game.model.*;
+import at.fhv.game.model.messages.PlayerJoinMessage;
+import at.fhv.game.model.messages.PlayerMoveMessage;
 import at.fhv.game.utils.RandomRoleAssigner;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +18,9 @@ public class PlayerService {
         this.impostorIndices = new ArrayList<>();
     }
 
-    public Player createPlayer(String username, Position randomPosition, Game game) {
-        Player player = new Player(username, randomPosition, game);
+    public Player createPlayer(String username, Position randomPosition, Game game, String playerColor) {
+
+        Player player = new Player(username, randomPosition, game, playerColor );
 
         return player;
     }

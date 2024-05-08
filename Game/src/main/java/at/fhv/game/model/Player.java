@@ -24,8 +24,11 @@ public class Player {
 
     @Schema(description = "Flag indicating if the player is currently moving")
     private boolean isMoving;
+    @Schema(description = "The color of the Player")
+    private String playerColor;
 
-    public Player(String username, Position position, Game game) {
+
+    public Player(String username, Position position, Game game, String playerColor) {
         this.id = idCounter++;
         this.username = username;
         this.position = position;
@@ -33,6 +36,7 @@ public class Player {
         this.role = Role.CREWMATE;
         this.isMirrored = false;
         this.isMoving = false;
+        this.playerColor = playerColor;
     }
 
     public Player(String username, Position position) {
@@ -94,5 +98,12 @@ public class Player {
 
     public void setMoving(boolean moving) {
         this.isMoving = moving;
+    }
+    public String getPlayerColor() {
+        return playerColor;
+    }
+
+    public void setPlayerColor(String playerColor) {
+        this.playerColor = playerColor;
     }
 }

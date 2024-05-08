@@ -58,7 +58,8 @@ public class GameController {
 
         //Create player, assign random position and role
         Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
-        Player player = playerService.createPlayer(createGameMessage.getPlayer().getUsername(), randomPosition, game);
+        Player player = playerService.createPlayer(createGameMessage.getPlayer().getUsername(), randomPosition, game, createGameMessage.getPlayerColor());
+        System.out.println(createGameMessage.getPlayer().getPlayerColor());
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
 
@@ -132,7 +133,7 @@ public class GameController {
             }
 
             Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
-            Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game);
+            Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game, joinMessage.getPlayerColor() );
             game.getPlayers().add(player);
 
             //Assign roles randomly to players
