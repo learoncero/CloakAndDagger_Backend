@@ -200,6 +200,7 @@ public class GameController {
         Game game = gameService.reportBody(gameCode, bodyToReportId);
 
         if (game != null) {
+            restTemplate.postForEntity("http://localhost:5011/api/chat/" + gameCode + "/start", null, Void.class);
             return ResponseEntity.ok().body(game);
         }
 
