@@ -13,12 +13,14 @@ public class CreateGameMessage {
     private String map;
     private String playerColor;
 
-    public CreateGameMessage(Player player, String playerColor, int numberOfPlayers, int numberOfImpostors, String map) {
+    public CreateGameMessage(Player player, int numberOfPlayers, int numberOfImpostors, String map, String playerColor) {
+
         this.player = player;
         this.playerColor = playerColor;
         this.numberOfPlayers = numberOfPlayers;
         this.numberOfImpostors = numberOfImpostors;
         this.map = map;
+
     }
 
     public CreateGameMessage() {
