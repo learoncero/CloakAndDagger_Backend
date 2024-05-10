@@ -1,6 +1,7 @@
 package at.fhv.minigames.service;
 
 import at.fhv.minigames.model.ColorSeqMiniGame;
+import at.fhv.minigames.model.DecipherSymbolsMiniGame;
 import at.fhv.minigames.model.MiniGame;
 import at.fhv.minigames.model.PasscodeMiniGame;
 import at.fhv.minigames.repository.MiniGameRepository;
@@ -50,6 +51,16 @@ public class MiniGameService {
             clonedColorSeqGame.setShuffledColors(originalColorSeqGame.getShuffledColors());
 
             clone = clonedColorSeqGame;
+        } else if (miniGameTemplate instanceof DecipherSymbolsMiniGame) {
+            DecipherSymbolsMiniGame originalDecipherSymbolsGame = (DecipherSymbolsMiniGame) miniGameTemplate;
+            DecipherSymbolsMiniGame clonedDecipherSymbolsGame = new DecipherSymbolsMiniGame();
+
+            clonedDecipherSymbolsGame.setId(originalDecipherSymbolsGame.getId());
+            clonedDecipherSymbolsGame.setTitle(originalDecipherSymbolsGame.getTitle());
+            clonedDecipherSymbolsGame.setDescription(originalDecipherSymbolsGame.getDescription());
+            clonedDecipherSymbolsGame.setSymbols(originalDecipherSymbolsGame.getSymbols());
+
+            clone = clonedDecipherSymbolsGame;
         }
 
         return clone;

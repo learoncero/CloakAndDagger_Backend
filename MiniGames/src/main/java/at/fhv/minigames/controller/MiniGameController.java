@@ -1,10 +1,12 @@
 package at.fhv.minigames.controller;
 
 import at.fhv.minigames.model.ColorSeqMiniGame;
+import at.fhv.minigames.model.DecipherSymbolsMiniGame;
 import at.fhv.minigames.model.MiniGame;
 import at.fhv.minigames.model.PasscodeMiniGame;
 import at.fhv.minigames.model.messages.MiniGameMessage;
 import at.fhv.minigames.service.ColorSequenceMiniGameService;
+import at.fhv.minigames.service.DecipherSymbolsMiniGameService;
 import at.fhv.minigames.service.MiniGameService;
 import at.fhv.minigames.service.PasscodeMiniGameService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,13 +25,14 @@ public class MiniGameController {
     private final MiniGameService miniGameService;
     private final PasscodeMiniGameService passcodeMiniGameService;
     private final ColorSequenceMiniGameService colorSeqMiniGameService;
+    private final DecipherSymbolsMiniGameService decipherSymbolsMiniGameService;
 
     @Autowired
-    public MiniGameController(MiniGameService miniGameService, PasscodeMiniGameService passcodeMiniGameService, ColorSequenceMiniGameService colorSeqMiniGameService) {
+    public MiniGameController(MiniGameService miniGameService, PasscodeMiniGameService passcodeMiniGameService, ColorSequenceMiniGameService colorSeqMiniGameService, DecipherSymbolsMiniGameService decipherSymbolsMiniGameService) {
         this.miniGameService = miniGameService;
         this.passcodeMiniGameService = passcodeMiniGameService;
         this.colorSeqMiniGameService = colorSeqMiniGameService;
-
+        this.decipherSymbolsMiniGameService = decipherSymbolsMiniGameService;
     }
 
     @Operation(summary = "Get all mini games")
@@ -57,8 +60,13 @@ public class MiniGameController {
                 passcodeMiniGame.setRandomSum(randomSum);
                 passcodeMiniGameService.saveNewInstance(gameCode, miniGameMessage.getTaskId(), passcodeMiniGame);
             }
+
             if (miniGameClone instanceof ColorSeqMiniGame colorSeqMiniGame) {
                 colorSeqMiniGameService.saveNewInstance(gameCode, miniGameMessage.getTaskId(), colorSeqMiniGame);
+            }
+
+            if (miniGameClone instanceof DecipherSymbolsMiniGame decipherSymbolsMiniGame) {
+                decipherSymbolsMiniGameService.saveNewInstance(gameCode, miniGameMessage.getTaskId(), decipherSymbolsMiniGame);
             }
         }
 
@@ -77,8 +85,13 @@ public class MiniGameController {
             if (miniGame instanceof PasscodeMiniGame) {
                 passcodeMiniGameService.deleteInstance(gameCode, miniGameMessage.getTaskId());
             }
+
             if (miniGame instanceof ColorSeqMiniGame) {
                 colorSeqMiniGameService.deleteInstance(gameCode, miniGameMessage.getTaskId());
+            }
+
+            if (miniGame instanceof DecipherSymbolsMiniGame) {
+                decipherSymbolsMiniGameService.deleteInstance(gameCode, miniGameMessage.getTaskId());
             }
         }
 

@@ -1,6 +1,7 @@
 package at.fhv.minigames.repository;
 
 import at.fhv.minigames.model.ColorSeqMiniGame;
+import at.fhv.minigames.model.DecipherSymbolsMiniGame;
 import at.fhv.minigames.model.MiniGame;
 import at.fhv.minigames.model.PasscodeMiniGame;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,8 @@ public class MiniGameRepository {
 
     private void initialiseMiniGames() {
         miniGames.add(new PasscodeMiniGame(1, "Passcode", "Sum up numbers to get the right passcode"));
-        miniGames.add(new ColorSeqMiniGame(2, "ColorSequence", "Choose the right order of Colors"));
+        miniGames.add(new ColorSeqMiniGame(2, "Color Sequence", "Choose the right order of Colors"));
+        miniGames.add(new DecipherSymbolsMiniGame(3, "Decipher Symbols", "Decipher the symbols three times in a row"));
     }
 
     public MiniGame getMiniGameById(int id) {
