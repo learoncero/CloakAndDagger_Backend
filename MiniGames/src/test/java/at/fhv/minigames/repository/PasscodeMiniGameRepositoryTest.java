@@ -1,7 +1,6 @@
-package at.fhv.minigames.service;
+package at.fhv.minigames.repository;
 
 import at.fhv.minigames.model.PasscodeMiniGame;
-import at.fhv.minigames.repository.PasscodeMiniGameRepository;
 import org.junit.Before;
 import org.junit.Test;
 

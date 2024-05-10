@@ -1,7 +1,6 @@
-package at.fhv.minigames.service;
+package at.fhv.minigames.repository;
 
 import at.fhv.minigames.model.ColorSeqMiniGame;
-import at.fhv.minigames.repository.ColorSeqMiniGameRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
