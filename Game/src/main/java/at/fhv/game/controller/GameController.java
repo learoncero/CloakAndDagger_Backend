@@ -267,6 +267,7 @@ public class GameController {
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
             if (taskService.taskDone(game, taskId)) {
+                gameService.checkCrewmatesWin(game);
                 return ResponseEntity.ok().build();
             } else {
                 return ResponseEntity.ok(true);

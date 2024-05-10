@@ -76,6 +76,15 @@ public class GameService {
         }
     }
 
+    public void checkCrewmatesWin(Game game) {
+        if ((game.getNumberOfImpostors() > 0) && (game.getPlayers().stream().filter(p -> p.getRole().equals(Role.IMPOSTOR)).count() == 0)) {
+            game.setGameStatus(GameStatus.CREWMATES_WIN);
+        }
+        if (game.getTasks().stream().filter(t -> !t.isCompleted()).count() == 0) {
+            game.setGameStatus(GameStatus.CREWMATES_WIN);
+        }
+    }
+
     public void updatePlayerActivity(int playerId, String gameCode) {
         long currentTime = System.currentTimeMillis();
         PlayerActivity activity = new PlayerActivity(currentTime, gameCode);
