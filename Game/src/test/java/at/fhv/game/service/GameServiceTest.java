@@ -22,13 +22,15 @@ public class GameServiceTest {
 
     @Mock
     private GameRepository gameRepository;
+    @Mock
+    private TaskService taskService;
 
 
     private GameService gameService;
 
     @Before
     public void setUp() {
-        gameService = new GameService(gameRepository);
+        gameService = new GameService(gameRepository, taskService);
     }
 
     @Test
@@ -75,7 +77,7 @@ public class GameServiceTest {
         Mockito.when(gameRepository.findByGameCode(any())).thenReturn(game);
         doNothing().when(gameRepository).save(any(Game.class));
 
-        game = gameService.killPlayer("gameCode", 1);
+        game = gameService.killPlayer("gameCode", 1, -1);
 
         assertEquals(Role.CREWMATE_GHOST, game.getPlayers().get(0).getRole());
     }
@@ -92,7 +94,7 @@ public class GameServiceTest {
 
         when(gameRepository.findByGameCode(any())).thenReturn(initialGame);
 
-        Game updatedGame = gameService.killPlayer("gameCode", 2);
+        Game updatedGame = gameService.killPlayer("gameCode", 2, -1);
 
         assertEquals(Role.CREWMATE, updatedGame.getPlayers().get(0).getRole());
     }
@@ -146,7 +148,7 @@ public class GameServiceTest {
         when(gameRepository.findByGameCode(any())).thenReturn(game);
 
         // Call the method to simulate killing the crewmate
-        gameService.killPlayer("gameCode", 3);
+        gameService.killPlayer("gameCode", 3, -1);
 
         // Check if the game status is impostors win
         assertEquals(GameStatus.IMPOSTORS_WIN, game.getGameStatus());
@@ -201,7 +203,110 @@ public class GameServiceTest {
         Game updatedGame = gameService.cancelSabotage(game);
 
         for (Sabotage s : updatedGame.getSabotages()) {
-            assertNull(s.getPosition());
+            assertEquals(s.getPosition().getX(), -1);
+            assertEquals(s.getPosition().getY(), -1);
         }
+    }
+
+    @Test
+    public void checkCrewmatesWin_NoImpostors_NoTasksRemaining() {
+        // Create a game with no impostors and no tasks remaining
+        Game game = new Game();
+        List<Player> players = new ArrayList<>();
+        Player crewmate1 = new Player();
+        crewmate1.setRole(Role.CREWMATE);
+        players.add(crewmate1);
+        Player impostorGhost = new Player();
+        impostorGhost.setRole(Role.IMPOSTOR_GHOST);
+        players.add(impostorGhost);
+        game.setPlayers(players);
+        Task task1 = new Task();
+        task1.setCompleted(true);
+        ArrayList tasks = new ArrayList();
+        tasks.add(task1);
+        game.setTasks(tasks);
+
+        // Call the method to check crewmates win condition
+        gameService.checkCrewmatesWin(game);
+
+        // Check if the game status is CREWMATES_WIN
+        assertEquals(GameStatus.CREWMATES_WIN, game.getGameStatus());
+    }
+
+    @Test
+    public void checkCrewmatesWin_NoImpostors_TasksRemaining() {
+        // Create a game with no impostors but tasks remaining
+        Game game = new Game();
+        game.setNumberOfImpostors(1);
+        List<Player> players = new ArrayList<>();
+        Player crewmate1 = new Player();
+        crewmate1.setRole(Role.CREWMATE);
+        players.add(crewmate1);
+        Player impostorGhost = new Player();
+        impostorGhost.setRole(Role.IMPOSTOR_GHOST);
+        players.add(impostorGhost);
+        game.setPlayers(players);
+        Task task1 = new Task();
+        task1.setCompleted(false);
+        ArrayList tasks = new ArrayList();
+        tasks.add(task1);
+        game.setTasks(tasks);
+
+        // Call the method to check crewmates win condition
+        gameService.checkCrewmatesWin(game);
+
+        // Check if the game status is not CREWMATES_WIN
+        assertEquals(GameStatus.CREWMATES_WIN, game.getGameStatus());
+    }
+
+    @Test
+    public void checkCrewmatesWin_ImpostorsExist_NoTasksRemaining() {
+        // Create a game with impostors but no tasks remaining
+        Game game = new Game();
+        game.setNumberOfImpostors(1);
+        List<Player> players = new ArrayList<>();
+        Player crewmate1 = new Player();
+        crewmate1.setRole(Role.CREWMATE);
+        players.add(crewmate1);
+        Player impostor = new Player();
+        impostor.setRole(Role.IMPOSTOR);
+        players.add(impostor);
+        game.setPlayers(players);
+        Task task1 = new Task();
+        task1.setCompleted(true);
+        ArrayList tasks = new ArrayList();
+        tasks.add(task1);
+        game.setTasks(tasks);
+
+        // Call the method to check crewmates win condition
+        gameService.checkCrewmatesWin(game);
+
+        // Check if the game status is not CREWMATES_WIN
+        assertEquals(GameStatus.CREWMATES_WIN, game.getGameStatus());
+    }
+
+    @Test
+    public void checkCrewmatesWin_ImpostorsExist_TasksRemaining() {
+        // Create a game with impostors and tasks remaining
+        Game game = new Game();
+        List<Player> players = new ArrayList<>();
+        Player crewmate1 = new Player();
+        crewmate1.setRole(Role.CREWMATE);
+        players.add(crewmate1);
+        Player impostor = new Player();
+        impostor.setRole(Role.IMPOSTOR);
+        players.add(impostor);
+        game.setPlayers(players);
+        Task task1 = new Task();
+        task1.setCompleted(false);
+        ArrayList tasks = new ArrayList();
+        tasks.add(task1);
+        game.setTasks(tasks);
+
+        // Call the method to check crewmates win condition
+        gameService.checkCrewmatesWin(game);
+
+        // Check if the game status is not CREWMATES_WIN
+        assertNotEquals(GameStatus.CREWMATES_WIN, game.getGameStatus());
     }
 }
