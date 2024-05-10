@@ -235,7 +235,7 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 251)
     public void handleInactivity() {
         List<PlayerMoveMessage> inactiveMessages = gameService.checkInactivity();
         inactiveMessages.forEach(message -> {

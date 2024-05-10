@@ -105,7 +105,7 @@ public class GameService {
                         .findFirst()
                         .ifPresent(player -> {
 
-                            if ((now - activity.getLastMoveTime()) > 1000) {
+                            if ((now - activity.getLastMoveTime()) > 251) {
                                 player.setMoving(false);
                                 PlayerMoveMessage message = new PlayerMoveMessage(
                                         playerId,
