@@ -1,7 +1,8 @@
-package at.fhv.minigames.service;
+package at.fhv.minigames;
 
 import at.fhv.minigames.controller.MiniGameController;
 import at.fhv.minigames.model.MiniGame;
+import at.fhv.minigames.service.MiniGameService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
