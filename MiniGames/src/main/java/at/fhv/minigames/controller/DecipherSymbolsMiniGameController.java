@@ -38,7 +38,6 @@ public class DecipherSymbolsMiniGameController {
         List<String> sequence = decipherSymbolsMiniGameService.createShuffledSymbols(decipherSymbolsMiniGame.getSymbols(), submission.getCurrentRound());
         decipherSymbolsMiniGame.setShuffledSymbols(sequence);
 
-        System.out.println("Shuffled symbols: " + sequence);
         return ResponseEntity.ok(sequence);
     }
 
@@ -54,7 +53,6 @@ public class DecipherSymbolsMiniGameController {
         String correctSymbol = decipherSymbolsMiniGameService.getCorrectSymbol(decipherSymbolsMiniGame.getShuffledSymbols());
         decipherSymbolsMiniGame.setCorrectSymbol(correctSymbol);
 
-        System.out.println("Correct symbol: " + correctSymbol);
         return ResponseEntity.ok(List.of(correctSymbol));
     }
 
