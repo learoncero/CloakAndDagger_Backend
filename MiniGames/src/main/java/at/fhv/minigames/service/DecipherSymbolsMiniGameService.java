@@ -28,8 +28,6 @@ public class DecipherSymbolsMiniGameService {
     public List<String> createShuffledSymbols(List<String> symbols, int currentRound) {
         shuffleList(symbols);
 
-        System.out.println("Shuffled symbols: " + symbols);
-
         Map<Integer, Integer> roundEndings = Map.of(
                 1, 9,
                 2, 16,
@@ -66,7 +64,6 @@ public class DecipherSymbolsMiniGameService {
 
             if (correctSymbol.equals(symbol)) {
                 if (currentRound == 3) {
-                    System.out.println("Game done");
                     restTemplate.postForEntity("http://localhost:5010/api/game/task/" + gameCode + "/done", taskId, Void.class);
                     deleteInstance(gameCode, taskId);
                 }
