@@ -70,9 +70,18 @@ public class GameService {
         return game;
     }
 
-    private void checkImpostorWin(Game game) {
+    public void checkImpostorWin(Game game) {
         if (game.getPlayers().stream().filter(p -> p.getRole().equals(Role.CREWMATE)).count() == game.getPlayers().stream().filter(p -> p.getRole().equals(Role.IMPOSTOR)).count()) {
             game.setGameStatus(GameStatus.IMPOSTORS_WIN);
+        }
+    }
+
+    public void checkCrewmatesWin(Game game) {
+        if ((game.getNumberOfImpostors() > 0) && (game.getPlayers().stream().filter(p -> p.getRole().equals(Role.IMPOSTOR)).count() == 0)) {
+            game.setGameStatus(GameStatus.CREWMATES_WIN);
+        }
+        if (game.getTasks().stream().filter(t -> !t.isCompleted()).count() == 0) {
+            game.setGameStatus(GameStatus.CREWMATES_WIN);
         }
     }
 
@@ -157,6 +166,27 @@ public class GameService {
             }
         }
         gameRepository.save(game);
+        return game;
+    }
+
+    public Game eliminatePlayer(String gameCode, int playerId) {
+        Game game = gameRepository.findByGameCode(gameCode);
+        if (game != null) {
+            Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
+            if (player != null) {
+                switch (player.getRole()) {
+                    case CREWMATE:
+                        player.setRole(Role.CREWMATE_GHOST);
+                        break;
+                    case IMPOSTOR:
+                        player.setRole(Role.IMPOSTOR_GHOST);
+                        break;
+                    default:
+                        break;
+                }
+                gameRepository.save(game);
+            }
+        }
         return game;
     }
 }
