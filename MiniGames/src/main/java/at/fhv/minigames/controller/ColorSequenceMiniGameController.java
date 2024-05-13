@@ -37,9 +37,13 @@ public class ColorSequenceMiniGameController {
     public ResponseEntity<List<String>> getShuffledColors(@PathVariable("gameCode") String gameCode, @RequestBody int taskId) {
         ColorSeqMiniGame colorSeqMiniGame = colorSequenceMiniGameService.getInstance(gameCode, taskId);
 
-        List<String> sequence = colorSequenceMiniGameService.createShuffledSequence(colorSeqMiniGame.getColors());
+        if (colorSeqMiniGame != null) {
+            List<String> sequence = colorSequenceMiniGameService.createShuffledSequence(colorSeqMiniGame.getColors());
 
-        return ResponseEntity.ok(sequence);
+            return ResponseEntity.ok(sequence);
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Submit colors for a game task")
@@ -65,8 +69,11 @@ public class ColorSequenceMiniGameController {
     public ResponseEntity<List<String>> getInitialColor(@PathVariable("gameCode") String gameCode, @RequestBody int taskId) {
         ColorSeqMiniGame colorSeqMiniGame = colorSequenceMiniGameService.getInstance(gameCode, taskId);
 
-        return ResponseEntity.ok(colorSeqMiniGame.getColors());
+        if (colorSeqMiniGame != null) {
+            return ResponseEntity.ok(colorSeqMiniGame.getColors());
+        }
 
+        return ResponseEntity.notFound().build();
     }
 
 }
