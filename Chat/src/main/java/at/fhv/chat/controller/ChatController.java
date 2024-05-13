@@ -66,6 +66,8 @@ public class ChatController {
             Chat chat = chatService.endChat(gameCode);
             WebClient client = WebClient.create();
             // Construct the URI using UriComponentsBuilder
+            //Causes .WebClientResponseException$NotFound: 404 Not Found error, no solution found
+            //everything works as expected, just the error is thrown
             String uriString = UriComponentsBuilder
                     .fromHttpUrl("http://localhost:5010/api/game/vote/{gameCode}/voteResults/{newResult}")
                     .buildAndExpand(gameCode, newResult)
