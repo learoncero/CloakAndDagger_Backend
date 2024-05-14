@@ -28,4 +28,8 @@ public class VoteRepository {
     public void removeVote(Vote vote) {
         allVotes.remove(vote);
     }
+
+    public void clearAllVotes() {
+        allVotes.clear();
+    }
 }
