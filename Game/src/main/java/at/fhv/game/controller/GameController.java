@@ -154,13 +154,13 @@ public class GameController {
         }
     }
 
-    @MessageMapping("/move")
-    @SendTo("/topic/positionChange")
-    public ResponseEntity<Game> movePlayer(@Payload PlayerMoveMessage playerMoveMessage) {
+    @MessageMapping("/{gameCode}/move")
+    @SendTo("/topic/{gameCode}/positionChange")
+    public ResponseEntity<Game> movePlayer(@DestinationVariable String gameCode, @Payload PlayerMoveMessage playerMoveMessage) {
         int playerId = playerMoveMessage.getId();
-        Game game = gameService.getGameByCode(playerMoveMessage.getGameCode());
+        Game game = gameService.getGameByCode(gameCode);
         Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
-
+        System.out.println("Message was recieved");
         if (player != null) {
             Position newPosition = playerService.calculateNewPosition(player.getPosition(), playerMoveMessage.getKeyCode());
             Map map = mapService.getMapByName(game.getMap());
@@ -174,6 +174,7 @@ public class GameController {
 
         return ResponseEntity.notFound().build();
     }
+
 
     @MessageMapping("/game/kill")
     @SendTo("/topic/playerKill")
@@ -240,13 +241,15 @@ public class GameController {
         List<PlayerMoveMessage> inactiveMessages = gameService.checkInactivity();
         inactiveMessages.forEach(message -> {
             int playerId = message.getId();
-            Game updatedGame = gameService.getGameByCode(message.getGameCode());
+            String gameCode = message.getGameCode(); // Assuming the message contains the gameCode
+            Game updatedGame = gameService.getGameByCode(gameCode);
             Player player = updatedGame.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
             playerService.updatePlayerisMoving(player, message.isMoving());
 
-            messagingTemplate.convertAndSend("/topic/IdleChange", ResponseEntity.ok().body(updatedGame));
+            messagingTemplate.convertAndSend("/topic/" + gameCode + "/IdleChange", ResponseEntity.ok().body(updatedGame));
         });
     }
+
 
     @MessageMapping("/game/end")
     @SendTo("/topic/gameEnd")
