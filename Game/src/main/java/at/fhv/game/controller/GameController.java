@@ -312,4 +312,29 @@ public class GameController {
 
         return ResponseEntity.notFound().build();
     }
+
+    @Operation(summary = "Get the playerId that got the most votes")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "PlayerId to be eliminated retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "PlayerId or Game not found")
+    })
+    @PostMapping("/game/vote/{gameCode}/voteResults/{results}")
+    public void handleVoteResults(@PathVariable String gameCode, @PathVariable String results) {
+        Game game = gameService.getGameByCode(gameCode);
+        System.out.println("Vote Result received in GameController");
+        System.out.println("gameCode: " + gameCode + " results: " + results);
+        int intResults = Integer.parseInt(results);
+        if (intResults >= 1) {
+            game = gameService.eliminatePlayer(gameCode, intResults);
+            gameService.checkCrewmatesWin(game);
+            gameService.checkImpostorWin(game);
+        }
+        List<Integer> voteResults = game.getVotingResults();
+        if (voteResults != null) {
+            voteResults.add(intResults);
+            game.setVotingResults(voteResults);
+        }
+
+        messagingTemplate.convertAndSend("/topic/voteResults", game);
+    }
 }
