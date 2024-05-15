@@ -25,10 +25,7 @@ public class GameService {
 
     public Game createGame(int numberOfPlayers, int numberOfImpostors, String map) {
         Game game = new Game(numberOfPlayers, numberOfImpostors, map);
-        /*System.out.println("new Game in Create Game (GameService), Sabotages: ");
-        for(Sabotage s: game.getSabotages()){
-            System.out.println("Sabotage: " + s.getId() + ", (" + s.getPosition().getX() + ", " + s.getPosition().getY()+")");
-        }*/
+
         gameRepository.save(game);
 
         return game;

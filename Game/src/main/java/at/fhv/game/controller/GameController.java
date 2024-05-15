@@ -22,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/api")
@@ -110,7 +111,6 @@ public class GameController {
     @PostMapping("/game/join")
     public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage) {
         if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
-            System.out.println("Invalid join message");
             return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Invalid join message", null));
         }
 
@@ -118,17 +118,14 @@ public class GameController {
             Game game = gameService.getGameByCode(joinMessage.getGameCode());
 
             if (game == null) {
-                System.out.println("Game not found");
                 return ResponseEntity.notFound().build();
             }
 
             if (game.getPlayers().size() >= game.getNumberOfPlayers()) {
-                System.out.println("Game lobby is full");
                 return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Game lobby is full", null));
             }
 
             if (game.getPlayers().stream().anyMatch(p -> p.getUsername().equals(joinMessage.getUsername()))) {
-                System.out.println("Username is already taken");
                 return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Username is already taken", null));
             }
 
@@ -140,9 +137,28 @@ public class GameController {
             game.setPlayers(playerService.setRandomRole(game.getPlayers()));
             return ResponseEntity.ok().body(game);
         } catch (Exception e) {
-            System.out.println("Error creating player: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new CustomApiResponse<>(500, "Error creating player: " + e.getMessage(), null));
         }
+    }
+
+    @Operation(summary = "Leave a game")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Player left successfully"),
+            @ApiResponse(responseCode = "404", description = "Game or player not found")
+    })
+    @PostMapping("/game/{gameCode}/leave")
+    public ResponseEntity<Boolean> removePlayer(@RequestBody PlayerLeaveMessage leaveMessage, @PathVariable String gameCode) {
+        Game game = gameService.getGameByCode(gameCode);
+
+        if (game != null) {
+            Player player = game.getPlayers().stream().filter(p -> Objects.equals(p.getUsername(), leaveMessage.getUsername())).findFirst().orElse(null);
+            if (player != null) {
+                game.getPlayers().remove(player);
+                return ResponseEntity.ok(true);
+            }
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     //Todo: handle case when game is null
