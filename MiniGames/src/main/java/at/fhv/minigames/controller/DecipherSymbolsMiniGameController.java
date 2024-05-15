@@ -35,10 +35,14 @@ public class DecipherSymbolsMiniGameController {
     public ResponseEntity<List<String>> getShuffledSymbols(@PathVariable("gameCode") String gameCode, @RequestBody DecipherSymbolsMiniGameMessage submission) {
         DecipherSymbolsMiniGame decipherSymbolsMiniGame = decipherSymbolsMiniGameService.getInstance(gameCode, submission.getTaskId());
 
-        List<String> sequence = decipherSymbolsMiniGameService.createShuffledSymbols(decipherSymbolsMiniGame.getSymbols(), submission.getCurrentRound());
-        decipherSymbolsMiniGame.setShuffledSymbols(sequence);
+        if (decipherSymbolsMiniGame != null) {
+            List<String> sequence = decipherSymbolsMiniGameService.createShuffledSymbols(decipherSymbolsMiniGame.getSymbols(), submission.getCurrentRound());
+            decipherSymbolsMiniGame.setShuffledSymbols(sequence);
 
-        return ResponseEntity.ok(sequence);
+            return ResponseEntity.ok(sequence);
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Get correct symbol for a game task")
@@ -50,10 +54,14 @@ public class DecipherSymbolsMiniGameController {
     public ResponseEntity<List<String>> getCorrectSymbol(@PathVariable("gameCode") String gameCode, @RequestBody int taskId) {
         DecipherSymbolsMiniGame decipherSymbolsMiniGame = decipherSymbolsMiniGameService.getInstance(gameCode, taskId);
 
-        String correctSymbol = decipherSymbolsMiniGameService.getCorrectSymbol(decipherSymbolsMiniGame.getShuffledSymbols());
-        decipherSymbolsMiniGame.setCorrectSymbol(correctSymbol);
+        if (decipherSymbolsMiniGame != null) {
+            String correctSymbol = decipherSymbolsMiniGameService.getCorrectSymbol(decipherSymbolsMiniGame.getShuffledSymbols());
+            decipherSymbolsMiniGame.setCorrectSymbol(correctSymbol);
 
-        return ResponseEntity.ok(List.of(correctSymbol));
+            return ResponseEntity.ok(List.of(correctSymbol));
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Submit symbol for a game task")
