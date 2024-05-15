@@ -319,7 +319,7 @@ public class GameController {
             @ApiResponse(responseCode = "404", description = "PlayerId or Game not found")
     })
     @PostMapping("/game/vote/{gameCode}/voteResults/{results}")
-    public void handleVoteResults(@PathVariable String gameCode, @PathVariable String results) {
+    public ResponseEntity<Void> handleVoteResults(@PathVariable String gameCode, @PathVariable String results) {
         Game game = gameService.getGameByCode(gameCode);
         System.out.println("Vote Result received in GameController");
         System.out.println("gameCode: " + gameCode + " results: " + results);
@@ -336,5 +336,7 @@ public class GameController {
         }
 
         messagingTemplate.convertAndSend("/topic/voteResults", game);
+
+        return ResponseEntity.ok().build();
     }
 }
