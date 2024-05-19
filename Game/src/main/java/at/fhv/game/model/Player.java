@@ -10,8 +10,11 @@ public class Player {
     @Schema(description = "The username of the player")
     private String username;
 
-    @Schema(description = "The position of the player")
-    private Position position;
+    @Schema(description = "The position of the active player")
+    private Position playerPosition;
+
+    @Schema(description = "The position of the dead player body")
+    private Position deadBodyPosition;
 
     @Schema(description = "The game the player is associated with")
     private Game game;
@@ -28,25 +31,16 @@ public class Player {
     private String playerColor;
 
 
-    public Player(String username, Position position, Game game, String playerColor) {
+    public Player(String username, Position playerPosition, Game game, String playerColor) {
         this.id = idCounter++;
         this.username = username;
-        this.position = position;
+        this.playerPosition = playerPosition;
+        this.deadBodyPosition = new Position(-1, -1);
         this.game = game;
         this.role = Role.CREWMATE;
         this.isMirrored = false;
         this.isMoving = false;
         this.playerColor = playerColor;
-    }
-
-    public Player(String username, Position position) {
-        this.id = idCounter++;
-        this.username = username;
-        this.position = position;
-        this.game = new Game();
-        this.role = Role.CREWMATE;
-        this.isMirrored = false;
-        this.isMoving = false;
     }
 
     public Player() {
@@ -68,12 +62,20 @@ public class Player {
         this.username = username;
     }
 
-    public Position getPosition() {
-        return position;
+    public Position getPlayerPosition() {
+        return playerPosition;
     }
 
-    public void setPosition(Position position) {
-        this.position = position;
+    public void setPlayerPosition(Position playerPosition) {
+        this.playerPosition = playerPosition;
+    }
+
+    public Position getDeadBodyPosition() {
+        return deadBodyPosition;
+    }
+
+    public void setDeadBodyPosition(Position deadBodyPosition) {
+        this.deadBodyPosition = deadBodyPosition;
     }
 
     public Role getRole() {
