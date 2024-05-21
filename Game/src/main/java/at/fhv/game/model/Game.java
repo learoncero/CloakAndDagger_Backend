@@ -44,8 +44,11 @@ public class Game {
     @Schema(description = "List of reported bodies in the game")
     private List<Integer> reportedBodies;
 
-    @Schema(description = "List of eliminated players in the game, -1=tie, 0=no votes")
-    private List<Integer> votingResults;
+    @Schema(description = "List of votes and who voted")
+    private List<VoteEvent> voteEvents;
+
+    @Schema(description = "Voting Result, playerId when successful, -1=tie, 0=no votes")
+    private Integer votingResult;
 
     public Game(int numberOfPlayers, int numberOfImpostors, String map) {
         this.gameCode = GameCodeGenerator.generateGameCode();
@@ -58,7 +61,7 @@ public class Game {
         this.gameID = nextGameID;
         this.gameStatus = GameStatus.LOBBY;
         this.reportedBodies = new ArrayList<>();
-        this.votingResults = new ArrayList<>();
+        this.voteEvents = new ArrayList<>();
     }
 
     public Game() {
