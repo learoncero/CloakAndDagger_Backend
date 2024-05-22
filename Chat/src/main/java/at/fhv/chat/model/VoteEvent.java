@@ -27,4 +27,9 @@ public class VoteEvent {
 
     @Schema(description = "Player id for Player that cast a vote")
     private Integer votedBy;
+
+    public VoteEvent(Integer votedForPlayer, Integer votedBy) {
+        this.votedForPlayer = votedForPlayer;
+        this.votedBy = votedBy;
+    }
 }
