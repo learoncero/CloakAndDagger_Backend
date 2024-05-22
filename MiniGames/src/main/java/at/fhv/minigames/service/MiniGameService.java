@@ -1,9 +1,6 @@
 package at.fhv.minigames.service;
 
-import at.fhv.minigames.model.ColorSeqMiniGame;
-import at.fhv.minigames.model.DecipherSymbolsMiniGame;
-import at.fhv.minigames.model.MiniGame;
-import at.fhv.minigames.model.PasscodeMiniGame;
+import at.fhv.minigames.model.*;
 import at.fhv.minigames.repository.MiniGameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +48,7 @@ public class MiniGameService {
             clonedColorSeqGame.setShuffledColors(originalColorSeqGame.getShuffledColors());
 
             clone = clonedColorSeqGame;
+
         } else if (miniGameTemplate instanceof DecipherSymbolsMiniGame) {
             DecipherSymbolsMiniGame originalDecipherSymbolsGame = (DecipherSymbolsMiniGame) miniGameTemplate;
             DecipherSymbolsMiniGame clonedDecipherSymbolsGame = new DecipherSymbolsMiniGame();
@@ -61,6 +59,17 @@ public class MiniGameService {
             clonedDecipherSymbolsGame.setSymbols(originalDecipherSymbolsGame.getSymbols());
 
             clone = clonedDecipherSymbolsGame;
+
+        } else if (miniGameTemplate instanceof SortingAlgorithmMiniGame) {
+            SortingAlgorithmMiniGame originalSortingAlgorithmGame = (SortingAlgorithmMiniGame) miniGameTemplate;
+            SortingAlgorithmMiniGame clonedSortingAlgorithmGame = new SortingAlgorithmMiniGame();
+
+            clonedSortingAlgorithmGame.setId(originalSortingAlgorithmGame.getId());
+            clonedSortingAlgorithmGame.setTitle(originalSortingAlgorithmGame.getTitle());
+            clonedSortingAlgorithmGame.setDescription(originalSortingAlgorithmGame.getDescription());
+            clonedSortingAlgorithmGame.setBoxes(originalSortingAlgorithmGame.getBoxes());
+
+            clone = clonedSortingAlgorithmGame;
         }
 
         return clone;
