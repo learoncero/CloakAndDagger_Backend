@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SortingAlgorithmMiniGame extends MiniGame {
     @Schema(description = "List of box sizes for the mini-game")
-    private List<Integer> boxes = Arrays.asList(1, 2, 3, 4, 5);
+    private List<Integer> boxes = Arrays.asList(1, 2, 3, 4, 5, 6, 7);
 
     @Schema(description = "Shuffled list of boxes for the mini-game")
     private List<Integer> shuffledBoxes;
