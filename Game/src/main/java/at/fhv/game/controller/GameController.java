@@ -52,6 +52,7 @@ public class GameController {
                             schema = @Schema(implementation = Game.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid request body")
     })
+
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
         //Create game
@@ -59,8 +60,7 @@ public class GameController {
 
         //Create player, assign random position and role
         Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
-        Player player = playerService.createPlayer(createGameMessage.getPlayer().getUsername(), randomPosition, game, createGameMessage.getPlayerColor());
-        System.out.println(createGameMessage.getPlayer().getPlayerColor());
+        Player player = playerService.createPlayer(createGameMessage.getUsername(), randomPosition, game, createGameMessage.getPlayerColor());
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
 
@@ -130,7 +130,7 @@ public class GameController {
             }
 
             Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
-            Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game, joinMessage.getPlayerColor() );
+            Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game, joinMessage.getPlayerColor());
             game.getPlayers().add(player);
 
             //Assign roles randomly to players
@@ -178,7 +178,7 @@ public class GameController {
         Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
 
         if (player != null) {
-            Position newPosition = playerService.calculateNewPosition(player.getPosition(), playerMoveMessage.getKeyCode());
+            Position newPosition = playerService.calculateNewPosition(player.getPlayerPosition(), playerMoveMessage.getKeyCode());
             Map map = mapService.getMapByName(game.getMap());
             playerService.updatePlayerPosition(player, newPosition, map);
 
