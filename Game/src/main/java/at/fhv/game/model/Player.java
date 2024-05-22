@@ -101,11 +101,20 @@ public class Player {
     public void setMoving(boolean moving) {
         this.isMoving = moving;
     }
+
     public String getPlayerColor() {
         return playerColor;
     }
 
     public void setPlayerColor(String playerColor) {
         this.playerColor = playerColor;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 }
