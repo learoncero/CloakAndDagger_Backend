@@ -11,6 +11,7 @@
 package at.fhv.chat.service;
 
 import at.fhv.chat.model.Vote;
+import at.fhv.chat.model.VoteEvent;
 import at.fhv.chat.repository.VoteRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,10 +53,11 @@ class VoteServiceTest {
     void testAddVote() {
         String gameCode = "game1";
         Vote vote = new Vote(gameCode);
+        VoteEvent voteEvent = new VoteEvent(1, 2);
 
         when(voteRepository.getVote(anyString())).thenReturn(vote);
 
-        Vote result = voteService.addVote(gameCode, 1);
+        Vote result = voteService.addVote(gameCode, voteEvent);
 
         assertEquals(vote, result);
         verify(voteRepository, times(1)).getVote(anyString());
@@ -65,7 +67,9 @@ class VoteServiceTest {
     void testGetVoteResult() {
         String gameCode = "game1";
         Vote vote = new Vote(gameCode);
-        vote.addVote(1);
+        VoteEvent voteEvent = new VoteEvent(1, 2);
+
+        vote.addVote(voteEvent);
 
         when(voteRepository.getVote(anyString())).thenReturn(vote);
 
@@ -79,10 +83,16 @@ class VoteServiceTest {
     void testGetVoteResultTie() {
         String gameCode = "game1";
         Vote vote = new Vote(gameCode);
-        vote.addVote(1);
-        vote.addVote(2);
-        vote.addVote(1);
-        vote.addVote(2);
+        VoteEvent voteEvent1 = new VoteEvent(1, 2);
+        VoteEvent voteEvent2 = new VoteEvent(2, 3);
+        VoteEvent voteEvent3 = new VoteEvent(1, 4);
+        VoteEvent voteEvent4 = new VoteEvent(3, 1);
+        VoteEvent voteEvent5 = new VoteEvent(2, 5);
+        vote.addVote(voteEvent1);
+        vote.addVote(voteEvent2);
+        vote.addVote(voteEvent3);
+        vote.addVote(voteEvent4);
+        vote.addVote(voteEvent5);
 
         when(voteRepository.getVote(anyString())).thenReturn(vote);
 
@@ -96,9 +106,12 @@ class VoteServiceTest {
     void testGetVoteResultWin() {
         String gameCode = "game1";
         Vote vote = new Vote(gameCode);
-        vote.addVote(1);
-        vote.addVote(1);
-        vote.addVote(2);
+        VoteEvent voteEvent1 = new VoteEvent(1, 2);
+        VoteEvent voteEvent2 = new VoteEvent(2, 3);
+        VoteEvent voteEvent3 = new VoteEvent(1, 4);
+        vote.addVote(voteEvent1);
+        vote.addVote(voteEvent2);
+        vote.addVote(voteEvent3);
 
         when(voteRepository.getVote(anyString())).thenReturn(vote);
 

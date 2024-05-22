@@ -329,26 +329,27 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
-    @Operation(summary = "Get the playerId that got the most votes")
+    @Operation(summary = "Get the voting Results of the last vote incl. all vote events")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "PlayerId to be eliminated retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "PlayerId or Game not found")
+            @ApiResponse(responseCode = "200", description = "Vote retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Vote or Game not found")
     })
-    @PostMapping("/game/vote/{gameCode}/voteResults/{results}")
-    public ResponseEntity<Void> handleVoteResults(@PathVariable String gameCode, @PathVariable String results) {
-        Game game = gameService.getGameByCode(gameCode);
-        System.out.println("Vote Result received in GameController");
-        System.out.println("gameCode: " + gameCode + " results: " + results);
-        int intResults = Integer.parseInt(results);
+    @PostMapping("/game/vote/voteResults") //todo update this
+    public ResponseEntity<Void> handleVoteResults(@RequestBody VoteResultsMessage voteResultsMessage) {
+
+        Game game = gameService.getGameByCode(voteResultsMessage.getGameCode());
+
+        int intResults = voteResultsMessage.getVoteResult();
+        game.setVotingResult(voteResultsMessage.getVoteResult());
         if (intResults >= 1) {
-            game = gameService.eliminatePlayer(gameCode, intResults);
+            game = gameService.eliminatePlayer(voteResultsMessage.getGameCode(), intResults);
             gameService.checkCrewmatesWin(game);
             gameService.checkImpostorWin(game);
         }
-        List<Integer> voteResults = game.getVotingResults();
-        if (voteResults != null) {
-            voteResults.add(intResults);
-            game.setVotingResults(voteResults);
+
+        List<VoteEvent> votings = voteResultsMessage.getVoteEvents();
+        if (votings != null) {
+            game.setVoteEvents(votings);
         }
 
         messagingTemplate.convertAndSend("/topic/voteResults", game);
