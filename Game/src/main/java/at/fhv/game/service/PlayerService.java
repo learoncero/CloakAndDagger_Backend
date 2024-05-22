@@ -99,7 +99,7 @@ public class PlayerService {
 
         for (Sabotage sabotage : sabotages) {
 
-            if (sabotage.getId() == 1 && sabotage.getPosition().getY() != -1 && player.getRole() == Role.CREWMATE) {
+            if (sabotage.getId() == 2 && sabotage.getPosition().getY() != -1 && player.getRole() == Role.CREWMATE) {
                 if(player.isMirrored() == false) {
                     updatePlayerMirrored(player, true);
                 } else {
