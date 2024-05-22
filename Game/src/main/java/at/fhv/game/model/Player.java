@@ -109,12 +109,4 @@ public class Player {
     public void setPlayerColor(String playerColor) {
         this.playerColor = playerColor;
     }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
 }
