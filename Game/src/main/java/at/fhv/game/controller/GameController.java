@@ -346,7 +346,7 @@ public class GameController {
             game.setVoteEvents(votings);
         }
 
-        messagingTemplate.convertAndSend("/topic/" + gameCode + "/voteResults", game);
+        messagingTemplate.convertAndSend("/topic/" + voteResultsMessage.getGameCode() + "/voteResults", game);
 
         return ResponseEntity.ok().build();
     }
