@@ -53,8 +53,8 @@ public class MapLoaderTest {
     }
 
     // Helper method to delete the test map file
-    private void deleteTestMapFile(String filePath) {
-        File file = new File(filePath);
+    private void deleteTestMapFile(String fileName) {
+        File file = new File(MapLoader.pathForMap + fileName + ".txt");
         if (file.exists()) {
             file.delete();
         }
