@@ -14,22 +14,27 @@ public class Vote {
     @Schema(description = "The game the votes are associated with")
     private String gameCode;
 
-    @Schema(description = "List of all votes")
-    private List<Integer> votes;
+    @Schema(description = "List of all voteEvents, Player that got voted and who voted for them")
+    private List<VoteEvent> voteEvents;
+
+    @Schema(description = "Result of this vote")
+    private Integer voteResult;
 
     public Vote(String gameCode) {
         this.gameCode = gameCode;
-        this.votes = new ArrayList<>();
+        this.voteEvents = new ArrayList<>();
     }
 
-    public void addVote(int vote) {
-        votes.add(vote);
+    public void addVote(VoteEvent vote) {
+        voteEvents.add(vote);
     }
 
     @Override
     public String toString() {
         return "Vote{" +
-                "votes=" + votes +
+                "gameCode='" + gameCode + '\'' +
+                ", voteEvents=" + voteEvents +
+                ", result=" + voteResult +
                 '}';
     }
 }

@@ -1,14 +1,8 @@
 package at.fhv.minigames.controller;
 
-import at.fhv.minigames.model.ColorSeqMiniGame;
-import at.fhv.minigames.model.DecipherSymbolsMiniGame;
-import at.fhv.minigames.model.MiniGame;
-import at.fhv.minigames.model.PasscodeMiniGame;
+import at.fhv.minigames.model.*;
 import at.fhv.minigames.model.messages.MiniGameMessage;
-import at.fhv.minigames.service.ColorSequenceMiniGameService;
-import at.fhv.minigames.service.DecipherSymbolsMiniGameService;
-import at.fhv.minigames.service.MiniGameService;
-import at.fhv.minigames.service.PasscodeMiniGameService;
+import at.fhv.minigames.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,13 +20,15 @@ public class MiniGameController {
     private final PasscodeMiniGameService passcodeMiniGameService;
     private final ColorSequenceMiniGameService colorSeqMiniGameService;
     private final DecipherSymbolsMiniGameService decipherSymbolsMiniGameService;
+    private final SortingAlgorithmMiniGameService sortingAlgorithmMiniGameService;
 
     @Autowired
-    public MiniGameController(MiniGameService miniGameService, PasscodeMiniGameService passcodeMiniGameService, ColorSequenceMiniGameService colorSeqMiniGameService, DecipherSymbolsMiniGameService decipherSymbolsMiniGameService) {
+    public MiniGameController(MiniGameService miniGameService, PasscodeMiniGameService passcodeMiniGameService, ColorSequenceMiniGameService colorSeqMiniGameService, DecipherSymbolsMiniGameService decipherSymbolsMiniGameService, SortingAlgorithmMiniGameService sortingAlgorithmMiniGameService) {
         this.miniGameService = miniGameService;
         this.passcodeMiniGameService = passcodeMiniGameService;
         this.colorSeqMiniGameService = colorSeqMiniGameService;
         this.decipherSymbolsMiniGameService = decipherSymbolsMiniGameService;
+        this.sortingAlgorithmMiniGameService = sortingAlgorithmMiniGameService;
     }
 
     @Operation(summary = "Get all mini games")
@@ -68,6 +64,10 @@ public class MiniGameController {
             if (miniGameClone instanceof DecipherSymbolsMiniGame decipherSymbolsMiniGame) {
                 decipherSymbolsMiniGameService.saveNewInstance(gameCode, miniGameMessage.getTaskId(), decipherSymbolsMiniGame);
             }
+
+            if (miniGameClone instanceof SortingAlgorithmMiniGame sortingAlgorithmMiniGame) {
+                sortingAlgorithmMiniGameService.saveNewInstance(gameCode, miniGameMessage.getTaskId(), sortingAlgorithmMiniGame);
+            }
         }
 
         return ResponseEntity.ok().build();
@@ -92,6 +92,10 @@ public class MiniGameController {
 
             if (miniGame instanceof DecipherSymbolsMiniGame) {
                 decipherSymbolsMiniGameService.deleteInstance(gameCode, miniGameMessage.getTaskId());
+            }
+
+            if (miniGame instanceof SortingAlgorithmMiniGame) {
+                sortingAlgorithmMiniGameService.deleteInstance(gameCode, miniGameMessage.getTaskId());
             }
         }
 

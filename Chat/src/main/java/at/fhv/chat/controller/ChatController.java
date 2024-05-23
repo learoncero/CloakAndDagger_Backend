@@ -1,9 +1,6 @@
 package at.fhv.chat.controller;
 
-import at.fhv.chat.model.Chat;
-import at.fhv.chat.model.Vote;
-import at.fhv.chat.model.SendChatMessage;
-import at.fhv.chat.model.AddVoteMessage;
+import at.fhv.chat.model.*;
 import at.fhv.chat.service.ChatService;
 import at.fhv.chat.service.VoteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,8 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
 @RequestMapping("/api")
@@ -60,23 +57,19 @@ public class ChatController {
     public void endChat(@PathVariable String gameCode) {
         Integer voteResult = voteService.getVoteResult(gameCode);
         if (voteResult != -2){
-            String newResult = String.valueOf(voteResult);
-            System.out.println("result in Backend: " + voteResult);
+            Vote finalVotes = voteService.getVoteByCode(gameCode);
+            finalVotes.setVoteResult(voteResult);
+            System.out.println("Final votes: " + finalVotes);
             Vote vote = voteService.endVote(gameCode);
             Chat chat = chatService.endChat(gameCode);
             WebClient client = WebClient.create();
 
-            String uriString = UriComponentsBuilder
-                    .fromHttpUrl("http://localhost:5010/api/game/vote/{gameCode}/voteResults/{newResult}")
-                    .buildAndExpand(gameCode, newResult)
-                    .toUriString();
-
             client.post()
-                    .uri(uriString)
+                    .uri("http://localhost:5010/api/game/vote/voteResults")
+                    .body(BodyInserters.fromValue(finalVotes))
                     .retrieve()
                     .toBodilessEntity()
-                    .block(); // Blocking call to wait for the response
-
+                    .block();
         }
     }
 
@@ -96,12 +89,11 @@ public class ChatController {
         return ResponseEntity.notFound().build();
     }
 
-    @Operation(summary = "Add a new vote")
     @MessageMapping("/chat/vote")
     @SendTo("/topic/vote")
     public ResponseEntity<Vote> handleNewVotes(@Payload AddVoteMessage addVoteMessage) {
         String gameCode = addVoteMessage.getGameCode();
-        int vote = addVoteMessage.getPlayerId();
+        VoteEvent vote = addVoteMessage.getVoteEvent();
         Vote currentVotes = voteService.addVote(gameCode, vote);
 
         if (currentVotes != null) {

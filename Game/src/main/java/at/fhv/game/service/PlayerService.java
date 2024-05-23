@@ -1,10 +1,7 @@
 package at.fhv.game.service;
 
 import at.fhv.game.model.*;
-import at.fhv.game.model.messages.PlayerJoinMessage;
-import at.fhv.game.model.messages.PlayerMoveMessage;
 import at.fhv.game.utils.RandomRoleAssigner;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +31,17 @@ public class PlayerService {
                         (y >= map.getMap().length) ||
                         (x >= map.getMap()[0].length);
 
-        if (!outOfBounds && isCellWalkable(map, x, y)) { //if true update repo otherwise do nothing
-            player.setPosition(newPosition);
+        if (!outOfBounds && isCellWalkable(map, x, y, player.getRole())) {
+            player.setPlayerPosition(newPosition);
         }
     }
 
-    private boolean isCellWalkable(Map map, int x, int y) {
-        return map.getCellValue(x, y) == '.';
+    private boolean isCellWalkable(Map map, int x, int y, Role playerRole) {
+        if (playerRole == Role.IMPOSTOR || playerRole == Role.CREWMATE) {
+            return map.getCellValue(x, y) == '.';
+        } else {
+            return map.getCellValue(x, y) == '.' || map.getCellValue(x, y) == '#';
+        }
     }
 
     public Player setInitialRandomRole(int numPlayers, int numImpostors, Player player) {

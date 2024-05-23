@@ -8,7 +8,15 @@ import java.util.Scanner;
 
 @Component
 public class MapLoader {
-    private static final String pathForMap = "Game/src/main/java/at/fhv/game/repository/";
+    //static final String pathForMap = "Game/src/main/java/at/fhv/game/repository/";
+
+    static final String pathForMap;
+
+    static {
+        String appPath = "Game/src/main/java/at/fhv/game/repository/";
+        String testPath = "src/main/java/at/fhv/game/repository/";
+        pathForMap = new File(appPath).exists() ? appPath : testPath;
+    }
 
     public static char[][] loadMapFromFile(String map) {
         char[][] mapCells = null;

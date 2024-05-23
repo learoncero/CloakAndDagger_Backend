@@ -62,10 +62,6 @@ public class MapService {
                 }
             }
         }
-        /*System.out.println("Task positions: ");
-        for (Position p: taskPositions){
-            System.out.println("x: "+p.getX() + ", " +"y: "+ p.getY());
-        }*/
         return taskPositions;
     }
 }

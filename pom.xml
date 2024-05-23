@@ -18,11 +18,11 @@
     <description>Backend for AmongUs_Replica</description>
 
     <modules>
-        <module>Game</module>
-        <module>Chat</module>
-        <module>MiniGames</module>
         <module>AdminServer</module>
         <module>EurekaServer</module>
+        <module>MiniGames</module>
+        <module>Game</module>
+        <module>Chat</module>
     </modules>
 
     <properties>

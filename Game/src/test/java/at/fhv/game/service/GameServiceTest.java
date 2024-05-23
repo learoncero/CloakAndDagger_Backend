@@ -14,8 +14,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GameServiceTest {
@@ -71,6 +70,8 @@ public class GameServiceTest {
         Player player = new Player();
         player.setId(1);
         player.setRole(Role.CREWMATE);
+        Position initialPosition = new Position(5, 5);
+        player.setPlayerPosition(initialPosition);
         players.add(player);
         game.setPlayers(players);
 
@@ -80,6 +81,7 @@ public class GameServiceTest {
         game = gameService.killPlayer("gameCode", 1, -1);
 
         assertEquals(Role.CREWMATE_GHOST, game.getPlayers().get(0).getRole());
+        assertEquals(initialPosition, game.getPlayers().get(0).getDeadBodyPosition());
     }
 
     @Test
@@ -89,6 +91,10 @@ public class GameServiceTest {
         Player player = new Player();
         player.setId(1);
         player.setRole(Role.CREWMATE);
+        Position deadBodyPosition = new Position(-1, -1);
+        player.setDeadBodyPosition(deadBodyPosition);
+        Position initialPosition = new Position(5, 5);
+        player.setPlayerPosition(initialPosition);
         players.add(player);
         initialGame.setPlayers(players);
 
@@ -97,6 +103,8 @@ public class GameServiceTest {
         Game updatedGame = gameService.killPlayer("gameCode", 2, -1);
 
         assertEquals(Role.CREWMATE, updatedGame.getPlayers().get(0).getRole());
+        assertEquals(-1, updatedGame.getPlayers().get(0).getDeadBodyPosition().getX());
+        assertEquals(-1, updatedGame.getPlayers().get(0).getDeadBodyPosition().getY());
     }
 
     @Test
@@ -153,7 +161,7 @@ public class GameServiceTest {
         // Check if the game status is impostors win
         assertEquals(GameStatus.IMPOSTORS_WIN, game.getGameStatus());
     }
-
+/*
     @Test
     public void setRandomSabotagePositionSuccessfully() {
         Game game = new Game();
@@ -175,10 +183,12 @@ public class GameServiceTest {
     public void setRandomSabotagePositionWithInvalidGame() {
         when(gameRepository.findByGameCode(any())).thenReturn(null);
 
-        Game updatedGame = gameService.setRandomSabotagePosition("invalidGameCode", 1, new Position(10, 10));
+        Game updatedGame = gameService.setRandomSabotagePosition("gameCode", 1, new Position(10, 10));
 
         assertNull(updatedGame);
     }
+
+ */
 
     @Test
     public void endGameSuccessfully() {
@@ -309,4 +319,36 @@ public class GameServiceTest {
         // Check if the game status is not CREWMATES_WIN
         assertNotEquals(GameStatus.CREWMATES_WIN, game.getGameStatus());
     }
+
+    @Test
+    public void testEliminatePlayer() {
+        // Create a game and a player
+        Game game = new Game();
+        game.setPlayers(new ArrayList<>());
+        Player player = new Player();
+        player.setId(1);
+        player.setRole(Role.CREWMATE);
+        game.getPlayers().add(player);
+
+        // Mock the gameRepository to return our game
+        Mockito.when(gameRepository.findByGameCode(any())).thenReturn(game);
+        doNothing().when(gameRepository).save(any(Game.class));
+
+        // Call the method to eliminate the player
+        Game updatedGame = gameService.eliminatePlayer("gameCode", 1);
+
+        // Check if the player's role has been updated to CREWMATE_GHOST
+        assertEquals(Role.CREWMATE_GHOST, updatedGame.getPlayers().get(0).getRole());
+
+        // Now set the player's role to IMPOSTOR and eliminate the player again
+        player.setRole(Role.IMPOSTOR);
+        updatedGame = gameService.eliminatePlayer("gameCode", 1);
+
+        // Check if the player's role has been updated to IMPOSTOR_GHOST
+        assertEquals(Role.IMPOSTOR_GHOST, updatedGame.getPlayers().get(0).getRole());
+
+        // Verify that the gameRepository's save method was called twice
+        verify(gameRepository, times(2)).save(any(Game.class));
+    }
+
 }

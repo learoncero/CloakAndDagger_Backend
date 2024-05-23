@@ -2,6 +2,7 @@ package at.fhv.chat.service;
 
 import at.fhv.chat.model.Vote;
 
+import at.fhv.chat.model.VoteEvent;
 import at.fhv.chat.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,23 +24,31 @@ public class VoteService {
         return vote;
     }
 
-    public Vote addVote(String gameCode, int vote) {
+    public Vote addVote(String gameCode, VoteEvent vote) {
         Vote currentVotes = voteRepository.getVote(gameCode);
         currentVotes.addVote(vote);
         return currentVotes;
     }
 
+    public Vote getVoteByCode(String gameCode) {
+        return voteRepository.getVote(gameCode);
+    }
+
     public Integer getVoteResult(String gameCode) {
         Vote currentVotes = voteRepository.getVote(gameCode);
+        List<Integer> votedPlayers = new ArrayList<>();
         if (currentVotes != null) {
-            List<Integer> votes = currentVotes.getVotes();
-            if (votes.isEmpty()) {
+            for (VoteEvent voteEvent : currentVotes.getVoteEvents()) {
+                votedPlayers.add(voteEvent.getVotedForPlayer());
+            }
+
+            if (votedPlayers.isEmpty()) {
                 return 0;
             }
-            Collections.sort(votes); //sorts the list in ascending order
+            Collections.sort(votedPlayers); //sorts the list in ascending order
 
             Map<Integer, Integer> frequencyMap = new HashMap<>();
-            for (int num : votes) {
+            for (int num : votedPlayers) {
                 frequencyMap.put(num, frequencyMap.getOrDefault(num, 0) + 1); //key = vote(PlayerId), value = voteCount
             }
             int maxCount = 0;
