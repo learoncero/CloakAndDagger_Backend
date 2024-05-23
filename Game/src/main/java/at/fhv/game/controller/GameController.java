@@ -22,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/api")
@@ -51,12 +52,14 @@ public class GameController {
                             schema = @Schema(implementation = Game.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid request body")
     })
+
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
         Game game = gameService.createGame(createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
 
         Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
-        Player player = playerService.createPlayer(createGameMessage.getPlayer().getUsername(), randomPosition, game, createGameMessage.getPlayerColor());
+        Player player = playerService.createPlayer(createGameMessage.getUsername(), randomPosition, game, createGameMessage.getPlayerColor());
+
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
 
@@ -133,6 +136,27 @@ public class GameController {
         }
     }
 
+    @Operation(summary = "Leave a game")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Player left successfully"),
+            @ApiResponse(responseCode = "404", description = "Game or player not found")
+    })
+    @PostMapping("/game/{gameCode}/leave")
+    public ResponseEntity<Boolean> removePlayer(@RequestBody PlayerLeaveMessage leaveMessage, @PathVariable String gameCode) {
+        Game game = gameService.getGameByCode(gameCode);
+
+        if (game != null) {
+            Player player = game.getPlayers().stream().filter(p -> Objects.equals(p.getUsername(), leaveMessage.getUsername())).findFirst().orElse(null);
+            if (player != null) {
+                game.getPlayers().remove(player);
+                return ResponseEntity.ok(true);
+            }
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    //Todo: handle case when game is null
     @MessageMapping("/{gameCode}/play")
     public void playGame(@DestinationVariable String gameCode) {
         if (gameService.startGame(gameCode)) {
@@ -147,7 +171,7 @@ public class GameController {
         Game game = gameService.getGameByCode(gameCode);
         Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
         if (player != null) {
-            Position newPosition = playerService.calculateNewPosition(player.getPosition(), playerMoveMessage.getKeyCode());
+            Position newPosition = playerService.calculateNewPosition(player.getPlayerPosition(), playerMoveMessage.getKeyCode());
             Map map = mapService.getMapByName(game.getMap());
             playerService.updatePlayerPosition(player, newPosition, map);
 
@@ -299,24 +323,27 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
-    @Operation(summary = "Get the playerId that got the most votes")
+    @Operation(summary = "Get the voting Results of the last vote incl. all vote events")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "PlayerId to be eliminated retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "PlayerId or Game not found")
+            @ApiResponse(responseCode = "200", description = "Vote retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Vote or Game not found")
     })
-    @PostMapping("/game/vote/{gameCode}/voteResults/{results}")
-    public ResponseEntity<Void> handleVoteResults(@PathVariable String gameCode, @PathVariable String results) {
-        Game game = gameService.getGameByCode(gameCode);
-        int intResults = Integer.parseInt(results);
+    @PostMapping("/game/vote/voteResults") //todo update this
+    public ResponseEntity<Void> handleVoteResults(@RequestBody VoteResultsMessage voteResultsMessage) {
+
+        Game game = gameService.getGameByCode(voteResultsMessage.getGameCode());
+
+        int intResults = voteResultsMessage.getVoteResult();
+        game.setVotingResult(voteResultsMessage.getVoteResult());
         if (intResults >= 1) {
-            game = gameService.eliminatePlayer(gameCode, intResults);
+            game = gameService.eliminatePlayer(voteResultsMessage.getGameCode(), intResults);
             gameService.checkCrewmatesWin(game);
             gameService.checkImpostorWin(game);
         }
-        List<Integer> voteResults = game.getVotingResults();
-        if (voteResults != null) {
-            voteResults.add(intResults);
-            game.setVotingResults(voteResults);
+
+        List<VoteEvent> votings = voteResultsMessage.getVoteEvents();
+        if (votings != null) {
+            game.setVoteEvents(votings);
         }
 
         messagingTemplate.convertAndSend("/topic/" + gameCode + "/voteResults", game);

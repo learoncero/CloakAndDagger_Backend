@@ -25,10 +25,7 @@ public class GameService {
 
     public Game createGame(int numberOfPlayers, int numberOfImpostors, String map) {
         Game game = new Game(numberOfPlayers, numberOfImpostors, map);
-        /*System.out.println("new Game in Create Game (GameService), Sabotages: ");
-        for(Sabotage s: game.getSabotages()){
-            System.out.println("Sabotage: " + s.getId() + ", (" + s.getPosition().getX() + ", " + s.getPosition().getY()+")");
-        }*/
+
         gameRepository.save(game);
 
         return game;
@@ -59,10 +56,10 @@ public class GameService {
             if (player != null) {
                 if (player.getRole().equals(Role.CREWMATE)) {
                     player.setRole(Role.CREWMATE_GHOST);
-
                 } else if (player.getRole().equals(Role.IMPOSTOR)) {
                     player.setRole(Role.IMPOSTOR_GHOST);
                 }
+                player.setDeadBodyPosition(player.getPlayerPosition());
                 checkImpostorWin(game);
                 gameRepository.save(game);
             }
@@ -130,6 +127,7 @@ public class GameService {
         if (game != null) {
             Player bodyToReport = game.getPlayers().stream().filter(p -> p.getId() == bodyToReportId).findFirst().orElse(null);
             if (bodyToReport != null) {
+                bodyToReport.setDeadBodyPosition(new Position(-1, -1));
                 game.getReportedBodies().add(bodyToReport.getId());
             }
         }

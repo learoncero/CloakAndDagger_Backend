@@ -7,7 +7,9 @@ import at.fhv.game.model.Task;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class TaskService {
@@ -22,11 +24,17 @@ public class TaskService {
 
     private List<Task> setTaskPositions(List<MiniGame> miniGames, List<Position> positions) {
         List<Task> gameTasks = new ArrayList<>();
+        Random random = new Random();
+
+        // Shuffle the miniGames list
+        Collections.shuffle(miniGames, random);
+
         for (int i = 0; i < positions.size(); i++) {
             int miniGamesIndex = i % miniGames.size();
-            int miniGameId = miniGames.get(miniGamesIndex).getId();
-            String name = miniGames.get(miniGamesIndex).getTitle();
-            String description = miniGames.get(miniGamesIndex).getDescription();
+            MiniGame miniGame = miniGames.get(miniGamesIndex);
+            int miniGameId = miniGame.getId();
+            String name = miniGame.getTitle();
+            String description = miniGame.getDescription();
 
             Task newTask = new Task(miniGameId, name, description);
             newTask.setPosition(positions.get(i));

@@ -9,5 +9,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AddVoteMessage {
     private String gameCode;
-    private int playerId;
+    private VoteEvent voteEvent;
 }
