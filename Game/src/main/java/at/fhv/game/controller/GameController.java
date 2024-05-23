@@ -36,9 +36,9 @@ public class GameController {
     private final org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerservice, TaskService taskService, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
+    public GameController(GameService gameService, PlayerService playerService, TaskService taskService, SabotageService sabotageService, SimpMessagingTemplate messagingTemplate, MapService mapService) {
         this.gameService = gameService;
-        this.playerService = playerservice;
+        this.playerService = playerService;
         this.taskService = taskService;
         this.sabotageService = sabotageService;
         this.messagingTemplate = messagingTemplate;
@@ -55,16 +55,14 @@ public class GameController {
 
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
-        //Create game
         Game game = gameService.createGame(createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
 
-        //Create player, assign random position and role
         Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
         Player player = playerService.createPlayer(createGameMessage.getUsername(), randomPosition, game, createGameMessage.getPlayerColor());
+
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
 
-        //Get tasks, add Position and assign to game
         List<Position> taskPositions = mapService.getTaskPositions(game.getMap());
         ResponseEntity<List<MiniGame>> responseEntity = restTemplate.exchange(
                 "http://localhost:5022/api/minigames",
@@ -72,13 +70,11 @@ public class GameController {
                 null,
                 new ParameterizedTypeReference<List<MiniGame>>() {
                 });
-        // Retrieve the list of MiniGame objects from the response entity
         List<MiniGame> miniGames = responseEntity.getBody();
         if (miniGames != null && taskPositions != null) {
             taskService.addMiniGamesToGame(game, miniGames, taskPositions);
         }
 
-        // Check if sabotages have already been added
         if (game.getSabotages() != null) {
             sabotageService.addSabotagesToGame(game);
         }
@@ -133,7 +129,6 @@ public class GameController {
             Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game, joinMessage.getPlayerColor());
             game.getPlayers().add(player);
 
-            //Assign roles randomly to players
             game.setPlayers(playerService.setRandomRole(game.getPlayers()));
             return ResponseEntity.ok().body(game);
         } catch (Exception e) {
@@ -165,18 +160,16 @@ public class GameController {
     @MessageMapping("/{gameCode}/play")
     public void playGame(@DestinationVariable String gameCode) {
         if (gameService.startGame(gameCode)) {
-            // Send the game information to the corresponding topic
             messagingTemplate.convertAndSend("/topic/" + gameCode + "/play", gameCode);
         }
     }
 
-    @MessageMapping("/move")
-    @SendTo("/topic/positionChange")
-    public ResponseEntity<Game> movePlayer(@Payload PlayerMoveMessage playerMoveMessage) {
+    @MessageMapping("/{gameCode}/move")
+    @SendTo("/topic/{gameCode}/positionChange")
+    public ResponseEntity<Game> movePlayer(@DestinationVariable String gameCode, @Payload PlayerMoveMessage playerMoveMessage) {
         int playerId = playerMoveMessage.getId();
-        Game game = gameService.getGameByCode(playerMoveMessage.getGameCode());
+        Game game = gameService.getGameByCode(gameCode);
         Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
-
         if (player != null) {
             Position newPosition = playerService.calculateNewPosition(player.getPlayerPosition(), playerMoveMessage.getKeyCode());
             Map map = mapService.getMapByName(game.getMap());
@@ -191,8 +184,8 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
-    @MessageMapping("/game/kill")
-    @SendTo("/topic/playerKill")
+    @MessageMapping("/game/{gameCode}/kill")
+    @SendTo("/topic/{gameCode}/playerKill")
     public ResponseEntity<Game> handleKill(@Payload PlayerKillMessage playerKillMessage) {
         int taskId = -1;
         if (playerKillMessage.getNearbyTask() != null) {
@@ -209,8 +202,8 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
-    @MessageMapping("/game/report")
-    @SendTo("/topic/bodyReport")
+    @MessageMapping("/game/{gameCode}/report")
+    @SendTo("/topic/{gameCode}/bodyReport")
     public ResponseEntity<Game> handleReportBody(@Payload BodyReportMessage bodyReportMessage) {
         int bodyToReportId = Integer.parseInt(bodyReportMessage.getBodyToReportId());
         String gameCode = bodyReportMessage.getGameCode();
@@ -224,23 +217,25 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
-    @MessageMapping("/game/startSabotage")
-    @SendTo("/topic/sabotageStart")
-    public ResponseEntity<Game> startSabotage(@Payload SabotageMessage sabotageMessage) throws Exception {
+    @MessageMapping("/game/{gameCode}/startSabotage")
+    //@SendTo("/topic/{gameCode}/sabotageStart")
+    public ResponseEntity<Game> startSabotage(@DestinationVariable String gameCode, @Payload SabotageMessage sabotageMessage) throws Exception {
         int sabotageId = Integer.parseInt(sabotageMessage.getSabotageId());
-        String gameCode = sabotageMessage.getGameCode();
         String mapName = sabotageMessage.getMap();
         Position randomPosition = mapService.getRandomWalkablePosition(mapName);
         Game game = gameService.setRandomSabotagePosition(gameCode, sabotageId, randomPosition);
         if (game != null) {
+            System.out.println("startSabotage:" + gameCode);
+            messagingTemplate.convertAndSend("/topic/" + gameCode + "/sabotageStart", ResponseEntity.ok().body(game));
             return ResponseEntity.ok().body(game);
+
         }
 
         return ResponseEntity.notFound().build();
     }
 
     @MessageMapping("/game/{gameCode}/cancelSabotage")
-    @SendTo("/topic/sabotageCancel")
+    @SendTo("/topic/{gameCode}/sabotageCancel")
     public ResponseEntity<Game> cancelSabotage(@DestinationVariable String gameCode) {
         Game game = gameService.getGameByCode(gameCode);
         if (game != null) {
@@ -256,20 +251,19 @@ public class GameController {
         List<PlayerMoveMessage> inactiveMessages = gameService.checkInactivity();
         inactiveMessages.forEach(message -> {
             int playerId = message.getId();
-            Game updatedGame = gameService.getGameByCode(message.getGameCode());
+            String gameCode = message.getGameCode();
+            Game updatedGame = gameService.getGameByCode(gameCode);
             Player player = updatedGame.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
             playerService.updatePlayerisMoving(player, message.isMoving());
 
-            messagingTemplate.convertAndSend("/topic/IdleChange", ResponseEntity.ok().body(updatedGame));
+            messagingTemplate.convertAndSend("/topic/" + gameCode + "/IdleChange", ResponseEntity.ok().body(updatedGame));
         });
     }
 
-    @MessageMapping("/game/end")
-    @SendTo("/topic/gameEnd")
+    @MessageMapping("/game/{gameCode}/end")
+    @SendTo("/topic/{gameCode}/gameEnd")
     public ResponseEntity<Game> endGame(@Payload EndGameMessage endGameMessage) {
         Game game = gameService.endGame(endGameMessage.getGameCode());
-
-        System.out.println("Game ended");
         return ResponseEntity.ok().body(game);
     }
 
@@ -352,7 +346,7 @@ public class GameController {
             game.setVoteEvents(votings);
         }
 
-        messagingTemplate.convertAndSend("/topic/voteResults", game);
+        messagingTemplate.convertAndSend("/topic/" + voteResultsMessage.getGameCode() + "/voteResults", game);
 
         return ResponseEntity.ok().build();
     }
