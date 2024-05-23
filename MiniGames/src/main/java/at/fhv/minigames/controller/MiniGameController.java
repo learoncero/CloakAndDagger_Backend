@@ -21,14 +21,16 @@ public class MiniGameController {
     private final ColorSequenceMiniGameService colorSeqMiniGameService;
     private final DecipherSymbolsMiniGameService decipherSymbolsMiniGameService;
     private final SortingAlgorithmMiniGameService sortingAlgorithmMiniGameService;
+    private final MovingSquareMiniGameService movingSquareMiniGameService;
 
     @Autowired
-    public MiniGameController(MiniGameService miniGameService, PasscodeMiniGameService passcodeMiniGameService, ColorSequenceMiniGameService colorSeqMiniGameService, DecipherSymbolsMiniGameService decipherSymbolsMiniGameService, SortingAlgorithmMiniGameService sortingAlgorithmMiniGameService) {
+    public MiniGameController(MiniGameService miniGameService, PasscodeMiniGameService passcodeMiniGameService, ColorSequenceMiniGameService colorSeqMiniGameService, DecipherSymbolsMiniGameService decipherSymbolsMiniGameService, SortingAlgorithmMiniGameService sortingAlgorithmMiniGameService, MovingSquareMiniGameService movingSquareMiniGameService) {
         this.miniGameService = miniGameService;
         this.passcodeMiniGameService = passcodeMiniGameService;
         this.colorSeqMiniGameService = colorSeqMiniGameService;
         this.decipherSymbolsMiniGameService = decipherSymbolsMiniGameService;
         this.sortingAlgorithmMiniGameService = sortingAlgorithmMiniGameService;
+        this.movingSquareMiniGameService = movingSquareMiniGameService;
     }
 
     @Operation(summary = "Get all mini games")
@@ -68,6 +70,10 @@ public class MiniGameController {
             if (miniGameClone instanceof SortingAlgorithmMiniGame sortingAlgorithmMiniGame) {
                 sortingAlgorithmMiniGameService.saveNewInstance(gameCode, miniGameMessage.getTaskId(), sortingAlgorithmMiniGame);
             }
+
+            if (miniGameClone instanceof MovingSquareMiniGame movingSquareMiniGame) {
+                movingSquareMiniGameService.saveInstance(gameCode, miniGameMessage.getTaskId(), movingSquareMiniGame);
+            }
         }
 
         return ResponseEntity.ok().build();
@@ -96,6 +102,10 @@ public class MiniGameController {
 
             if (miniGame instanceof SortingAlgorithmMiniGame) {
                 sortingAlgorithmMiniGameService.deleteInstance(gameCode, miniGameMessage.getTaskId());
+            }
+
+            if (miniGame instanceof MovingSquareMiniGame) {
+                movingSquareMiniGameService.deleteInstance(gameCode, miniGameMessage.getTaskId());
             }
         }
 
