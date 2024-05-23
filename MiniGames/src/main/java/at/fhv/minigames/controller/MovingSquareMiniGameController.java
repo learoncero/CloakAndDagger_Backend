@@ -28,7 +28,7 @@ public class MovingSquareMiniGameController {
             @ApiResponse(responseCode = "200", description = "Task marked as completed successfully"),
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
-    @PostMapping("/movingSquare/{gameCode}/markAsCompleted")
+    @PostMapping("/moving-square/{gameCode}/complete")
     public ResponseEntity<Boolean> markAsCompleted(@PathVariable("gameCode") String gameCode, @RequestBody MovingSquareMiniGameMessage submission) {
 
         if (movingSquareMiniGameService.markAsCompleted(gameCode, submission.getTaskId())) {
