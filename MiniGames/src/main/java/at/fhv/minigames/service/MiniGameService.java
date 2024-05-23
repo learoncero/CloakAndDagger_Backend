@@ -70,6 +70,15 @@ public class MiniGameService {
             clonedSortingAlgorithmGame.setBoxes(originalSortingAlgorithmGame.getBoxes());
 
             clone = clonedSortingAlgorithmGame;
+        } else if (miniGameTemplate instanceof MovingSquareMiniGame) {
+            MovingSquareMiniGame originalMovingSquareGame = (MovingSquareMiniGame) miniGameTemplate;
+            MovingSquareMiniGame clonedMovingSquareGame = new MovingSquareMiniGame();
+
+            clonedMovingSquareGame.setId(originalMovingSquareGame.getId());
+            clonedMovingSquareGame.setTitle(originalMovingSquareGame.getTitle());
+            clonedMovingSquareGame.setDescription(originalMovingSquareGame.getDescription());
+
+            clone = clonedMovingSquareGame;
         }
 
         return clone;
