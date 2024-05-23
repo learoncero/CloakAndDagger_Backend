@@ -171,7 +171,8 @@ public class GameController {
         Game game = gameService.getGameByCode(gameCode);
         Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
         if (player != null) {
-            Position newPosition = playerService.calculateNewPosition(player.getPlayerPosition(), playerMoveMessage.getKeyCode());
+            Position newPosition = playerService.calculateNewPosition(player.getPlayerPosition(), playerMoveMessage.getKeyCode(), game.getSabotages(), player);
+
             Map map = mapService.getMapByName(game.getMap());
             playerService.updatePlayerPosition(player, newPosition, map);
 
