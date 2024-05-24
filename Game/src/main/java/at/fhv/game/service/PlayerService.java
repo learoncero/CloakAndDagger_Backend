@@ -1,10 +1,7 @@
 package at.fhv.game.service;
 
 import at.fhv.game.model.*;
-import at.fhv.game.model.messages.PlayerJoinMessage;
-import at.fhv.game.model.messages.PlayerMoveMessage;
 import at.fhv.game.utils.RandomRoleAssigner;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +31,17 @@ public class PlayerService {
                         (y >= map.getMap().length) ||
                         (x >= map.getMap()[0].length);
 
-        if (!outOfBounds && isCellWalkable(map, x, y)) { //if true update repo otherwise do nothing
-            player.setPosition(newPosition);
+        if (!outOfBounds && isCellWalkable(map, x, y, player.getRole())) {
+            player.setPlayerPosition(newPosition);
         }
     }
 
-    private boolean isCellWalkable(Map map, int x, int y) {
-        return map.getCellValue(x, y) == '.';
+    private boolean isCellWalkable(Map map, int x, int y, Role playerRole) {
+        if (playerRole == Role.IMPOSTOR || playerRole == Role.CREWMATE) {
+            return map.getCellValue(x, y) == '.';
+        } else {
+            return map.getCellValue(x, y) == '.' || map.getCellValue(x, y) == '#';
+        }
     }
 
     public Player setInitialRandomRole(int numPlayers, int numImpostors, Player player) {
@@ -63,7 +64,7 @@ public class PlayerService {
         return players;
     }
 
-    public Position calculateNewPosition(Position currentPosition, String keyCode) {
+    public Position calculateNewPosition(Position currentPosition, String keyCode, List<Sabotage> sabotages, Player player) {
         int deltaX = 0, deltaY = 0;
         switch (keyCode) {
             case "KeyA":
@@ -85,7 +86,41 @@ public class PlayerService {
 
         int newX = currentPosition.getX() + deltaX;
         int newY = currentPosition.getY() + deltaY;
-        return new Position(newX, newY);
+        Position newPosition = new Position(newX, newY);
+
+        if (shouldMirrorMovement(sabotages, player)) {
+            System.out.println("Should it really mirror?");
+            newPosition = mirrorPosition(currentPosition, newPosition);
+        }
+
+        return newPosition;
+    }
+
+    private boolean shouldMirrorMovement(List<Sabotage> sabotages, Player player) {
+
+        for (Sabotage sabotage : sabotages) {
+
+            if (sabotage.getId() == 2 && sabotage.getPosition().getY() != -1 && player.getRole() == Role.CREWMATE) {
+                if(player.isMirrored() == false) {
+                    updatePlayerMirrored(player, true);
+                } else {
+                    updatePlayerMirrored(player, false);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Position mirrorPosition(Position currentPosition, Position newPosition) {
+        int deltaX = newPosition.getX() - currentPosition.getX();
+        int deltaY = newPosition.getY() - currentPosition.getY();
+
+        // Mirror the movement
+        int mirroredX = currentPosition.getX() - deltaX;
+        int mirroredY = currentPosition.getY() - deltaY;
+
+        return new Position(mirroredX, mirroredY);
     }
 
     public void updatePlayerMirrored(Player player , boolean isMirrored) {

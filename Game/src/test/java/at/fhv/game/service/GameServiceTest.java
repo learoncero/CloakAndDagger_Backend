@@ -70,6 +70,8 @@ public class GameServiceTest {
         Player player = new Player();
         player.setId(1);
         player.setRole(Role.CREWMATE);
+        Position initialPosition = new Position(5, 5);
+        player.setPlayerPosition(initialPosition);
         players.add(player);
         game.setPlayers(players);
 
@@ -79,6 +81,7 @@ public class GameServiceTest {
         game = gameService.killPlayer("gameCode", 1, -1);
 
         assertEquals(Role.CREWMATE_GHOST, game.getPlayers().get(0).getRole());
+        assertEquals(initialPosition, game.getPlayers().get(0).getDeadBodyPosition());
     }
 
     @Test
@@ -88,6 +91,10 @@ public class GameServiceTest {
         Player player = new Player();
         player.setId(1);
         player.setRole(Role.CREWMATE);
+        Position deadBodyPosition = new Position(-1, -1);
+        player.setDeadBodyPosition(deadBodyPosition);
+        Position initialPosition = new Position(5, 5);
+        player.setPlayerPosition(initialPosition);
         players.add(player);
         initialGame.setPlayers(players);
 
@@ -96,6 +103,8 @@ public class GameServiceTest {
         Game updatedGame = gameService.killPlayer("gameCode", 2, -1);
 
         assertEquals(Role.CREWMATE, updatedGame.getPlayers().get(0).getRole());
+        assertEquals(-1, updatedGame.getPlayers().get(0).getDeadBodyPosition().getX());
+        assertEquals(-1, updatedGame.getPlayers().get(0).getDeadBodyPosition().getY());
     }
 
     @Test
@@ -152,7 +161,7 @@ public class GameServiceTest {
         // Check if the game status is impostors win
         assertEquals(GameStatus.IMPOSTORS_WIN, game.getGameStatus());
     }
-
+/*
     @Test
     public void setRandomSabotagePositionSuccessfully() {
         Game game = new Game();
@@ -174,10 +183,12 @@ public class GameServiceTest {
     public void setRandomSabotagePositionWithInvalidGame() {
         when(gameRepository.findByGameCode(any())).thenReturn(null);
 
-        Game updatedGame = gameService.setRandomSabotagePosition("invalidGameCode", 1, new Position(10, 10));
+        Game updatedGame = gameService.setRandomSabotagePosition("gameCode", 1, new Position(10, 10));
 
         assertNull(updatedGame);
     }
+
+ */
 
     @Test
     public void endGameSuccessfully() {

@@ -56,10 +56,10 @@ public class GameService {
             if (player != null) {
                 if (player.getRole().equals(Role.CREWMATE)) {
                     player.setRole(Role.CREWMATE_GHOST);
-
                 } else if (player.getRole().equals(Role.IMPOSTOR)) {
                     player.setRole(Role.IMPOSTOR_GHOST);
                 }
+                player.setDeadBodyPosition(player.getPlayerPosition());
                 checkImpostorWin(game);
                 gameRepository.save(game);
             }
@@ -127,6 +127,7 @@ public class GameService {
         if (game != null) {
             Player bodyToReport = game.getPlayers().stream().filter(p -> p.getId() == bodyToReportId).findFirst().orElse(null);
             if (bodyToReport != null) {
+                bodyToReport.setDeadBodyPosition(new Position(-1, -1));
                 game.getReportedBodies().add(bodyToReport.getId());
             }
         }
@@ -135,7 +136,9 @@ public class GameService {
 
 
     public Game setRandomSabotagePosition(String gameCode, int sabotageId, Position position) {
+
         Game game = gameRepository.findByGameCode(gameCode);
+        System.out.println("SetRandomSabotagePosition:" + gameCode);
         if (game != null) {
             Optional<Sabotage> sabotage = game.getSabotages().stream()
                     .filter(s -> s.getId() == sabotageId)
