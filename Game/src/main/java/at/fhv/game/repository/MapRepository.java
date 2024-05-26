@@ -19,7 +19,6 @@ public class MapRepository {
     }
 
     public Map findMapByName(String mapName) {
-        System.out.println("MapRepository: findMapByName: " + mapName);
         return maps.stream()
                 .filter(map -> map.getName().equals(mapName))
                 .findFirst()
