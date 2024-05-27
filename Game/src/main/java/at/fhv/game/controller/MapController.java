@@ -31,7 +31,6 @@ public class MapController {
     public ResponseEntity<Map> getMap(@PathVariable String mapName) {
         Map map = mapService.getMapByName(mapName);
 
-        //System.out.println("Get map called: " + map.getName());
         return ResponseEntity.ok(map);
     }
 }

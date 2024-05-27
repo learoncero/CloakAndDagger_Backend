@@ -30,12 +30,16 @@ public class MapRepository {
         Map spaceshipMap = new Map("Spaceship", spaceshipMapArray);
         maps.add(spaceshipMap);
 
-        char[][] devMap1Array = MapLoader.loadMapFromFile("DevMap1");
-        Map devMap1 = new Map("DevMap1", devMap1Array);
-        maps.add(devMap1);
+        char[][] wormholeMapArray = MapLoader.loadMapFromFile("Wormhole");
+        Map wormholeMap = new Map("Wormhole", wormholeMapArray);
+        maps.add(wormholeMap);
 
-        char[][] devMap2Array = MapLoader.loadMapFromFile("DevMap2");
-        Map devMap2 = new Map("DevMap2", devMap2Array);
-        maps.add(devMap2);
+        char[][] jungleMapArray = MapLoader.loadMapFromFile("Jungle");
+        Map jungleMap = new Map("Jungle", jungleMapArray);
+        maps.add(jungleMap);
+
+        char[][] basementMapArray = MapLoader.loadMapFromFile("Basement");
+        Map basementMap = new Map("Basement", basementMapArray);
+        maps.add(basementMap);
     }
 }
