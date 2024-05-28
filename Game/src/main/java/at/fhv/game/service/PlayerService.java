@@ -22,7 +22,7 @@ public class PlayerService {
         return player;
     }
 
-    public void updatePlayerPosition(Player player, Position newPosition, Map map) {
+    public void updatePlayerPosition(Player player, Position newPosition, Map map, List<Sabotage> sabotages) {
         int x = newPosition.getX();
         int y = newPosition.getY();
         boolean outOfBounds =
@@ -31,16 +31,8 @@ public class PlayerService {
                         (y >= map.getMap().length) ||
                         (x >= map.getMap()[0].length);
 
-        if (!outOfBounds && isCellWalkable(map, x, y, player.getRole())) {
+        if (!outOfBounds && isCellWalkable(map, x, y, player.getRole(), sabotages)) {
             player.setPlayerPosition(newPosition);
-        }
-    }
-
-    private boolean isCellWalkable(Map map, int x, int y, Role playerRole) {
-        if (playerRole == Role.IMPOSTOR || playerRole == Role.CREWMATE) {
-            return map.getCellValue(x, y) == '.';
-        } else {
-            return map.getCellValue(x, y) == '.' || map.getCellValue(x, y) == '#';
         }
     }
 
@@ -126,15 +118,38 @@ public class PlayerService {
     public void updatePlayerMirrored(Player player , boolean isMirrored) {
         if (player != null) {
             player.setMirrored(isMirrored);
-
-
         }
     }
+
     public void updatePlayerisMoving(Player player , boolean isMoving) {
         if (player != null) {
             player.setMoving(isMoving);
-
-
         }
     }
+
+    private boolean isWallPosition(List<Sabotage> sabotages, int x, int y) {
+        for (Sabotage sabotage : sabotages) {
+            if (sabotage.getId() == 4 && sabotage.getWallPosition() != null) {
+                for (Position wallPosition : sabotage.getWallPosition()) {
+                    if (wallPosition.getX() == x && wallPosition.getY() == y) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isCellWalkable(Map map, int x, int y, Role playerRole, List<Sabotage> sabotages) {
+        if (isWallPosition(sabotages, x, y)) {
+            return false;
+        }
+        if (playerRole == Role.IMPOSTOR || playerRole == Role.CREWMATE) {
+            return map.getCellValue(x, y) == '.';
+        } else {
+            return map.getCellValue(x, y) == '.' || map.getCellValue(x, y) == '#';
+        }
+    }
+
+
 }

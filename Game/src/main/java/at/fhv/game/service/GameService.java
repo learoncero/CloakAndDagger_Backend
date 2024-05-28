@@ -15,12 +15,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GameService {
     private final GameRepository gameRepository;
     private final TaskService taskService;
+    private final MapService mapService;
     private ConcurrentHashMap<Integer, PlayerActivity> playerActivities = new ConcurrentHashMap<>();
 
     @Autowired
-    public GameService(GameRepository gameRepository, TaskService taskService) {
+    public GameService(GameRepository gameRepository, TaskService taskService, MapService mapService) {
         this.gameRepository = gameRepository;
         this.taskService = taskService;
+        this.mapService = mapService;
     }
 
     public Game createGame(int numberOfPlayers, int numberOfImpostors, String map) {
@@ -134,9 +136,7 @@ public class GameService {
         return game;
     }
 
-
     public Game setRandomSabotagePosition(String gameCode, int sabotageId, Position position) {
-
         Game game = gameRepository.findByGameCode(gameCode);
         System.out.println("SetRandomSabotagePosition:" + gameCode);
         if (game != null) {
@@ -145,6 +145,20 @@ public class GameService {
                     .findFirst();
             if (sabotage.isPresent()) {
                 sabotage.get().setPosition(position);
+            }
+        }
+
+        return game;
+    }
+
+    public Game setRandomWallPositionForSabotage(String gameCode, int sabotageId, Position[] wallPosition) throws Exception {
+        Game game = gameRepository.findByGameCode(gameCode);
+        if (game != null) {
+            Optional<Sabotage> sabotage = game.getSabotages().stream()
+                    .filter(s -> s.getId() == sabotageId)
+                    .findFirst();
+            if (sabotage.isPresent() && sabotageId == 4) {
+                sabotage.get().setWallPosition(wallPosition);
             }
         }
 
@@ -164,10 +178,14 @@ public class GameService {
             if (s.getPosition() != null) {
                 s.setPosition(new Position(-1, -1));
             }
+            if (s.getId() == 4 && s.getWallPosition() != null) {
+                s.setWallPosition(new Position[]{new Position(-1, -1), new Position(-1, -1)});
+            }
         }
         gameRepository.save(game);
         return game;
     }
+
 
     public Game eliminatePlayer(String gameCode, int playerId) {
         Game game = gameRepository.findByGameCode(gameCode);

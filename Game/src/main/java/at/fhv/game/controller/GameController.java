@@ -174,7 +174,7 @@ public class GameController {
             Position newPosition = playerService.calculateNewPosition(player.getPlayerPosition(), playerMoveMessage.getKeyCode(), game.getSabotages(), player);
 
             Map map = mapService.getMapByName(game.getMap());
-            playerService.updatePlayerPosition(player, newPosition, map);
+            playerService.updatePlayerPosition(player, newPosition, map, game.getSabotages() );
 
             playerService.updatePlayerMirrored(player, playerMoveMessage.isMirrored());
             playerService.updatePlayerisMoving(player, playerMoveMessage.isMoving());
@@ -226,10 +226,13 @@ public class GameController {
         Position randomPosition = mapService.getRandomWalkablePosition(mapName);
         Game game = gameService.setRandomSabotagePosition(gameCode, sabotageId, randomPosition);
         if (game != null) {
-            System.out.println("startSabotage:" + gameCode);
+            if (sabotageId == 4) {
+                Position[] randomWallPosition = mapService.getRandomWallPosition(mapName);
+                game = gameService.setRandomWallPositionForSabotage(gameCode, sabotageId, randomWallPosition);
+            }
+
             messagingTemplate.convertAndSend("/topic/" + gameCode + "/sabotageStart", ResponseEntity.ok().body(game));
             return ResponseEntity.ok().body(game);
-
         }
 
         return ResponseEntity.notFound().build();
