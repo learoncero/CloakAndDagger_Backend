@@ -184,6 +184,7 @@ public class GameService {
                     default:
                         break;
                 }
+                player.setDeadBodyPosition(player.getPlayerPosition());
                 gameRepository.save(game);
             }
         }
