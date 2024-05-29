@@ -26,7 +26,7 @@ public class MapService {
     }
 
     public List<Position> loadWalkablePositions(String mapName) throws Exception {
-        List<String> lines = Files.readAllLines(Paths.get("Game/src/main/java/at/fhv/game/repository/" + mapName + ".txt"));
+        List<String> lines = Files.readAllLines(Paths.get("Game/src/main/resources/" + mapName + ".txt"));
         List<Position> walkablePositions = new ArrayList<>();
 
         for (int y = 0; y < lines.size(); y++) {
@@ -51,7 +51,7 @@ public class MapService {
     }
 
     public List<Position> getTaskPositions(String mapName) throws Exception {
-        List<String> lines = Files.readAllLines(Paths.get("Game/src/main/java/at/fhv/game/repository/" + mapName + ".txt"));
+        List<String> lines = Files.readAllLines(Paths.get("Game/src/main/resources/" + mapName + ".txt"));
         List<Position> taskPositions = new ArrayList<>();
 
         for (int y = 0; y < lines.size(); y++) {
