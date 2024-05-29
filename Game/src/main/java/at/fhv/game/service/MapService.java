@@ -6,11 +6,14 @@ import at.fhv.game.repository.MapRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class MapService {
@@ -25,8 +28,20 @@ public class MapService {
         return mapRepository.findMapByName(mapName);
     }
 
-    public List<Position> loadWalkablePositions(String mapName) throws Exception {
-        List<String> lines = Files.readAllLines(Paths.get("Game/src/main/resources/at/fhv/game/repository/" + mapName + ".txt"));
+    private List<String> readResourceFile(String mapName) throws IOException {
+        String resourcePath = "at/fhv/game/repository/" + mapName.toLowerCase() + ".txt";
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                throw new IOException("File not found: " + resourcePath);
+            }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                return reader.lines().collect(Collectors.toList());
+            }
+        }
+    }
+
+    public List<Position> loadWalkablePositions(String mapName) throws IOException {
+        List<String> lines = readResourceFile(mapName);
         List<Position> walkablePositions = new ArrayList<>();
 
         for (int y = 0; y < lines.size(); y++) {
@@ -40,18 +55,18 @@ public class MapService {
         return walkablePositions;
     }
 
-    public Position getRandomWalkablePosition(String mapName) throws Exception {
+    public Position getRandomWalkablePosition(String mapName) throws IOException {
         List<Position> walkablePositions = loadWalkablePositions(mapName);
         if (!walkablePositions.isEmpty()) {
             Random random = new Random();
             return walkablePositions.get(random.nextInt(walkablePositions.size()));
         } else {
-            throw new Exception("No walkable positions found.");
+            throw new IOException("No walkable positions found.");
         }
     }
 
-    public List<Position> getTaskPositions(String mapName) throws Exception {
-        List<String> lines = Files.readAllLines(Paths.get("Game/src/main/resources/at/fhv/game/repository/" + mapName + ".txt"));
+    public List<Position> getTaskPositions(String mapName) throws IOException {
+        List<String> lines = readResourceFile(mapName);
         List<Position> taskPositions = new ArrayList<>();
 
         for (int y = 0; y < lines.size(); y++) {
