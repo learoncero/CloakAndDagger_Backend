@@ -156,7 +156,8 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
-    //Todo: handle case when game is null
+
+
     @MessageMapping("/{gameCode}/play")
     public void playGame(@DestinationVariable String gameCode) {
         if (gameService.startGame(gameCode)) {
@@ -219,7 +220,6 @@ public class GameController {
     }
 
     @MessageMapping("/game/{gameCode}/startSabotage")
-    //@SendTo("/topic/{gameCode}/sabotageStart")
     public ResponseEntity<Game> startSabotage(@DestinationVariable String gameCode, @Payload SabotageMessage sabotageMessage) throws Exception {
         int sabotageId = Integer.parseInt(sabotageMessage.getSabotageId());
         String mapName = sabotageMessage.getMap();
@@ -257,7 +257,7 @@ public class GameController {
             Player player = updatedGame.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
             playerService.updatePlayerisMoving(player, message.isMoving());
 
-            messagingTemplate.convertAndSend("/topic/" + gameCode + "/IdleChange", ResponseEntity.ok().body(updatedGame));
+            messagingTemplate.convertAndSend("/topic/" + gameCode + "/idleChange", ResponseEntity.ok().body(updatedGame));
         });
     }
 
@@ -266,6 +266,18 @@ public class GameController {
     public ResponseEntity<Game> endGame(@Payload EndGameMessage endGameMessage) {
         Game game = gameService.endGame(endGameMessage.getGameCode());
         return ResponseEntity.ok().body(game);
+    }
+
+    @MessageMapping("/game/{gameCode}/startEmergencyMeeting")
+    public ResponseEntity<Game> startEmergencyMeeting(@DestinationVariable String gameCode) {
+        Game game = gameService.getGameByCode(gameCode);
+
+        if (game != null) {
+            restTemplate.postForEntity("http://localhost:5011/api/chat/" + gameCode + "/start", null, Void.class);
+            messagingTemplate.convertAndSend("/topic/" + gameCode + "/emergencyMeetingStart", ResponseEntity.ok().body(game));
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Conditionally mark a task as done")

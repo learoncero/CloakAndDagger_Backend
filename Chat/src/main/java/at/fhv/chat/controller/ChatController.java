@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +22,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Controller
 @RequestMapping("/api")
 public class ChatController {
-    ChatService chatService;
-    VoteService voteService;
-    private final org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+    private final ChatService chatService;
+    private final VoteService voteService;
 
     @Autowired
     public ChatController(ChatService chatService, VoteService voteService) {
