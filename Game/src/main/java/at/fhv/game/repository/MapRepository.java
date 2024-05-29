@@ -26,19 +26,19 @@ public class MapRepository {
     }
 
     private void initializeMaps() {
-        char[][] spaceshipMapArray = MapLoader.loadMapFromFile("spaceship");
+        char[][] spaceshipMapArray = MapLoader.loadMapFromFile("Spaceship");
         Map spaceshipMap = new Map("Spaceship", spaceshipMapArray);
         maps.add(spaceshipMap);
 
-        char[][] wormholeMapArray = MapLoader.loadMapFromFile("wormhole");
+        char[][] wormholeMapArray = MapLoader.loadMapFromFile("Wormhole");
         Map wormholeMap = new Map("Wormhole", wormholeMapArray);
         maps.add(wormholeMap);
 
-        char[][] jungleMapArray = MapLoader.loadMapFromFile("jungle");
+        char[][] jungleMapArray = MapLoader.loadMapFromFile("Jungle");
         Map jungleMap = new Map("Jungle", jungleMapArray);
         maps.add(jungleMap);
 
-        char[][] basementMapArray = MapLoader.loadMapFromFile("basement");
+        char[][] basementMapArray = MapLoader.loadMapFromFile("Basement");
         Map basementMap = new Map("Basement", basementMapArray);
         maps.add(basementMap);
     }
