@@ -10,7 +10,7 @@ public class MapLoader {
 
     public static char[][] loadMapFromFile(String map) {
         char[][] mapCells = null;
-        String resourcePath = "at/fhv/game/repository/" + map.toLowerCase() + ".txt";
+        String resourcePath = "at/fhv/game/repository/" + map + ".txt";
 
         try (InputStream inputStream = MapLoader.class.getClassLoader().getResourceAsStream(resourcePath)) {
             if (inputStream == null) {

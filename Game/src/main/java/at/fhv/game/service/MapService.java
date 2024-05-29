@@ -29,7 +29,7 @@ public class MapService {
     }
 
     private List<String> readResourceFile(String mapName) throws IOException {
-        String resourcePath = "at/fhv/game/repository/" + mapName.toLowerCase() + ".txt";
+        String resourcePath = "at/fhv/game/repository/" + mapName + ".txt";
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
             if (inputStream == null) {
                 throw new IOException("File not found: " + resourcePath);
