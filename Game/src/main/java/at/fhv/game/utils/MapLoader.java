@@ -13,8 +13,8 @@ public class MapLoader {
     static final String pathForMap;
 
     static {
-        String appPath = "Game/src/main/java/at/fhv/game/repository/";
-        String testPath = "src/main/java/at/fhv/game/repository/";
+        String appPath = "Game/src/main/resources/";
+        String testPath = "src/test/resources/";
         pathForMap = new File(appPath).exists() ? appPath : testPath;
     }
 
