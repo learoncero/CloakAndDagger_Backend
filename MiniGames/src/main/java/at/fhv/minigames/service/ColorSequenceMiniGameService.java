@@ -33,7 +33,7 @@ public class ColorSequenceMiniGameService {
         if (colorSeqMiniGame != null) {
             colorSeqMiniGame.setEqual(submittedColors.equals(shuffledColors));
             if (colorSeqMiniGame.isEqual()) {
-                restTemplate.postForEntity("http://localhost:5010/api/game/task/" + gameCode + "/done", taskId, Void.class);
+                restTemplate.postForEntity("http://10.0.40.169:5010/api/game/task/" + gameCode + "/done", taskId, Void.class);
                 deleteInstance(gameCode, taskId);
             } else {
                 colorSeqMiniGameRepository.saveInstance(gameCode, taskId, colorSeqMiniGame);

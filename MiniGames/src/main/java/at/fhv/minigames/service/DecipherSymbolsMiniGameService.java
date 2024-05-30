@@ -64,7 +64,7 @@ public class DecipherSymbolsMiniGameService {
 
             if (correctSymbol.equals(symbol)) {
                 if (currentRound == 3) {
-                    restTemplate.postForEntity("http://localhost:5010/api/game/task/" + gameCode + "/done", taskId, Void.class);
+                    restTemplate.postForEntity("http://10.0.40.169:5010/api/game/task/" + gameCode + "/done", taskId, Void.class);
                     deleteInstance(gameCode, taskId);
                 }
 
