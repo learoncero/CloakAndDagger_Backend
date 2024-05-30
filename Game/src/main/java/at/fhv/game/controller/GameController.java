@@ -65,7 +65,7 @@ public class GameController {
 
         List<Position> taskPositions = mapService.getTaskPositions(game.getMap());
         ResponseEntity<List<MiniGame>> responseEntity = restTemplate.exchange(
-                "http://10.0.40.169:5022/api/minigames",
+                "http://localhost:5022/api/minigames",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<MiniGame>>() {
@@ -211,7 +211,7 @@ public class GameController {
         Game game = gameService.reportBody(gameCode, bodyToReportId);
 
         if (game != null) {
-            restTemplate.postForEntity("http://10.0.40.169:5011/api/chat/" + gameCode + "/start", null, Void.class);
+            restTemplate.postForEntity("http://localhost:5011/api/chat/" + gameCode + "/start", null, Void.class);
             return ResponseEntity.ok().body(game);
         }
 

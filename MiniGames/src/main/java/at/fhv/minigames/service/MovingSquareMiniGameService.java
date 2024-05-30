@@ -24,7 +24,7 @@ public class MovingSquareMiniGameService {
         MovingSquareMiniGame movingSquareMiniGame = movingSquareMiniGameRepository.getInstance(gameCode, taskId);
 
         if (movingSquareMiniGame != null) {
-            restTemplate.postForEntity("http://10.0.40.169:5010/api/game/task/" + gameCode + "/done", taskId, Void.class);
+            restTemplate.postForEntity("http://localhost:5010/api/game/task/" + gameCode + "/done", taskId, Void.class);
             deleteInstance(gameCode, taskId);
             return true;
         }
