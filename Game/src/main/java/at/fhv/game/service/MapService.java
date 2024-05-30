@@ -66,7 +66,7 @@ public class MapService {
     }
 
     public List<Position[]> findPossibleWallPositions(String mapName) throws Exception {
-        List<String> lines = Files.readAllLines(Paths.get("Game/src/main/java/at/fhv/game/repository/" + mapName + ".txt"));
+        List<String> lines = Files.readAllLines(Paths.get("Game/src/main/resources/" + mapName + ".txt"));
         List<Position> walkablePositions = loadWalkablePositions(mapName);
         List<Position[]> possibleWalls = new ArrayList<>();
 
