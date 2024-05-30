@@ -129,10 +129,12 @@ public class PlayerService {
 
     private boolean isWallPosition(List<Sabotage> sabotages, int x, int y) {
         for (Sabotage sabotage : sabotages) {
-            if (sabotage.getId() == 4 && sabotage.getWallPosition() != null) {
-                for (Position wallPosition : sabotage.getWallPosition()) {
-                    if (wallPosition.getX() == x && wallPosition.getY() == y) {
-                        return true;
+            if (sabotage.getId() == 4 && sabotage.getWallPositions() != null) {
+                for (Position[] wallPositions : sabotage.getWallPositions()) {
+                    for (Position wallPosition : wallPositions) {
+                        if (wallPosition.getX() == x && wallPosition.getY() == y) {
+                            return true;
+                        }
                     }
                 }
             }
