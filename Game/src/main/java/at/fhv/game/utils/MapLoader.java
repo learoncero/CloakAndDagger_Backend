@@ -28,20 +28,17 @@ public class MapLoader {
                 String line = scanner.nextLine();
                 rows++;
                 cols = Math.max(cols, line.length());
-                //System.out.println("Rows: "+rows+" Cols: "+cols);
             }
             mapCells = new char[rows][cols];
-            try(Scanner mapScanner = new Scanner(new File(newPathForMap))){
+            try (Scanner mapScanner = new Scanner(new File(newPathForMap))) {
                 int row = 0;
                 while (mapScanner.hasNextLine()) {
                     String line = mapScanner.nextLine();
-                    //System.out.println("Line: "+line);
                     for (int col = 0; col < line.length(); col++) {
                         mapCells[row][col] = line.charAt(col);
                     }
                     row++;
                 }
-                //System.out.println(Arrays.deepToString(walkableCells));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -49,5 +46,5 @@ public class MapLoader {
             e.printStackTrace();
         }
         return mapCells;
-    }//TODO printStackTrace causes warning: probably should be replaced with more robust logging
+    }
 }

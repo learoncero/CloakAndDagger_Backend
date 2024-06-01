@@ -139,7 +139,6 @@ public class GameService {
 
     public Game setRandomSabotagePosition(String gameCode, int sabotageId, Position position) {
         Game game = gameRepository.findByGameCode(gameCode);
-        System.out.println("SetRandomSabotagePosition:" + gameCode);
         if (game != null) {
             Optional<Sabotage> sabotage = game.getSabotages().stream()
                     .filter(s -> s.getId() == sabotageId)
