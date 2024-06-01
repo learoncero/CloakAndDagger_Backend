@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,10 +55,9 @@ public class ChatController {
     @PostMapping("/{gameCode}/chat/end")
     public void endChat(@PathVariable String gameCode) {
         Integer voteResult = voteService.getVoteResult(gameCode);
-        if (voteResult != -2){
+        if (voteResult != -2) {
             Vote finalVotes = voteService.getVoteByCode(gameCode);
             finalVotes.setVoteResult(voteResult);
-            System.out.println("Final votes: " + finalVotes);
             Vote vote = voteService.endVote(gameCode);
             Chat chat = chatService.endChat(gameCode);
             WebClient client = WebClient.create();

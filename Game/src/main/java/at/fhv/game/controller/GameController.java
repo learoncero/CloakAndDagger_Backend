@@ -158,7 +158,6 @@ public class GameController {
     }
 
 
-
     @MessageMapping("/{gameCode}/play")
     public void playGame(@DestinationVariable String gameCode) {
         if (gameService.startGame(gameCode)) {
@@ -176,7 +175,7 @@ public class GameController {
             Position newPosition = playerService.calculateNewPosition(player.getPlayerPosition(), playerMoveMessage.getKeyCode(), game.getSabotages(), player);
 
             Map map = mapService.getMapByName(game.getMap());
-            playerService.updatePlayerPosition(player, newPosition, map, game.getSabotages() );
+            playerService.updatePlayerPosition(player, newPosition, map, game.getSabotages());
 
             playerService.updatePlayerMirrored(player, playerMoveMessage.isMirrored());
             playerService.updatePlayerisMoving(player, playerMoveMessage.isMoving());
@@ -258,13 +257,8 @@ public class GameController {
     @MessageMapping("/game/{gameCode}/submitDuelChoice")
     @SendTo("/topic/{gameCode}/duelChoiceResult")
     public ResponseEntity<Game> submitWallChoice(@DestinationVariable String gameCode, @Payload DuelChoiceMessage DuelMessage) {
-        System.out.println("HELLO THERE");
-        System.out.println("This should be my choice" + DuelMessage.getChoice());
         String result = gameService.checkDuelResult(DuelMessage.getChoice());
-        System.out.println("This is my result" + result);
         Game game = gameService.updateWallPositionsByResult(gameCode, result);
-        System.out.println("This is my ResponseEntity" + ResponseEntity.ok().body(game));
-       // messagingTemplate.convertAndSend("/topic/" + gameCode + "/duelChoiceResult", ResponseEntity.ok().body(game));
         return ResponseEntity.ok().body(game);
     }
 

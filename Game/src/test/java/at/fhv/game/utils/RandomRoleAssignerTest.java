@@ -17,7 +17,6 @@ public class RandomRoleAssignerTest {
 
         // Check if impostors list is not null
         assertNotNull(impostors);
-        //System.out.println(impostors);
         // Check if the number of impostors assigned matches the expected number
         assertEquals(numImpostors, impostors.size());
 
