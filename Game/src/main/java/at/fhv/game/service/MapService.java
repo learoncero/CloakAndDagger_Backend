@@ -64,4 +64,47 @@ public class MapService {
         }
         return taskPositions;
     }
+
+    public List<Position[]> findPossibleWallPositions(String mapName) throws Exception {
+        List<String> lines = Files.readAllLines(Paths.get("Game/src/main/resources/" + mapName + ".txt"));
+        List<Position> walkablePositions = loadWalkablePositions(mapName);
+        List<Position[]> possibleWalls = new ArrayList<>();
+
+        for (Position pos : walkablePositions) {
+            int x = pos.getX();
+            int y = pos.getY();
+
+            // Check horizontal placement
+            if (isWalkable(lines, x, y) && isWalkable(lines, x + 1, y)
+                    && isWallOrBoundary(lines, x - 1, y) && isWallOrBoundary(lines, x + 2, y)) {
+                possibleWalls.add(new Position[]{new Position(x, y), new Position(x + 1, y)});
+            }
+
+            // Check vertical placement
+            if (isWalkable(lines, x, y) && isWalkable(lines, x, y + 1)
+                    && isWallOrBoundary(lines, x, y - 1) && isWallOrBoundary(lines, x, y + 2)) {
+                possibleWalls.add(new Position[]{new Position(x, y), new Position(x, y + 1)});
+            }
+        }
+
+        return possibleWalls;
+    }
+
+    public Position[] getRandomWallPosition(String mapName) throws Exception {
+        List<Position[]> possibleWallPositions = findPossibleWallPositions(mapName);
+        if (!possibleWallPositions.isEmpty()) {
+            Random random = new Random();
+            return possibleWallPositions.get(random.nextInt(possibleWallPositions.size()));
+        } else {
+            throw new Exception("No possible wall positions found.");
+        }
+    }
+
+    private boolean isWalkable(List<String> lines, int x, int y) {
+        return y >= 0 && y < lines.size() && x >= 0 && x < lines.get(y).length() && lines.get(y).charAt(x) == '.';
+    }
+
+    private boolean isWallOrBoundary(List<String> lines, int x, int y) {
+        return y < 0 || y >= lines.size() || x < 0 || x >= lines.get(y).length() || lines.get(y).charAt(x) == '#';
+    }
 }

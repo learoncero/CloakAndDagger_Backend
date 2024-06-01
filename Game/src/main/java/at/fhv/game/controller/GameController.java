@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -175,7 +176,7 @@ public class GameController {
             Position newPosition = playerService.calculateNewPosition(player.getPlayerPosition(), playerMoveMessage.getKeyCode(), game.getSabotages(), player);
 
             Map map = mapService.getMapByName(game.getMap());
-            playerService.updatePlayerPosition(player, newPosition, map);
+            playerService.updatePlayerPosition(player, newPosition, map, game.getSabotages() );
 
             playerService.updatePlayerMirrored(player, playerMoveMessage.isMirrored());
             playerService.updatePlayerisMoving(player, playerMoveMessage.isMoving());
@@ -226,10 +227,17 @@ public class GameController {
         Position randomPosition = mapService.getRandomWalkablePosition(mapName);
         Game game = gameService.setRandomSabotagePosition(gameCode, sabotageId, randomPosition);
         if (game != null) {
-            System.out.println("startSabotage:" + gameCode);
+            if (sabotageId == 4) {
+                List<Position[]> wallPositions = new ArrayList<>();
+                for (int i = 0; i < 3; i++) {
+                    Position[] randomWallPosition = mapService.getRandomWallPosition(mapName);
+                    wallPositions.add(randomWallPosition);
+                }
+                game = gameService.setRandomWallPositionsForSabotage(gameCode, sabotageId, wallPositions);
+            }
+
             messagingTemplate.convertAndSend("/topic/" + gameCode + "/sabotageStart", ResponseEntity.ok().body(game));
             return ResponseEntity.ok().body(game);
-
         }
 
         return ResponseEntity.notFound().build();
@@ -245,6 +253,19 @@ public class GameController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @MessageMapping("/game/{gameCode}/submitDuelChoice")
+    @SendTo("/topic/{gameCode}/duelChoiceResult")
+    public ResponseEntity<Game> submitWallChoice(@DestinationVariable String gameCode, @Payload DuelChoiceMessage DuelMessage) {
+        System.out.println("HELLO THERE");
+        System.out.println("This should be my choice" + DuelMessage.getChoice());
+        String result = gameService.checkDuelResult(DuelMessage.getChoice());
+        System.out.println("This is my result" + result);
+        Game game = gameService.updateWallPositionsByResult(gameCode, result);
+        System.out.println("This is my ResponseEntity" + ResponseEntity.ok().body(game));
+       // messagingTemplate.convertAndSend("/topic/" + gameCode + "/duelChoiceResult", ResponseEntity.ok().body(game));
+        return ResponseEntity.ok().body(game);
     }
 
     @Scheduled(fixedRate = 251)
