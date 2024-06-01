@@ -3,6 +3,7 @@ package at.fhv.game.service;
 import at.fhv.game.model.*;
 import at.fhv.game.utils.RandomRoleAssigner;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,12 +18,12 @@ public class PlayerService {
 
     public Player createPlayer(String username, Position randomPosition, Game game, String playerColor) {
 
-        Player player = new Player(username, randomPosition, game, playerColor );
+        Player player = new Player(username, randomPosition, game, playerColor);
 
         return player;
     }
 
-    public void updatePlayerPosition(Player player, Position newPosition, Map map) {
+    public void updatePlayerPosition(Player player, Position newPosition, Map map, List<Sabotage> sabotages) {
         int x = newPosition.getX();
         int y = newPosition.getY();
         boolean outOfBounds =
@@ -31,16 +32,8 @@ public class PlayerService {
                         (y >= map.getMap().length) ||
                         (x >= map.getMap()[0].length);
 
-        if (!outOfBounds && isCellWalkable(map, x, y, player.getRole())) {
+        if (!outOfBounds && isCellWalkable(map, x, y, player.getRole(), sabotages)) {
             player.setPlayerPosition(newPosition);
-        }
-    }
-
-    private boolean isCellWalkable(Map map, int x, int y, Role playerRole) {
-        if (playerRole == Role.IMPOSTOR || playerRole == Role.CREWMATE) {
-            return map.getCellValue(x, y) == '.';
-        } else {
-            return map.getCellValue(x, y) == '.' || map.getCellValue(x, y) == '#';
         }
     }
 
@@ -80,7 +73,6 @@ public class PlayerService {
                 deltaY = 1;
                 break;
             default:
-                System.out.println("Invalid key code");
                 break;
         }
 
@@ -89,7 +81,6 @@ public class PlayerService {
         Position newPosition = new Position(newX, newY);
 
         if (shouldMirrorMovement(sabotages, player)) {
-            System.out.println("Should it really mirror?");
             newPosition = mirrorPosition(currentPosition, newPosition);
         }
 
@@ -101,7 +92,7 @@ public class PlayerService {
         for (Sabotage sabotage : sabotages) {
 
             if (sabotage.getId() == 2 && sabotage.getPosition().getY() != -1 && player.getRole() == Role.CREWMATE) {
-                if(player.isMirrored() == false) {
+                if (player.isMirrored() == false) {
                     updatePlayerMirrored(player, true);
                 } else {
                     updatePlayerMirrored(player, false);
@@ -123,18 +114,43 @@ public class PlayerService {
         return new Position(mirroredX, mirroredY);
     }
 
-    public void updatePlayerMirrored(Player player , boolean isMirrored) {
+    public void updatePlayerMirrored(Player player, boolean isMirrored) {
         if (player != null) {
             player.setMirrored(isMirrored);
-
-
         }
     }
-    public void updatePlayerisMoving(Player player , boolean isMoving) {
+
+    public void updatePlayerisMoving(Player player, boolean isMoving) {
         if (player != null) {
             player.setMoving(isMoving);
-
-
         }
     }
+
+    private boolean isWallPosition(List<Sabotage> sabotages, int x, int y) {
+        for (Sabotage sabotage : sabotages) {
+            if (sabotage.getId() == 4 && sabotage.getWallPositions() != null) {
+                for (Position[] wallPositions : sabotage.getWallPositions()) {
+                    for (Position wallPosition : wallPositions) {
+                        if (wallPosition.getX() == x && wallPosition.getY() == y) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isCellWalkable(Map map, int x, int y, Role playerRole, List<Sabotage> sabotages) {
+        if (isWallPosition(sabotages, x, y)) {
+            return false;
+        }
+        if (playerRole == Role.IMPOSTOR || playerRole == Role.CREWMATE) {
+            return map.getCellValue(x, y) == '.';
+        } else {
+            return map.getCellValue(x, y) == '.' || map.getCellValue(x, y) == '#';
+        }
+    }
+
+
 }

@@ -2,6 +2,9 @@ package at.fhv.game.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Sabotage {
     @Schema(description = "The ID of the sabotage")
     private int id;
@@ -14,6 +17,9 @@ public class Sabotage {
 
     @Schema(description = "The position of the sabotage")
     private Position position;
+
+    @Schema(description = "The position of the Wall for Sabotage Number 4")
+    private List<Position[]> wallPositions = new ArrayList<>();
 
     public Sabotage(int id, String title, String description) {
         this.id = id;
@@ -56,5 +62,17 @@ public class Sabotage {
 
     public void setPosition(Position position) {
         this.position = position;
+    }
+
+    public List<Position[]> getWallPositions() {
+        return wallPositions;
+    }
+
+    public void setWallPositions(List<Position[]> wallPositions) {
+        if (this.id == 4) {
+            this.wallPositions = wallPositions;
+        } else {
+            throw new UnsupportedOperationException("Wall position can only be set for Sabotage with ID 4");
+        }
     }
 }

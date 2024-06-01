@@ -9,18 +9,21 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class GameService {
     private final GameRepository gameRepository;
     private final TaskService taskService;
+    private final MapService mapService;
     private ConcurrentHashMap<Integer, PlayerActivity> playerActivities = new ConcurrentHashMap<>();
 
     @Autowired
-    public GameService(GameRepository gameRepository, TaskService taskService) {
+    public GameService(GameRepository gameRepository, TaskService taskService, MapService mapService) {
         this.gameRepository = gameRepository;
         this.taskService = taskService;
+        this.mapService = mapService;
     }
 
     public Game createGame(int numberOfPlayers, int numberOfImpostors, String map) {
@@ -134,11 +137,8 @@ public class GameService {
         return game;
     }
 
-
     public Game setRandomSabotagePosition(String gameCode, int sabotageId, Position position) {
-
         Game game = gameRepository.findByGameCode(gameCode);
-        System.out.println("SetRandomSabotagePosition:" + gameCode);
         if (game != null) {
             Optional<Sabotage> sabotage = game.getSabotages().stream()
                     .filter(s -> s.getId() == sabotageId)
@@ -150,6 +150,21 @@ public class GameService {
 
         return game;
     }
+
+    public Game setRandomWallPositionsForSabotage(String gameCode, int sabotageId, List<Position[]> wallPositions) throws Exception {
+        Game game = gameRepository.findByGameCode(gameCode);
+        if (game != null) {
+            Optional<Sabotage> sabotage = game.getSabotages().stream()
+                    .filter(s -> s.getId() == sabotageId)
+                    .findFirst();
+            if (sabotage.isPresent() && sabotageId == 4) {
+                sabotage.get().setWallPositions(wallPositions);
+            }
+        }
+
+        return game;
+    }
+
 
     public Game endGame(String gameCode) {
         Game game = gameRepository.findByGameCode(gameCode);
@@ -164,10 +179,18 @@ public class GameService {
             if (s.getPosition() != null) {
                 s.setPosition(new Position(-1, -1));
             }
+            if (s.getId() == 4 && s.getWallPositions() != null) {
+                List<Position[]> updatedWallPositions = new ArrayList<>();
+                for (Position[] wallPosition : s.getWallPositions()) {
+                    updatedWallPositions.add(new Position[]{new Position(-1, -1), new Position(-1, -1)});
+                }
+                s.setWallPositions(updatedWallPositions);
+            }
         }
         gameRepository.save(game);
         return game;
     }
+
 
     public Game eliminatePlayer(String gameCode, int playerId) {
         Game game = gameRepository.findByGameCode(gameCode);
@@ -187,6 +210,41 @@ public class GameService {
                 player.setDeadBodyPosition(player.getPlayerPosition());
                 gameRepository.save(game);
             }
+        }
+        return game;
+    }
+
+    public String checkDuelResult(String choice) {
+        String[] choices = {"Rock", "Paper", "Scissors"};
+        Random random = new Random();
+        String opponentChoice = choices[random.nextInt(choices.length)];
+        String result;
+
+        if (choice.equals(opponentChoice)) {
+            result = "Draw";
+        } else if ((choice.equals("Rock") && opponentChoice.equals("Scissors")) ||
+                (choice.equals("Paper") && opponentChoice.equals("Rock")) ||
+                (choice.equals("Scissors") && opponentChoice.equals("Paper"))) {
+            result = "Win";
+        } else {
+            result = "Lose";
+        }
+        return result;
+    }
+
+    public Game updateWallPositionsByResult(String gameCode, String result) {
+        Game game = gameRepository.findByGameCode(gameCode);
+        if (game != null && result.equals("Win")) {
+            for (Sabotage s : game.getSabotages()) {
+                if (s.getId() == 4 && s.getWallPositions() != null) {
+                    List<Position[]> updatedWallPositions = new ArrayList<>();
+                    for (Position[] wallPosition : s.getWallPositions()) {
+                        updatedWallPositions.add(new Position[]{new Position(-1, -1), new Position(-1, -1)});
+                    }
+                    s.setWallPositions(updatedWallPositions);
+                }
+            }
+            gameRepository.save(game);
         }
         return game;
     }

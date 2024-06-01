@@ -21,9 +21,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Controller
 @RequestMapping("/api")
 public class ChatController {
-    ChatService chatService;
-    VoteService voteService;
-    private final org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+    private final ChatService chatService;
+    private final VoteService voteService;
 
     @Autowired
     public ChatController(ChatService chatService, VoteService voteService) {
@@ -56,10 +55,9 @@ public class ChatController {
     @PostMapping("/{gameCode}/chat/end")
     public void endChat(@PathVariable String gameCode) {
         Integer voteResult = voteService.getVoteResult(gameCode);
-        if (voteResult != -2){
+        if (voteResult != -2) {
             Vote finalVotes = voteService.getVoteByCode(gameCode);
             finalVotes.setVoteResult(voteResult);
-            System.out.println("Final votes: " + finalVotes);
             Vote vote = voteService.endVote(gameCode);
             Chat chat = chatService.endChat(gameCode);
             WebClient client = WebClient.create();
