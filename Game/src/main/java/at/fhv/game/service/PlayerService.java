@@ -146,9 +146,9 @@ public class PlayerService {
             return false;
         }
         if (playerRole == Role.IMPOSTOR || playerRole == Role.CREWMATE) {
-            return map.getCellValue(x, y) == '.';
+            return map.getCellValue(x, y) == '.' || Character.isDigit(map.getCellValue(x, y));
         } else {
-            return map.getCellValue(x, y) == '.' || map.getCellValue(x, y) == '#';
+            return map.getCellValue(x, y) == '.' || map.getCellValue(x, y) == '#' || Character.isDigit(map.getCellValue(x, y));
         }
     }
 
