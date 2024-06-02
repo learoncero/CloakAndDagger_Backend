@@ -23,13 +23,15 @@ public class GameServiceTest {
     private GameRepository gameRepository;
     @Mock
     private TaskService taskService;
+    @Mock
+    private MapService mapService;
 
 
     private GameService gameService;
 
     @Before
     public void setUp() {
-        gameService = new GameService(gameRepository, taskService);
+        gameService = new GameService(gameRepository, taskService, mapService);
     }
 
     @Test
