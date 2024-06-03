@@ -2,6 +2,7 @@ package at.fhv.game.service;
 
 import at.fhv.game.model.*;
 import at.fhv.game.utils.RandomRoleAssigner;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -152,5 +153,18 @@ public class PlayerService {
         }
     }
 
+    public Position sendPlayerToVent(Player player, List<Pair<Position>> ventPositions) {
 
+        if (player != null) {
+            Position currentPosition = player.getPlayerPosition();
+            for (Pair<Position> vP : ventPositions) {
+                if (vP.getFirst().equals(currentPosition)) {
+                    return vP.getSecond();
+                } else if (vP.getSecond().equals(currentPosition)) {
+                    return vP.getFirst();
+                }
+            }
+        }
+        return player.getPlayerPosition();
+    }
 }
