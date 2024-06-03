@@ -38,7 +38,7 @@ public class PlayerService {
     public Player setInitialRandomRole(int numPlayers, int numImpostors, Player player) {
         //Create List of Random Indices that will be assigned as Impostors
         impostorIndices = RandomRoleAssigner.assignRandomRoles(numPlayers, numImpostors);
-        //Assign Impostor if player index matches impostor indeces
+        //Assign Impostor if player index matches impostor indexes
         if (impostorIndices.contains(0)) {
             player.setRole(Role.IMPOSTOR);
         }
