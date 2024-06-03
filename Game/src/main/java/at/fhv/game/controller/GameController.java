@@ -69,7 +69,7 @@ public class GameController {
                 "http://localhost:5022/api/minigames",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<MiniGame>>() {
+                new ParameterizedTypeReference<>() {
                 });
         List<MiniGame> miniGames = responseEntity.getBody();
         if (miniGames != null && taskPositions != null) {

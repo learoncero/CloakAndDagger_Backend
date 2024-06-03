@@ -2,7 +2,6 @@ package at.fhv.game.service;
 
 import at.fhv.game.model.*;
 import at.fhv.game.utils.RandomRoleAssigner;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,9 +18,7 @@ public class PlayerService {
 
     public Player createPlayer(String username, Position randomPosition, Game game, String playerColor) {
 
-        Player player = new Player(username, randomPosition, game, playerColor);
-
-        return player;
+        return new Player(username, randomPosition, game, playerColor);
     }
 
     public void updatePlayerPosition(Player player, Position newPosition, Map map, List<Sabotage> sabotages) {
@@ -93,7 +90,7 @@ public class PlayerService {
         for (Sabotage sabotage : sabotages) {
 
             if (sabotage.getId() == 2 && sabotage.getPosition().getY() != -1 && player.getRole() == Role.CREWMATE) {
-                if (player.isMirrored() == false) {
+                if (!player.isMirrored()) {
                     updatePlayerMirrored(player, true);
                 } else {
                     updatePlayerMirrored(player, false);

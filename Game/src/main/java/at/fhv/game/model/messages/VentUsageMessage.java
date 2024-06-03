@@ -20,9 +20,4 @@ import lombok.Setter;
 public class VentUsageMessage {
     private String gameCode;
     private int playerId;
-
-    public VentUsageMessage(String gameCode, int id) {
-        this.gameCode = gameCode;
-        this.playerId = id;
-    }
 }
