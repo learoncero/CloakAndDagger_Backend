@@ -186,6 +186,28 @@ public class GameController {
         return ResponseEntity.notFound().build();
     }
 
+    @MessageMapping("game/{gameCode}/useVent")
+    @SendTo("/topic/{gameCode}/useVent")
+    public ResponseEntity<Game> handleVentUse(@Payload VentUsageMessage ventUsageMessage){
+        Game game = gameService.getGameByCode(ventUsageMessage.getGameCode());
+        Player player = game.getPlayers().stream().filter(p -> p.getId() == ventUsageMessage.getPlayerId()).findFirst().orElse(null);
+        String mapName = game.getMap();
+        List<Pair<Position>> ventPositions = mapService.getVentPositions(mapName);
+        if(player != null){
+            Position currentPosition = player.getPlayerPosition();
+            for(Pair<Position> vP : ventPositions){
+                if(vP.getFirst().equals(currentPosition)) {
+                    player.setPlayerPosition(vP.getSecond());
+                    return ResponseEntity.ok().body(game);
+                }else if(vP.getSecond().equals(currentPosition)){
+                    player.setPlayerPosition(vP.getFirst());
+                    return ResponseEntity.ok().body(game);
+                }
+            }
+        }
+        return ResponseEntity.ok().body(game);
+    }
+
     @MessageMapping("/game/{gameCode}/kill")
     @SendTo("/topic/{gameCode}/playerKill")
     public ResponseEntity<Game> handleKill(@Payload PlayerKillMessage playerKillMessage) {
