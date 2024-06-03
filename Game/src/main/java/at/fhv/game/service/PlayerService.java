@@ -165,6 +165,7 @@ public class PlayerService {
                 }
             }
         }
+        assert player != null;
         return player.getPlayerPosition();
     }
 }
