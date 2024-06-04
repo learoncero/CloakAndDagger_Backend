@@ -7,6 +7,13 @@ import java.util.Scanner;
 
 @Component
 public class MapLoader {
+    static final String pathForMap;
+
+    static {
+        String appPath = "Game/src/main/resources/";
+        String testPath = "src/test/java/at/fhv/game/resources/";
+        pathForMap = new File(appPath).exists() ? appPath : testPath;
+    }
 
     public static char[][] loadMapFromFile(String map) {
         char[][] mapCells = null;
