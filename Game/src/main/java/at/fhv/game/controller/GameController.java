@@ -175,7 +175,7 @@ public class GameController {
             Position newPosition = playerService.calculateNewPosition(player.getPlayerPosition(), playerMoveMessage.getKeyCode(), game.getSabotages(), player);
 
             Map map = mapService.getMapByName(game.getMap());
-            playerService.updatePlayerPosition(player, newPosition, map, game.getSabotages());
+            playerService.updatePlayerPosition(player, newPosition, map, game.getSabotages(), game.getPlayers());
 
             playerService.updatePlayerMirrored(player, playerMoveMessage.isMirrored());
             playerService.updatePlayerisMoving(player, playerMoveMessage.isMoving());
