@@ -55,7 +55,7 @@ public class PlayerServiceTest {
         when(mockMap.getCellValue(anyInt(), anyInt())).thenReturn('.');
         when(mockMap.getMap()).thenReturn(testMapContent_charArr); // Add this line
 
-        playerService.updatePlayerPosition(player, new Position(2, 2), mockMap, new ArrayList<>());
+        playerService.updatePlayerPosition(player, new Position(2, 2), mockMap, new ArrayList<>(), new ArrayList<>());
         assertEquals(new Position(2, 2), player.getPlayerPosition());
     }
 
