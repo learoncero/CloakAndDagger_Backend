@@ -173,13 +173,16 @@ public class PlayerService {
         if (player != null) {
             Position currentPosition = player.getPlayerPosition();
             for (Pair<Position> vP : ventPositions) {
-                if (vP.getFirst().equals(currentPosition)) {
+                if ((Math.abs(vP.getFirst().getX() - currentPosition.getX()) <= 1) &&
+                        (Math.abs(vP.getFirst().getY() - currentPosition.getY()) <= 1)){
                     return vP.getSecond();
-                } else if (vP.getSecond().equals(currentPosition)) {
+                } else if ((Math.abs(vP.getSecond().getX() - currentPosition.getX()) <= 1) &&
+                        (Math.abs(vP.getSecond().getY() - currentPosition.getY()) <= 1)){
                     return vP.getFirst();
                 }
             }
         }
+
         assert player != null;
         return player.getPlayerPosition();
     }
