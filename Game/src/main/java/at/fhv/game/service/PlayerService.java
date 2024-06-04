@@ -21,7 +21,7 @@ public class PlayerService {
         return new Player(username, randomPosition, game, playerColor);
     }
 
-    public void updatePlayerPosition(Player player, Position newPosition, Map map, List<Sabotage> sabotages) {
+    public void updatePlayerPosition(Player player, Position newPosition, Map map, List<Sabotage> sabotages, List<Player> players) {
         int x = newPosition.getX();
         int y = newPosition.getY();
         boolean outOfBounds =
@@ -30,7 +30,7 @@ public class PlayerService {
                         (y >= map.getMap().length) ||
                         (x >= map.getMap()[0].length);
 
-        if (!outOfBounds && isCellWalkable(map, x, y, player.getRole(), sabotages)) {
+        if (!outOfBounds && isCellWalkable(map, x, y, player.getRole(), sabotages, players)) {
             player.setPlayerPosition(newPosition);
         }
     }
@@ -135,15 +135,37 @@ public class PlayerService {
         return false;
     }
 
-    private boolean isCellWalkable(Map map, int x, int y, Role playerRole, List<Sabotage> sabotages) {
+    private boolean isPlayerPositionFree(List<Player> players, Position newPosition, Role playerRole) {
+        if (playerRole == Role.IMPOSTOR_GHOST || playerRole == Role.CREWMATE_GHOST) {
+            return true;
+        }
+
+        for (Player player : players) {
+            if (player.getPlayerPosition().equals(newPosition) && player.getRole() != Role.IMPOSTOR_GHOST && player.getRole() != Role.CREWMATE_GHOST) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isCellWalkable(Map map, int x, int y, Role playerRole, List<Sabotage> sabotages, List<Player> players) {
         if (isWallPosition(sabotages, x, y)) {
             return false;
         }
+
+        Position newPosition = new Position(x, y);
+
         if (playerRole == Role.IMPOSTOR || playerRole == Role.CREWMATE) {
-            return map.getCellValue(x, y) == '.' || Character.isDigit(map.getCellValue(x, y));
-        } else {
+            // Check for player collisions
+            if (isPlayerPositionFree(players, newPosition, playerRole)) {
+                return map.getCellValue(x, y) == '.' || Character.isDigit(map.getCellValue(x, y));
+            } else {
+                return false;
+            }
+        } else if (playerRole == Role.IMPOSTOR_GHOST || playerRole == Role.CREWMATE_GHOST) {
             return map.getCellValue(x, y) == '.' || map.getCellValue(x, y) == '#' || Character.isDigit(map.getCellValue(x, y));
         }
+        return false;
     }
 
     public Position sendPlayerToVent(Player player, List<Pair<Position>> ventPositions) {
