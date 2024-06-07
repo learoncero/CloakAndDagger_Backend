@@ -234,7 +234,7 @@ public class GameServiceTest {
         game.setPlayers(players);
         Task task1 = new Task();
         task1.setCompleted(true);
-        ArrayList tasks = new ArrayList();
+        ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(task1);
         game.setTasks(tasks);
 
@@ -260,7 +260,7 @@ public class GameServiceTest {
         game.setPlayers(players);
         Task task1 = new Task();
         task1.setCompleted(false);
-        ArrayList tasks = new ArrayList();
+        ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(task1);
         game.setTasks(tasks);
 
@@ -286,7 +286,7 @@ public class GameServiceTest {
         game.setPlayers(players);
         Task task1 = new Task();
         task1.setCompleted(true);
-        ArrayList tasks = new ArrayList();
+        ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(task1);
         game.setTasks(tasks);
 
@@ -311,7 +311,7 @@ public class GameServiceTest {
         game.setPlayers(players);
         Task task1 = new Task();
         task1.setCompleted(false);
-        ArrayList tasks = new ArrayList();
+        ArrayList<Task> tasks = new ArrayList<>();
         tasks.add(task1);
         game.setTasks(tasks);
 

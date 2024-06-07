@@ -69,7 +69,7 @@ public class GameController {
                 "http://localhost:5022/api/minigames",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<MiniGame>>() {
+                new ParameterizedTypeReference<>() {
                 });
         List<MiniGame> miniGames = responseEntity.getBody();
         if (miniGames != null && taskPositions != null) {
@@ -184,6 +184,20 @@ public class GameController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @MessageMapping("game/{gameCode}/useVent")
+    @SendTo("/topic/{gameCode}/useVent")
+    public ResponseEntity<Game> handleVentUse(@Payload VentUsageMessage ventUsageMessage){
+        Game game = gameService.getGameByCode(ventUsageMessage.getGameCode());
+        Player player = game.getPlayers().stream().filter(p -> p.getId() == ventUsageMessage.getPlayerId()).findFirst().orElse(null);
+        List<Pair<Position>> ventPositions = mapService.getVentPositions(game.getMap());
+        Position updatedPosition = playerService.sendPlayerToVent(player, ventPositions);
+        game.getPlayers().stream().filter(p -> {
+            assert player != null;
+            return p.getId() == player.getId();
+        }).findFirst().ifPresent(p -> p.setPlayerPosition(updatedPosition));
+        return ResponseEntity.ok().body(game);
     }
 
     @MessageMapping("/game/{gameCode}/kill")

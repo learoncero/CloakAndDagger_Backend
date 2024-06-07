@@ -23,7 +23,6 @@ public class SabotageRepository {
         sabotages.add(new Sabotage(1, "Impaired Visuals", "Reduces visible area drastically"));
         sabotages.add(new Sabotage(2, "Mirror Madness", "Reverses movement controls"));
         sabotages.add(new Sabotage(3, "Navigation Jam", "Disables the minimap"));
-        sabotages.add(new Sabotage(4, "Ask your Friends for help", "Your friends will block a path, but be careful, they are not very smart"));
-        //sabotages.add(new Sabotage(5, "Sabotaging equipment", "Physically damaging machinery or tools"));
+        sabotages.add(new Sabotage(4, "Thug Barricade", "Challenge thugs to proceed."));
     }
 }

@@ -1,6 +1,7 @@
 package at.fhv.game.service;
 
 import at.fhv.game.model.Map;
+import at.fhv.game.model.Pair;
 import at.fhv.game.model.Position;
 import at.fhv.game.repository.MapRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,5 +124,9 @@ public class MapService {
 
     private boolean isWallOrBoundary(List<String> lines, int x, int y) {
         return y < 0 || y >= lines.size() || x < 0 || x >= lines.get(y).length() || lines.get(y).charAt(x) == '#';
+    }
+
+    public List<Pair<Position>> getVentPositions(String mapName) {
+        return getMapByName(mapName).getVentPositions();
     }
 }
