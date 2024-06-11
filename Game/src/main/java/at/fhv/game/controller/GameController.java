@@ -56,7 +56,7 @@ public class GameController {
 
     @PostMapping("/game")
     public ResponseEntity<Game> createGame(@RequestBody CreateGameMessage createGameMessage) throws Exception {
-        Game game = gameService.createGame(createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
+        Game game = gameService.createGame(createGameMessage.getGameMode(), createGameMessage.getNumberOfPlayers(), createGameMessage.getNumberOfImpostors(), createGameMessage.getMap());
 
         Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
         Player player = playerService.createPlayer(createGameMessage.getUsername(), randomPosition, game, createGameMessage.getPlayerColor());
@@ -111,30 +111,33 @@ public class GameController {
             return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Invalid join message", null));
         }
 
-        try {
-            Game game = gameService.getGameByCode(joinMessage.getGameCode());
+        if (joinMessage.getGameMode() == GameMode.PRIVATE) {
+            try {
+                Game game = gameService.getGameByCode(joinMessage.getGameCode());
 
-            if (game == null) {
-                return ResponseEntity.notFound().build();
+                if (game == null) {
+                    return ResponseEntity.notFound().build();
+                }
+
+                if (game.getPlayers().size() >= game.getNumberOfPlayers()) {
+                    return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Game lobby is full", null));
+                }
+
+                if (game.getPlayers().stream().anyMatch(p -> p.getUsername().equals(joinMessage.getUsername()))) {
+                    return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Username is already taken", null));
+                }
+
+                Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
+                Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game, joinMessage.getPlayerColor());
+                game.getPlayers().add(player);
+
+                game.setPlayers(playerService.setRandomRole(game.getPlayers()));
+                return ResponseEntity.ok().body(game);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new CustomApiResponse<>(500, "Error creating player: " + e.getMessage(), null));
             }
-
-            if (game.getPlayers().size() >= game.getNumberOfPlayers()) {
-                return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Game lobby is full", null));
-            }
-
-            if (game.getPlayers().stream().anyMatch(p -> p.getUsername().equals(joinMessage.getUsername()))) {
-                return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Username is already taken", null));
-            }
-
-            Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
-            Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game, joinMessage.getPlayerColor());
-            game.getPlayers().add(player);
-
-            game.setPlayers(playerService.setRandomRole(game.getPlayers()));
-            return ResponseEntity.ok().body(game);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new CustomApiResponse<>(500, "Error creating player: " + e.getMessage(), null));
         }
+        return null;
     }
 
     @Operation(summary = "Leave a game")
