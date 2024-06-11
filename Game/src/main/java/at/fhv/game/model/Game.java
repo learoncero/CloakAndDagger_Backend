@@ -17,6 +17,9 @@ public class Game {
     @Schema(description = "Unique code identifying the game", example = "ABC123")
     private String gameCode;
 
+    @Schema(description = "Game mode of the game", example = "PRIVATE")
+    private GameMode gameMode;
+
     @Schema(description = "Number of players in the game", example = "6")
     private int numberOfPlayers;
 
@@ -50,8 +53,9 @@ public class Game {
     @Schema(description = "Voting Result, playerId when successful, -1=tie, 0=no votes")
     private Integer votingResult;
 
-    public Game(int numberOfPlayers, int numberOfImpostors, String map) {
+    public Game(GameMode gameMode, int numberOfPlayers, int numberOfImpostors, String map) {
         this.gameCode = GameCodeGenerator.generateGameCode();
+        this.gameMode = gameMode;
         this.numberOfPlayers = numberOfPlayers;
         this.numberOfImpostors = numberOfImpostors;
         this.map = map;

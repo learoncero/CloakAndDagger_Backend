@@ -27,7 +27,7 @@ public class GameService {
     }
 
     public Game createGame(int numberOfPlayers, int numberOfImpostors, String map) {
-        Game game = new Game(numberOfPlayers, numberOfImpostors, map);
+        Game game = new Game(GameMode.PUBLIC, numberOfPlayers, numberOfImpostors, map);
 
         gameRepository.save(game);
 
