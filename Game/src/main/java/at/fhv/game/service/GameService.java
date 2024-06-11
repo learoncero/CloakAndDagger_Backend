@@ -48,17 +48,21 @@ public class GameService {
     }
 
     public boolean startGame(String gameCode) {
-        Game game = privateGameRepository.findByGameCode(gameCode);
+        Game game = getGameByCode(gameCode);
         if (game != null) {
             game.setGameStatus(GameStatus.IN_GAME);
-            privateGameRepository.save(game);
+            if (game.getGameMode().equals(GameMode.PRIVATE)) {
+                privateGameRepository.save(game);
+            } else {
+                publicGameRepository.save(game);
+            }
             return true;
         }
         return false;
     }
 
     public Game killPlayer(String gameCode, int playerId, int taskId) {
-        Game game = privateGameRepository.findByGameCode(gameCode);
+        Game game = getGameByCode(gameCode);
         if (game != null) {
             if (taskId != -1 && taskService.getStatus(game, taskId)) {
                 taskService.setStatus(game, taskId, false);
@@ -73,7 +77,11 @@ public class GameService {
                 }
                 player.setDeadBodyPosition(player.getPlayerPosition());
                 checkImpostorWin(game);
-                privateGameRepository.save(game);
+                if (game.getGameMode().equals(GameMode.PRIVATE)) {
+                    privateGameRepository.save(game);
+                } else {
+                    publicGameRepository.save(game);
+                }
             }
         }
         return game;
@@ -106,7 +114,8 @@ public class GameService {
         List<PlayerMoveMessage> inactiveMessages = new ArrayList<>();
 
         playerActivities.forEach((playerId, activity) -> {
-            Game game = privateGameRepository.findByGameCode(activity.getGameCode());
+
+            Game game = getGameByCode(activity.getGameCode());
             if (game != null) {
 
                 game.getPlayers().stream()
@@ -135,7 +144,7 @@ public class GameService {
     }
 
     public Game reportBody(String gameCode, int bodyToReportId) {
-        Game game = privateGameRepository.findByGameCode(gameCode);
+        Game game = getGameByCode(gameCode);
         if (game != null) {
             Player bodyToReport = game.getPlayers().stream().filter(p -> p.getId() == bodyToReportId).findFirst().orElse(null);
             if (bodyToReport != null) {
@@ -147,7 +156,7 @@ public class GameService {
     }
 
     public Game setRandomSabotagePosition(String gameCode, int sabotageId, Position position) {
-        Game game = privateGameRepository.findByGameCode(gameCode);
+        Game game = getGameByCode(gameCode);
         if (game != null) {
             Optional<Sabotage> sabotage = game.getSabotages().stream()
                     .filter(s -> s.getId() == sabotageId)
@@ -161,7 +170,7 @@ public class GameService {
     }
 
     public Game setRandomWallPositionsForSabotage(String gameCode, int sabotageId, List<Position[]> wallPositions) throws Exception {
-        Game game = privateGameRepository.findByGameCode(gameCode);
+        Game game = getGameByCode(gameCode);
         if (game != null) {
             Optional<Sabotage> sabotage = game.getSabotages().stream()
                     .filter(s -> s.getId() == sabotageId)
@@ -176,10 +185,14 @@ public class GameService {
 
 
     public Game endGame(String gameCode) {
-        Game game = privateGameRepository.findByGameCode(gameCode);
+        Game game = getGameByCode(gameCode);
         game.setGameStatus(GameStatus.IMPOSTORS_WIN);
 
-        privateGameRepository.save(game);
+        if (game.getGameMode().equals(GameMode.PRIVATE)) {
+            privateGameRepository.save(game);
+        } else {
+            publicGameRepository.save(game);
+        }
         return game;
     }
 
@@ -196,13 +209,17 @@ public class GameService {
                 s.setWallPositions(updatedWallPositions);
             }
         }
-        privateGameRepository.save(game);
+        if (game.getGameMode().equals(GameMode.PRIVATE)) {
+            privateGameRepository.save(game);
+        } else {
+            publicGameRepository.save(game);
+        }
         return game;
     }
 
 
     public Game eliminatePlayer(String gameCode, int playerId) {
-        Game game = privateGameRepository.findByGameCode(gameCode);
+        Game game = getGameByCode(gameCode);
         if (game != null) {
             Player player = game.getPlayers().stream().filter(p -> p.getId() == playerId).findFirst().orElse(null);
             if (player != null) {
@@ -217,7 +234,11 @@ public class GameService {
                         break;
                 }
                 player.setDeadBodyPosition(player.getPlayerPosition());
-                privateGameRepository.save(game);
+                if (game.getGameMode().equals(GameMode.PRIVATE)) {
+                    privateGameRepository.save(game);
+                } else {
+                    publicGameRepository.save(game);
+                }
             }
         }
         return game;
@@ -242,7 +263,7 @@ public class GameService {
     }
 
     public Game updateWallPositionsByResult(String gameCode, String result) {
-        Game game = privateGameRepository.findByGameCode(gameCode);
+        Game game = getGameByCode(gameCode);
         if (game != null && result.equals("Win")) {
             for (Sabotage s : game.getSabotages()) {
                 if (s.getId() == 4 && s.getWallPositions() != null) {
@@ -253,7 +274,11 @@ public class GameService {
                     s.setWallPositions(updatedWallPositions);
                 }
             }
-            privateGameRepository.save(game);
+            if (game.getGameMode().equals(GameMode.PRIVATE)) {
+                privateGameRepository.save(game);
+            } else {
+                publicGameRepository.save(game);
+            }
         }
         return game;
     }
