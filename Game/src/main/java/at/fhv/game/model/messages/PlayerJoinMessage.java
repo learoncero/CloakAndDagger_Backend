@@ -1,6 +1,6 @@
 package at.fhv.game.model.messages;
 
-import at.fhv.game.model.Position;
+import at.fhv.game.model.GameMode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,18 +8,18 @@ import lombok.Setter;
 @Getter
 public class PlayerJoinMessage {
     private String username;
-    private Position position;
     private String gameCode;
-
     private String playerColor;
+    private GameMode gameMode;
 
     public PlayerJoinMessage() {
     }
 
-    public PlayerJoinMessage(String username, Position position, String playerColor) {
+    public PlayerJoinMessage(String username, String gameCode, String playerColor, GameMode gameMode) {
         this.username = username;
-        this.position = position;
+        this.gameCode = gameCode;
         this.playerColor = playerColor;
+        this.gameMode = gameMode;
     }
 
 }

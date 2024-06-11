@@ -1,7 +1,8 @@
 package at.fhv.game.service;
 
 import at.fhv.game.model.*;
-import at.fhv.game.repository.GameRepository;
+import at.fhv.game.repository.PrivateGameRepository;
+import at.fhv.game.repository.PublicGameRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,25 +21,24 @@ import static org.mockito.Mockito.*;
 public class GameServiceTest {
 
     @Mock
-    private GameRepository gameRepository;
+    private PrivateGameRepository privateGameRepository;
+    @Mock
+    private PublicGameRepository publicGameRepository;
     @Mock
     private TaskService taskService;
-    @Mock
-    private MapService mapService;
-
 
     private GameService gameService;
 
     @Before
     public void setUp() {
-        gameService = new GameService(gameRepository, taskService, mapService);
+        gameService = new GameService(privateGameRepository, publicGameRepository, taskService);
     }
 
     @Test
     public void createGameSuccessfully() {
-        doNothing().when(gameRepository).save(any(Game.class));
+        doNothing().when(privateGameRepository).save(any(Game.class));
 
-        Game game = gameService.createGame(5, 1, "test_map");
+        Game game = gameService.createGame(GameMode.PRIVATE, 5, 1, "test_map");
 
         assertNotNull(game);
         assertEquals(5, game.getNumberOfPlayers());
@@ -48,17 +48,17 @@ public class GameServiceTest {
 
     @Test
     public void startGameSuccessfully() {
-        when(gameRepository.findByGameCode(any())).thenReturn(new Game());
+        when(privateGameRepository.findByGameCode(any())).thenReturn(new Game());
 
         boolean gameStarted = gameService.startGame("gameCode");
 
         assertTrue(gameStarted);
-        assertEquals(GameStatus.IN_GAME, gameRepository.findByGameCode("gameCode").getGameStatus());
+        assertEquals(GameStatus.IN_GAME, privateGameRepository.findByGameCode("gameCode").getGameStatus());
     }
 
     @Test
     public void startGameWithInvalidCode() {
-        when(gameRepository.findByGameCode(any())).thenReturn(null);
+        when(privateGameRepository.findByGameCode(any())).thenReturn(null);
 
         boolean gameStarted = gameService.startGame("invalidCode");
 
@@ -77,8 +77,8 @@ public class GameServiceTest {
         players.add(player);
         game.setPlayers(players);
 
-        Mockito.when(gameRepository.findByGameCode(any())).thenReturn(game);
-        doNothing().when(gameRepository).save(any(Game.class));
+        Mockito.when(privateGameRepository.findByGameCode(any())).thenReturn(game);
+        doNothing().when(privateGameRepository).save(any(Game.class));
 
         game = gameService.killPlayer("gameCode", 1, -1);
 
@@ -100,7 +100,7 @@ public class GameServiceTest {
         players.add(player);
         initialGame.setPlayers(players);
 
-        when(gameRepository.findByGameCode(any())).thenReturn(initialGame);
+        when(privateGameRepository.findByGameCode(any())).thenReturn(initialGame);
 
         Game updatedGame = gameService.killPlayer("gameCode", 2, -1);
 
@@ -121,7 +121,7 @@ public class GameServiceTest {
         game.setPlayers(players);
         game.setReportedBodies(reportedBodies);
 
-        when(gameRepository.findByGameCode(any())).thenReturn(game);
+        when(privateGameRepository.findByGameCode(any())).thenReturn(game);
 
         // Call the method to report the body
         game = gameService.reportBody("gameCode", 1);
@@ -155,7 +155,7 @@ public class GameServiceTest {
         game.setPlayers(players);
 
         // Mock the behavior of the repository method
-        when(gameRepository.findByGameCode(any())).thenReturn(game);
+        when(privateGameRepository.findByGameCode(any())).thenReturn(game);
 
         // Call the method to simulate killing the crewmate
         gameService.killPlayer("gameCode", 3, -1);
@@ -196,7 +196,7 @@ public class GameServiceTest {
     public void endGameSuccessfully() {
         Game game = new Game();
 
-        when(gameRepository.findByGameCode(any())).thenReturn(game);
+        when(privateGameRepository.findByGameCode(any())).thenReturn(game);
 
         Game endedGame = gameService.endGame("gameCode");
 
@@ -333,8 +333,8 @@ public class GameServiceTest {
         game.getPlayers().add(player);
 
         // Mock the gameRepository to return our game
-        Mockito.when(gameRepository.findByGameCode(any())).thenReturn(game);
-        doNothing().when(gameRepository).save(any(Game.class));
+        Mockito.when(privateGameRepository.findByGameCode(any())).thenReturn(game);
+        doNothing().when(privateGameRepository).save(any(Game.class));
 
         // Call the method to eliminate the player
         Game updatedGame = gameService.eliminatePlayer("gameCode", 1);
@@ -350,7 +350,7 @@ public class GameServiceTest {
         assertEquals(Role.IMPOSTOR_GHOST, updatedGame.getPlayers().get(0).getRole());
 
         // Verify that the gameRepository's save method was called twice
-        verify(gameRepository, times(2)).save(any(Game.class));
+        verify(privateGameRepository, times(2)).save(any(Game.class));
     }
 
 }
