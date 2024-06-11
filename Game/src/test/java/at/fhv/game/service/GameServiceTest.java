@@ -28,6 +28,7 @@ public class GameServiceTest {
     private TaskService taskService;
 
     private GameService gameService;
+    private final GameMode gameMode = GameMode.PRIVATE;
 
     @Before
     public void setUp() {
@@ -36,9 +37,13 @@ public class GameServiceTest {
 
     @Test
     public void createGameSuccessfully() {
-        doNothing().when(privateGameRepository).save(any(Game.class));
+        if(gameMode.equals(GameMode.PRIVATE)) {
+            doNothing().when(privateGameRepository).save(any(Game.class));
+        } else {
+            doNothing().when(publicGameRepository).save(any(Game.class));
+        }
 
-        Game game = gameService.createGame(GameMode.PRIVATE, 5, 1, "test_map");
+        Game game = gameService.createGame(gameMode, 5, 1, "test_map");
 
         assertNotNull(game);
         assertEquals(5, game.getNumberOfPlayers());
@@ -48,12 +53,23 @@ public class GameServiceTest {
 
     @Test
     public void startGameSuccessfully() {
-        when(privateGameRepository.findByGameCode(any())).thenReturn(new Game());
+        Game game = new Game();
+        game.setGameMode(gameMode);
+
+        if(gameMode.equals(GameMode.PRIVATE)) {
+            when(privateGameRepository.findByGameCode(any())).thenReturn(game);
+        } else {
+            when(publicGameRepository.findByGameCode(any())).thenReturn(game);
+        }
 
         boolean gameStarted = gameService.startGame("gameCode");
 
         assertTrue(gameStarted);
-        assertEquals(GameStatus.IN_GAME, privateGameRepository.findByGameCode("gameCode").getGameStatus());
+        if(gameMode.equals(GameMode.PRIVATE)) {
+            assertEquals(GameStatus.IN_GAME, privateGameRepository.findByGameCode("gameCode").getGameStatus());
+        } else {
+            assertEquals(GameStatus.IN_GAME, publicGameRepository.findByGameCode("gameCode").getGameStatus());
+        }
     }
 
     @Test
@@ -68,6 +84,7 @@ public class GameServiceTest {
     @Test
     public void killPlayerSuccessfully() {
         Game game = new Game();
+        game.setGameMode(gameMode);
         List<Player> players = new ArrayList<>();
         Player player = new Player();
         player.setId(1);
@@ -77,8 +94,13 @@ public class GameServiceTest {
         players.add(player);
         game.setPlayers(players);
 
-        Mockito.when(privateGameRepository.findByGameCode(any())).thenReturn(game);
-        doNothing().when(privateGameRepository).save(any(Game.class));
+        if(gameMode.equals(GameMode.PRIVATE)) {
+            when(privateGameRepository.findByGameCode(any())).thenReturn(game);
+            doNothing().when(privateGameRepository).save(any(Game.class));
+        } else {
+            when(publicGameRepository.findByGameCode(any())).thenReturn(game);
+            doNothing().when(publicGameRepository).save(any(Game.class));
+        }
 
         game = gameService.killPlayer("gameCode", 1, -1);
 
@@ -135,6 +157,7 @@ public class GameServiceTest {
     public void testImpostorWinCondition() {
         // Create a game with 2 impostors and 1 crewmate
         Game game = new Game();
+        game.setGameMode(gameMode);
         List<Player> players = new ArrayList<>();
 
         Player impostor1 = new Player();
@@ -155,7 +178,11 @@ public class GameServiceTest {
         game.setPlayers(players);
 
         // Mock the behavior of the repository method
-        when(privateGameRepository.findByGameCode(any())).thenReturn(game);
+        if(gameMode.equals(GameMode.PRIVATE)) {
+            when(privateGameRepository.findByGameCode(any())).thenReturn(game);
+        } else {
+            when(publicGameRepository.findByGameCode(any())).thenReturn(game);
+        }
 
         // Call the method to simulate killing the crewmate
         gameService.killPlayer("gameCode", 3, -1);
@@ -195,8 +222,13 @@ public class GameServiceTest {
     @Test
     public void endGameSuccessfully() {
         Game game = new Game();
+        game.setGameMode(gameMode);
 
-        when(privateGameRepository.findByGameCode(any())).thenReturn(game);
+        if(gameMode.equals(GameMode.PRIVATE)) {
+            when(privateGameRepository.findByGameCode(any())).thenReturn(game);
+        }else {
+            when(publicGameRepository.findByGameCode(any())).thenReturn(game);
+        }
 
         Game endedGame = gameService.endGame("gameCode");
 
@@ -206,6 +238,7 @@ public class GameServiceTest {
     @Test
     public void cancelSabotageSuccessfully() {
         Game game = new Game();
+        game.setGameMode(gameMode);
         List<Sabotage> sabotages = new ArrayList<>();
         Sabotage sabotage = new Sabotage();
         sabotage.setPosition(new Position(10, 10));
@@ -326,15 +359,25 @@ public class GameServiceTest {
     public void testEliminatePlayer() {
         // Create a game and a player
         Game game = new Game();
+        game.setGameMode(gameMode);
         game.setPlayers(new ArrayList<>());
         Player player = new Player();
         player.setId(1);
         player.setRole(Role.CREWMATE);
         game.getPlayers().add(player);
+        Player player2 = new Player();
+        player2.setId(2);
+        player2.setRole(Role.IMPOSTOR);
+        game.getPlayers().add(player2);
 
         // Mock the gameRepository to return our game
-        Mockito.when(privateGameRepository.findByGameCode(any())).thenReturn(game);
-        doNothing().when(privateGameRepository).save(any(Game.class));
+        if(gameMode.equals(GameMode.PRIVATE)) {
+            when(privateGameRepository.findByGameCode(any())).thenReturn(game);
+            doNothing().when(privateGameRepository).save(any(Game.class));
+        } else {
+            when(publicGameRepository.findByGameCode(any())).thenReturn(game);
+            doNothing().when(publicGameRepository).save(any(Game.class));
+        }
 
         // Call the method to eliminate the player
         Game updatedGame = gameService.eliminatePlayer("gameCode", 1);
@@ -343,14 +386,17 @@ public class GameServiceTest {
         assertEquals(Role.CREWMATE_GHOST, updatedGame.getPlayers().get(0).getRole());
 
         // Now set the player's role to IMPOSTOR and eliminate the player again
-        player.setRole(Role.IMPOSTOR);
-        updatedGame = gameService.eliminatePlayer("gameCode", 1);
+        updatedGame = gameService.eliminatePlayer("gameCode", 2);
 
         // Check if the player's role has been updated to IMPOSTOR_GHOST
-        assertEquals(Role.IMPOSTOR_GHOST, updatedGame.getPlayers().get(0).getRole());
+        assertEquals(Role.IMPOSTOR_GHOST, updatedGame.getPlayers().get(1).getRole());
 
         // Verify that the gameRepository's save method was called twice
-        verify(privateGameRepository, times(2)).save(any(Game.class));
+        if(gameMode.equals(GameMode.PRIVATE)) {
+            verify(privateGameRepository, times(2)).save(any(Game.class));
+        } else {
+            verify(publicGameRepository, times(2)).save(any(Game.class));
+        }
     }
 
 }
