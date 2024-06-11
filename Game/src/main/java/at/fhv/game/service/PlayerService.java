@@ -141,7 +141,7 @@ public class PlayerService {
         }
 
         for (Player player : players) {
-            if (player.getPlayerPosition().equals(newPosition) && player.getRole() != Role.IMPOSTOR_GHOST && player.getRole() != Role.CREWMATE_GHOST) {
+            if ((player.getPlayerPosition().equals(newPosition) && player.getRole() != Role.IMPOSTOR_GHOST && player.getRole() != Role.CREWMATE_GHOST) || player.getDeadBodyPosition().equals(newPosition)) {
                 return false;
             }
         }
@@ -174,10 +174,10 @@ public class PlayerService {
             Position currentPosition = player.getPlayerPosition();
             for (Pair<Position> vP : ventPositions) {
                 if ((Math.abs(vP.getFirst().getX() - currentPosition.getX()) <= 1) &&
-                        (Math.abs(vP.getFirst().getY() - currentPosition.getY()) <= 1)){
+                        (Math.abs(vP.getFirst().getY() - currentPosition.getY()) <= 1)) {
                     return vP.getSecond();
                 } else if ((Math.abs(vP.getSecond().getX() - currentPosition.getX()) <= 1) &&
-                        (Math.abs(vP.getSecond().getY() - currentPosition.getY()) <= 1)){
+                        (Math.abs(vP.getSecond().getY() - currentPosition.getY()) <= 1)) {
                     return vP.getFirst();
                 }
             }
