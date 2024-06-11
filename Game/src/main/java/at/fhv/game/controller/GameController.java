@@ -107,13 +107,14 @@ public class GameController {
     })
     @PostMapping("/game/join")
     public ResponseEntity<?> createPlayer(@RequestBody PlayerJoinMessage joinMessage) {
-        if (joinMessage == null || joinMessage.getPosition() == null || joinMessage.getGameCode() == null) {
+        if (joinMessage == null || joinMessage.getGameCode() == null || joinMessage.getUsername() == null || joinMessage.getPlayerColor() == null || joinMessage.getGameMode() == null) {
             return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Invalid join message", null));
         }
 
-        if (joinMessage.getGameMode() == GameMode.PRIVATE) {
-            try {
-                Game game = gameService.getGameByCode(joinMessage.getGameCode());
+        try {
+            Game game;
+            if (joinMessage.getGameMode() == GameMode.PRIVATE) {
+                game = gameService.getGameByCode(joinMessage.getGameCode());
 
                 if (game == null) {
                     return ResponseEntity.notFound().build();
@@ -122,22 +123,35 @@ public class GameController {
                 if (game.getPlayers().size() >= game.getNumberOfPlayers()) {
                     return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Game lobby is full", null));
                 }
+            } else {
+                List<Game> publicGames = gameService.getPublicGames();
 
-                if (game.getPlayers().stream().anyMatch(p -> p.getUsername().equals(joinMessage.getUsername()))) {
-                    return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Username is already taken", null));
+                List<Game> availableGames = publicGames.stream()
+                        .filter(g -> g.getPlayers().size() < g.getNumberOfPlayers())
+                        .toList();
+
+                if (availableGames.isEmpty()) {
+                    return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "No available public games found", null));
                 }
 
-                Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
-                Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game, joinMessage.getPlayerColor());
-                game.getPlayers().add(player);
-
-                game.setPlayers(playerService.setRandomRole(game.getPlayers()));
-                return ResponseEntity.ok().body(game);
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new CustomApiResponse<>(500, "Error creating player: " + e.getMessage(), null));
+                game = availableGames.get(0);
             }
+
+            if (game.getPlayers().stream().anyMatch(p -> p.getUsername().equals(joinMessage.getUsername()))) {
+                return ResponseEntity.badRequest().body(new CustomApiResponse<>(400, "Username is already taken", null));
+            }
+
+            Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
+            Player player = playerService.createPlayer(joinMessage.getUsername(), randomPosition, game, joinMessage.getPlayerColor());
+            game.getPlayers().add(player);
+
+            game.setPlayers(playerService.setRandomRole(game.getPlayers()));
+
+            return ResponseEntity.ok().body(game);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new CustomApiResponse<>(500, "Error creating player: " + e.getMessage(), null));
         }
-        return null;
     }
 
     @Operation(summary = "Leave a game")
@@ -191,7 +205,7 @@ public class GameController {
 
     @MessageMapping("game/{gameCode}/useVent")
     @SendTo("/topic/{gameCode}/useVent")
-    public ResponseEntity<Game> handleVentUse(@Payload VentUsageMessage ventUsageMessage){
+    public ResponseEntity<Game> handleVentUse(@Payload VentUsageMessage ventUsageMessage) {
         Game game = gameService.getGameByCode(ventUsageMessage.getGameCode());
         Player player = game.getPlayers().stream().filter(p -> p.getId() == ventUsageMessage.getPlayerId()).findFirst().orElse(null);
         List<Pair<Position>> ventPositions = mapService.getVentPositions(game.getMap());

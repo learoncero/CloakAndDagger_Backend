@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 
 @Component
-public class GameRepository {
+public class PrivateGameRepository {
     private final HashMap<String, Game> games = new HashMap<>();
 
     public void save(Game game) {
