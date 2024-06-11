@@ -141,7 +141,7 @@ public class PlayerService {
         }
 
         for (Player player : players) {
-            if (player.getPlayerPosition().equals(newPosition) || player.getDeadBodyPosition().equals(newPosition)) {
+            if ((player.getPlayerPosition().equals(newPosition) && player.getRole() != Role.IMPOSTOR_GHOST && player.getRole() != Role.CREWMATE_GHOST) || player.getDeadBodyPosition().equals(newPosition)) {
                 return false;
             }
         }
