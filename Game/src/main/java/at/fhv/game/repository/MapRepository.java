@@ -30,9 +30,9 @@ public class MapRepository {
         Map spaceshipMap = new Map("Spaceship", spaceshipMapArray);
         maps.add(spaceshipMap);
 
-        char[][] wormholeMapArray = MapLoader.loadMapFromFile("Wormhole");
-        Map wormholeMap = new Map("Wormhole", wormholeMapArray);
-        maps.add(wormholeMap);
+        char[][] pirateShipMapArray = MapLoader.loadMapFromFile("PirateShip");
+        Map pirateShipMap = new Map("PirateShip", pirateShipMapArray);
+        maps.add(pirateShipMap);
 
         char[][] jungleMapArray = MapLoader.loadMapFromFile("Jungle");
         Map jungleMap = new Map("Jungle", jungleMapArray);
