@@ -28,7 +28,8 @@ public class GameService {
     }
 
     public Game createGame(GameMode gameMode, int numberOfPlayers, int numberOfImpostors, String map) {
-        Game game = new Game(gameMode, numberOfPlayers, numberOfImpostors, map);
+        String mapWithoutWhitespace = map.replaceAll("\\s", "");
+        Game game = new Game(gameMode, numberOfPlayers, numberOfImpostors, mapWithoutWhitespace);
 
         if (gameMode.equals(GameMode.PRIVATE)) {
             privateGameRepository.save(game);
