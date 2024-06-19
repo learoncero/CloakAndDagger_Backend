@@ -307,6 +307,15 @@ public class GameController {
         });
     }
 
+    @Scheduled(fixedRate = 1000)
+    public void handleGameInactivity() {
+        List<Game> inactiveGames = gameService.checkGameInactivity();
+        inactiveGames.forEach(game -> {
+            gameService.deleteGame(game);
+            messagingTemplate.convertAndSend("/topic/" + game.getGameCode() + "/gameDeleted", ResponseEntity.ok().body("Game has been deleted due to inactivity"));
+        });
+    }
+
     @MessageMapping("/game/{gameCode}/end")
     @SendTo("/topic/{gameCode}/gameEnd")
     public ResponseEntity<Game> endGame(@Payload EndGameMessage endGameMessage) {
