@@ -53,6 +53,9 @@ public class Game {
     @Schema(description = "Voting Result, playerId when successful, -1=tie, 0=no votes")
     private Integer votingResult;
 
+    @Schema(description = "TimeStamp when game was created")
+    private long creationTime;
+
     public Game(GameMode gameMode, int numberOfPlayers, int numberOfImpostors, String map) {
         this.gameCode = GameCodeGenerator.generateGameCode();
         this.gameMode = gameMode;
@@ -66,8 +69,17 @@ public class Game {
         this.gameStatus = GameStatus.LOBBY;
         this.reportedBodies = new ArrayList<>();
         this.voteEvents = new ArrayList<>();
+        this.creationTime = System.currentTimeMillis();
     }
 
     public Game() {
+    }
+
+    public long getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(long creationTime) {
+        this.creationTime = creationTime;
     }
 }

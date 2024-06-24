@@ -146,13 +146,16 @@ public class GameService {
 
     public List<Game> checkGameInactivity() {
         long now = System.currentTimeMillis();
-        long inactivityThreshold = 1000; // 5 minutes in milliseconds
+        long inactivityThreshold = 300000; // 5 minutes in milliseconds
 
         List<Game> inactiveGames = new ArrayList<>();
 
         getAllGames().forEach(game -> {
             boolean allInactive = game.getPlayers().stream()
-                    .allMatch(player -> !player.isMoving() && (now - playerActivities.get(player.getId()).getLastMoveTime()) > inactivityThreshold);
+                    .allMatch(player -> {
+                        PlayerActivity activity = playerActivities.get(player.getId());
+                        return activity != null && (now - activity.getLastMoveTime()) > inactivityThreshold;
+                    });
 
             if (allInactive) {
                 inactiveGames.add(game);
@@ -160,6 +163,9 @@ public class GameService {
         });
         return inactiveGames;
     }
+
+
+
 
     public void deleteGame(Game gameToDelete) {
         if (gameToDelete.getGameMode().equals(GameMode.PRIVATE)) {
