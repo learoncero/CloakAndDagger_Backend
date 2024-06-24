@@ -69,17 +69,10 @@ public class Game {
         this.gameStatus = GameStatus.LOBBY;
         this.reportedBodies = new ArrayList<>();
         this.voteEvents = new ArrayList<>();
-        this.creationTime = System.currentTimeMillis();
     }
 
     public Game() {
     }
 
-    public long getCreationTime() {
-        return creationTime;
-    }
 
-    public void setCreationTime(long creationTime) {
-        this.creationTime = creationTime;
-    }
 }
