@@ -60,7 +60,6 @@ public class GameController {
 
         Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
         Player player = playerService.createPlayer(createGameMessage.getUsername(), randomPosition, game, createGameMessage.getPlayerColor());
-        gameService.updatePlayerActivity(player.getId(), game.getGameCode());
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
 

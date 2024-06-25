@@ -94,13 +94,15 @@ public class MapService {
 
             // Check horizontal placement
             if (isWalkable(lines, x, y) && isWalkable(lines, x + 1, y)
-                    && isWallOrBoundary(lines, x - 1, y) && isWallOrBoundary(lines, x + 2, y)) {
+                    && isWallOrBoundary(lines, x - 1, y) && isWallOrBoundary(lines, x + 2, y)
+                    && isWalkable(lines, x - 1, y - 1) && isWalkable(lines, x + 2, y + 1)) {
                 possibleWalls.add(new Position[]{new Position(x, y), new Position(x + 1, y)});
             }
 
             // Check vertical placement
             if (isWalkable(lines, x, y) && isWalkable(lines, x, y + 1)
-                    && isWallOrBoundary(lines, x, y - 1) && isWallOrBoundary(lines, x, y + 2)) {
+                    && isWallOrBoundary(lines, x, y - 1) && isWallOrBoundary(lines, x, y + 2)
+                    && isWalkable(lines, x - 1, y - 1) && isWalkable(lines, x + 1, y + 2)) {
                 possibleWalls.add(new Position[]{new Position(x, y), new Position(x, y + 1)});
             }
         }
