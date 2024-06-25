@@ -53,6 +53,9 @@ public class Game {
     @Schema(description = "Voting Result, playerId when successful, -1=tie, 0=no votes")
     private Integer votingResult;
 
+    @Schema(description = "TimeStamp when game was created")
+    private long creationTime;
+
     public Game(GameMode gameMode, int numberOfPlayers, int numberOfImpostors, String map) {
         this.gameCode = GameCodeGenerator.generateGameCode();
         this.gameMode = gameMode;
@@ -70,4 +73,6 @@ public class Game {
 
     public Game() {
     }
+
+
 }

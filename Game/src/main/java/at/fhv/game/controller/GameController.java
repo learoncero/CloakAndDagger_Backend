@@ -60,7 +60,6 @@ public class GameController {
 
         Position randomPosition = mapService.getRandomWalkablePosition(game.getMap());
         Player player = playerService.createPlayer(createGameMessage.getUsername(), randomPosition, game, createGameMessage.getPlayerColor());
-
         player = playerService.setInitialRandomRole(game.getNumberOfPlayers(), game.getNumberOfImpostors(), player);
         game.getPlayers().add(player);
 
@@ -304,6 +303,15 @@ public class GameController {
             playerService.updatePlayerisMoving(player, message.isMoving());
 
             messagingTemplate.convertAndSend("/topic/" + gameCode + "/idleChange", ResponseEntity.ok().body(updatedGame));
+        });
+    }
+
+    @Scheduled(fixedRate = 1000)
+    public void handleGameInactivity() {
+        List<Game> inactiveGames = gameService.checkGameInactivity();
+        inactiveGames.forEach(game -> {
+            gameService.deleteGame(game);
+            messagingTemplate.convertAndSend("/topic/" + game.getGameCode() + "/gameDeleted", ResponseEntity.ok().body("Game has been deleted due to inactivity"));
         });
     }
 

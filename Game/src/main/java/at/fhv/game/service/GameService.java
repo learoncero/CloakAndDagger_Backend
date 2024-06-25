@@ -144,6 +144,37 @@ public class GameService {
         return inactiveMessages;
     }
 
+    public List<Game> checkGameInactivity() {
+        long now = System.currentTimeMillis();
+        long inactivityThreshold = 300000; // 5 minutes in milliseconds
+
+        List<Game> inactiveGames = new ArrayList<>();
+
+        getAllGames().forEach(game -> {
+            boolean allInactive = game.getPlayers().stream()
+                    .allMatch(player -> {
+                        PlayerActivity activity = playerActivities.get(player.getId());
+                        return activity != null && (now - activity.getLastMoveTime()) > inactivityThreshold;
+                    });
+
+            if (allInactive) {
+                inactiveGames.add(game);
+            }
+        });
+        return inactiveGames;
+    }
+
+
+
+
+    public void deleteGame(Game gameToDelete) {
+        if (gameToDelete.getGameMode().equals(GameMode.PRIVATE)) {
+            privateGameRepository.deleteByGameCode(gameToDelete.getGameCode());
+        } else {
+            publicGameRepository.deleteByGameCode(gameToDelete.getGameCode());
+        }
+    }
+
     public Game reportBody(String gameCode, int bodyToReportId) {
         Game game = getGameByCode(gameCode);
         if (game != null) {
@@ -168,6 +199,13 @@ public class GameService {
         }
 
         return game;
+    }
+
+    public List<Game> getAllGames(){
+        List<Game> games = new ArrayList<>();
+        games.addAll(privateGameRepository.findAll());
+        games.addAll(publicGameRepository.findAll());
+        return games;
     }
 
     public Game setRandomWallPositionsForSabotage(String gameCode, int sabotageId, List<Position[]> wallPositions) throws Exception {

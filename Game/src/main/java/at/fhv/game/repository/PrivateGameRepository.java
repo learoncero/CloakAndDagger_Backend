@@ -4,6 +4,7 @@ import at.fhv.game.model.Game;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class PrivateGameRepository {
@@ -23,6 +24,10 @@ public class PrivateGameRepository {
 
     public boolean existsByGameCode(String gameCode) {
         return games.containsKey(gameCode);
+    }
+
+    public List<Game> findAll() {
+        return List.copyOf(games.values());
     }
 
 }
