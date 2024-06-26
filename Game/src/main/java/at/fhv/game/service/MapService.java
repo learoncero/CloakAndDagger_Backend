@@ -95,14 +95,14 @@ public class MapService {
             // Check horizontal placement
             if (isWalkable(lines, x, y) && isWalkable(lines, x + 1, y)
                     && isWallOrBoundary(lines, x - 1, y) && isWallOrBoundary(lines, x + 2, y)
-                    && isWalkable(lines, x - 1, y - 1) && isWalkable(lines, x + 2, y + 1)) {
+                    && !hasAdjacentWalkableLine(lines, x, y, true)) {
                 possibleWalls.add(new Position[]{new Position(x, y), new Position(x + 1, y)});
             }
 
             // Check vertical placement
             if (isWalkable(lines, x, y) && isWalkable(lines, x, y + 1)
                     && isWallOrBoundary(lines, x, y - 1) && isWallOrBoundary(lines, x, y + 2)
-                    && isWalkable(lines, x - 1, y - 1) && isWalkable(lines, x + 1, y + 2)) {
+                    && !hasAdjacentWalkableLine(lines, x, y, false)) {
                 possibleWalls.add(new Position[]{new Position(x, y), new Position(x, y + 1)});
             }
         }
@@ -128,7 +128,18 @@ public class MapService {
         return y < 0 || y >= lines.size() || x < 0 || x >= lines.get(y).length() || lines.get(y).charAt(x) == '#';
     }
 
+    private boolean hasAdjacentWalkableLine(List<String> lines, int x, int y, boolean horizontal) {
+        if (horizontal) {
+            return (isWalkable(lines, x - 1, y) && isWalkable(lines, x - 2, y))
+                    && (isWalkable(lines, x + 2, y) && isWalkable(lines, x + 3, y));
+        } else {
+            return (isWalkable(lines, x, y - 1) && isWalkable(lines, x, y - 2))
+                    && (isWalkable(lines, x, y + 2) && isWalkable(lines, x, y + 3));
+        }
+    }
+
     public List<Pair<Position>> getVentPositions(String mapName) {
         return getMapByName(mapName).getVentPositions();
     }
+
 }
